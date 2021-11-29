@@ -87,8 +87,8 @@ def select_best_candidate_split_for_node(I, residual_image_vector, candidate_spl
             Q_0_l.append(index)
         else:
             Q_0_r.append(index)
-    mu_0_l = 1 / len(Q_0_l) * np.sum(residual_image_vector[Q_0_l]]) 
-    mu_0_r = 1 / len(Q_0_r) * np.sum()
+    mu_0_l = 1 / len(Q_0_l) * np.sum(residual_image_vector[Q_0_l]) 
+    mu_0_r = 1 / len(Q_0_r) * np.sum(residual_image_vector[Q_0_r])
     return
 
 def generate_candidate_splits(number_candidate_splits=20):
