@@ -1,10 +1,12 @@
 import numpy as np
 import uuid
 
-from numpy.core.fromnumeric import argmax
-number_selected_features = 400
+_DEBUG = True
+_AMOUNT_CADIDATE_SPLITS = 20
+_AMOUND_EXTRACTED_FEATURES = 400
+_REGRESSION_TREE_MAX_DEPTH = 5
 
-(_INSERT, _DELETE) = range(2)
+_INSERT, _DELETE = range(2)
 
 class Node:
 
@@ -28,8 +30,8 @@ class Node:
             else:
                 self.right_child_id = None
 
-    def print_node(self):
-        return '[id %s, x1 %d, x2 %d, threshold %d, left %s, right %s]' % (self.id, self.x1, self.x2, self.threshold, self.left_child_id, self.right_child_id)
+    def get_node_description(self):
+        return '[id: %s, x1: %d, x2: %d, threshold: %d, left child id: %s, right child id: %s]' % (self.id, self.x1, self.x2, self.threshold, self.left_child_id, self.right_child_id)
 
 class Regression_Tree:
 
@@ -37,7 +39,6 @@ class Regression_Tree:
         self.nodes = []
 
     def create_node(self, x1, x2, threshold, parent_id=None):
-        print("parent " + str(parent_id))
         node = Node(x1, x2, threshold)
         self.nodes.append(node)
         self.__update_childs(parent_id, node.id, _INSERT)
@@ -52,9 +53,11 @@ class Regression_Tree:
             else:
                 self[position].update_child(child_id=id, left=False, mode=mode)
 
-    def print_tree(self):
+    def get_tree_description(self):
+        result = "<< 🌳 regression tree 🌳 >>\n"
         for node in self.nodes:
-            print(node.print_node())
+            result += node.get_node_description() + "\n"
+        return result + "\n<< 🌳 regression tree 🌳 >>\n"
 
     def get_index(self, position):
         for index, node in enumerate(self.nodes):
@@ -87,17 +90,18 @@ Parameters
 
 Returns
     -------
-    (pixel x1, pixel x2, pixel intensity threshold), mu_theta : best candidate split triplet and corresponding mu_theta value to simplify calculation for next iteration
+    (pixel x1, pixel x2, pixel intensity threshold), mu_theta : best candidate split triplet and corresponding Q_theta_l, Q_thetas_r, mu_theta value needed for calculation in the next iteration
 """
 def select_best_candidate_split_for_node(I_grayscale_image_matrix, residual_image_vector_matrix, theta_candidate_splits, Q_images_at_node, mu_parent_node=None):
-    sum_square_error_theta_candidate_splits = np.empty(len(theta_candidate_splits))
-    mu_thetas = np.empty(len(theta_candidate_splits))
-    Q_thetas_l = np.empty(len(theta_candidate_splits))
-    Q_thetas_r = np.empty(len(theta_candidate_splits))
+    sum_square_error_theta_candidate_splits = []
+    mu_thetas = []
+    Q_thetas_l =  []
+    Q_thetas_r = []
 
     for theta in theta_candidate_splits:
         x1, x2, threshold = theta
-        Q_theta_l, Q_theta_r = []
+        Q_theta_l = []
+        Q_theta_r = []
 
         # bucketize images based on theta candidate split
         for index in Q_images_at_node:
@@ -106,43 +110,43 @@ def select_best_candidate_split_for_node(I_grayscale_image_matrix, residual_imag
             else:
                 Q_theta_r.append(index)
 
-        mu_theta_l = 1 / len(Q_theta_l) * np.sum(residual_image_vector_matrix[Q_theta_l])
-        if mu_parent_node == None: # True if selecting candidate split for root node
-            mu_theta_r = 1 / len(Q_theta_r) * np.sum(residual_image_vector_matrix[Q_theta_r])
+        mu_theta_l = (len(Q_theta_l) and 1 / len(Q_theta_l) or 0) * np.sum(residual_image_vector_matrix[Q_theta_l], axis=0) 
+        mu_theta_r = np.empty(residual_image_vector_matrix[Q_theta_r].shape)
+        if mu_parent_node is None: # True if selecting candidate split for root node
+            mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * np.sum(residual_image_vector_matrix[Q_theta_r], axis=0)
         else:
-            mu_theta_r = 1/ len(Q_theta_r) * (len(Q_images_at_node) * mu_parent_node - len(Q_theta_l) * mu_theta_l)
-            
+            mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * (len(Q_images_at_node) * mu_parent_node - len(Q_theta_l) * mu_theta_l)
+    
         sum_square_error_theta = (len(Q_theta_l) * np.matmul(mu_theta_l.T, mu_theta_l)) + (len(Q_theta_r) * np.matmul(mu_theta_r.T, mu_theta_r))
         sum_square_error_theta_candidate_splits.append(sum_square_error_theta)
         mu_thetas.append(mu_theta_l + mu_theta_r)
         Q_thetas_l.append(Q_theta_l)
         Q_thetas_r.append(Q_theta_r)
 
-    best_theta_candidate_split_index = argmax(sum_square_error_theta_candidate_splits)
+    best_theta_candidate_split_index = np.argmax(sum_square_error_theta_candidate_splits)
     return theta_candidate_splits[best_theta_candidate_split_index],  Q_thetas_l[best_theta_candidate_split_index], Q_thetas_l[best_theta_candidate_split_index], mu_thetas[best_theta_candidate_split_index]
 
-def generate_random_candidate_splits(amount_candidate_splits=20):
+def generate_random_candidate_splits(amount_candidate_splits=_AMOUNT_CADIDATE_SPLITS, amount_extraced_features=_AMOUND_EXTRACTED_FEATURES):
     random_candidate_splits = []
-    for _ in range(0, amount_candidate_splits-1): 
-        random_x1_pixel_index = np.random.randint(0, number_selected_features)
-        random_x2_pixel_index = np.random.randint(0, number_selected_features)
+    for _ in range(0, amount_candidate_splits): 
+        random_x1_pixel_index = np.random.randint(0, amount_extraced_features)
+        random_x2_pixel_index = np.random.randint(0, amount_extraced_features)
         while (random_x1_pixel_index == random_x2_pixel_index):
-            random_x2_pixel_index = np.random.randint(0, number_selected_features)
+            random_x2_pixel_index = np.random.randint(0, amount_extraced_features)
 
-        random_threshold = np.random.randint(0, 255) # we take the absolute value for the pixel intensity differnece
-
-        random_candidate_splits.append(zip(random_x1_pixel_index, random_x2_pixel_index, random_threshold))
+        random_threshold = np.random.randint(0, 256) # we take the absolute value for the pixel intensity differnece (0-255)
+        random_candidate_splits.append((random_x1_pixel_index, random_x2_pixel_index, random_threshold))
     return random_candidate_splits
 
 def generate_root_node(I_grayscale_image_matrix, residual_image_vector_matrix, Q_images_at_node):
     random_candidate_splits_root = generate_random_candidate_splits()
-    best_x1_pixel_index_root, best_x2_pixel_index_root, best_threshold_root, Q_theta_l, Q_theta_r, mu_theta_root = select_best_candidate_split_for_node(
+    (best_x1_pixel_index_root, best_x2_pixel_index_root, best_threshold_root), Q_theta_l_root, Q_theta_r_root, mu_theta_root = select_best_candidate_split_for_node(
         I_grayscale_image_matrix,
         residual_image_vector_matrix,
         random_candidate_splits_root,
         Q_images_at_node
     )
-    return _REGRESSION_TREE.create_node(best_x1_pixel_index_root, best_x2_pixel_index_root, best_threshold_root), Q_theta_l, Q_theta_r, mu_theta_root 
+    return _REGRESSION_TREE.create_node(best_x1_pixel_index_root, best_x2_pixel_index_root, best_threshold_root), Q_theta_l_root, Q_theta_r_root, mu_theta_root 
 
 def generate_child_nodes(
         current_node_id, 
@@ -155,10 +159,10 @@ def generate_child_nodes(
         mu_parent_node
     ):
     if current_depth == max_depth:
-        return
+        return True
 
     random_candidate_splits_left_child = generate_random_candidate_splits()
-    best_x1_pixel_index_left_child, best_x2_pixel_index_left_child, best_threshold_left_child, Q_theta_l_left_child, Q_theta_r_left_child, mu_theta_left_child = select_best_candidate_split_for_node(
+    (best_x1_pixel_index_left_child, best_x2_pixel_index_left_child, best_threshold_left_child), Q_theta_l_left_child, Q_theta_r_left_child, mu_theta_left_child = select_best_candidate_split_for_node(
         I_grayscale_image_matrix,
         residual_image_vector_matrix,
         random_candidate_splits_left_child,
@@ -167,7 +171,7 @@ def generate_child_nodes(
     )
 
     random_candidate_splits_right_child = generate_random_candidate_splits()
-    best_x1_pixel_index_right_child, best_x2_pixel_index_right_child, best_threshold_right_child, Q_theta_l_right_child, Q_theta_r_right_child, mu_theta_right_child = select_best_candidate_split_for_node(
+    (best_x1_pixel_index_right_child, best_x2_pixel_index_right_child, best_threshold_right_child), Q_theta_l_right_child, Q_theta_r_right_child, mu_theta_right_child = select_best_candidate_split_for_node(
         I_grayscale_image_matrix,
         residual_image_vector_matrix,
         random_candidate_splits_right_child,
@@ -201,12 +205,30 @@ def generate_child_nodes(
         )
     ) 
 
-# try running 
-# restirct depth by setting minimum amount of images buckitized in one node!
+# TODO restirct depth by setting minimum amount of images bucketized in one node/leaf
+# TODO remove candidate split calculation for leaf nodes
+# TODO calculate and save avarage residual values (delta landmarks) for leaf nodes
+# TODO build function to search trough the regression tree in order to find correct landmark delta values for each Image
+
+I_grayscale_image_matrix = np.random.randint(0, 256, (20, 400)) # shape (n, #extraced pixels)
+residual_image_vector_matrix = np.random.rand(20, 20) # only positive values for test example ; shape (n, R) #TODO should be actualy of shape (n, R *(1, 194))
+Q_images_at_node = [i for i in range(0, 20)]
+
+if _DEBUG:
+    print("I_grayscale_image_matrix : " + str(I_grayscale_image_matrix))
+    print("residual_image_vector_matrix : " + str(residual_image_vector_matrix))
+    print("Q_images_at_node : " + str(Q_images_at_node))
 
 _REGRESSION_TREE = Regression_Tree()
-root = generate_root(tree)
-generate_complete_node(current_node_id=root.id, current_depth=0, max_depth=2)
+root_node, Q_theta_l_root, Q_theta_r_root, mu_theta_root = generate_root_node(I_grayscale_image_matrix, residual_image_vector_matrix, Q_images_at_node)
 
-# print(len(tree.nodes))
-# print(tree.print_tree())
+if _DEBUG:
+    print()
+    print("root node: " + root_node.get_node_description())
+
+regression_tree_generation_successful = generate_child_nodes(root_node.id, 0, _REGRESSION_TREE_MAX_DEPTH, I_grayscale_image_matrix, residual_image_vector_matrix, Q_theta_l_root, Q_theta_r_root, mu_theta_root)
+print("🌳 regression tree successfully generated ... ", regression_tree_generation_successful)
+
+if _DEBUG:
+    print()
+    print(_REGRESSION_TREE.get_tree_description())
