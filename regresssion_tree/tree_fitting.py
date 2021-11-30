@@ -209,6 +209,7 @@ def generate_child_nodes(
 # TODO remove candidate split calculation for leaf nodes
 # TODO calculate and save avarage residual values (delta landmarks) for leaf nodes
 # TODO build function to search trough the regression tree in order to find correct landmark delta values for each Image
+# TODO Extract tree structure to seperate file?
 
 I_grayscale_image_matrix = np.random.randint(0, 256, (20, 400)) # shape (n, #extraced pixels)
 residual_image_vector_matrix = np.random.rand(20, 20) # only positive values for test example ; shape (n, R) #TODO should be actualy of shape (n, R *(1, 194))
