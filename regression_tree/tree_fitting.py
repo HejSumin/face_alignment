@@ -1,4 +1,3 @@
-from matplotlib.pyplot import waitforbuttonpress
 import numpy as np
 from regression_tree import *
 
@@ -97,7 +96,6 @@ def _generate_root_node(regression_tree, I_grayscale_image_matrix, residual_imag
 
 def _generate_leaf_node(regression_tree, avarage_residual_image_vector, parent_id):
     return regression_tree.create_leaf(avarage_residual_image_vector, parent_id)
-
 
 def _generate_child_nodes(
         regression_tree,
