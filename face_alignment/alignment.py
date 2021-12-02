@@ -1,6 +1,6 @@
 from matplotlib.patches import Circle
 import numpy as np
-
+from face_detection.face_detection import get_circle_bounding_box_for_image
 
 def get_bounding_coords(image, circle):
     x1 = (circle[0][0][0] - circle[0][1])

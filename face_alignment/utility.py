@@ -5,8 +5,8 @@ import pandas as pd
 import os, sys
 
 #data = '~/CS-ITU/3-semester/Advanced Machine Learning/Project/data/'
-data = '../../data/'
-annotations = '../../data/annotation/'
+data = '../data/'
+annotations = '../data/annotation/'
 
 
 def get_all_file_names(folder):
@@ -73,13 +73,13 @@ def get_landmark_coords_from_file(id_image):
                 return read_landmarks_from_file(annotations+str(i)+".txt") 
     return None
 
-def plot_image_given_coords(id_image, coords):
+def plot_image_given_coords(id_image, coords, colors=['yellow']):
     image = cv2.imread(data +"train_1/"+id_image)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    coords = list(zip(*coords))
+    for c in range(len(coords)):
+        coord = list(zip(*coords[c]))
+        plt.plot(coord[0],coord[1], color=colors[c], marker='o',  markersize=1,  linestyle = 'None')
     plt.imshow(image)
-    plt.plot(coords[0],coords[1], color='yellow', marker='o',  markersize=1,  linestyle = 'None')
-
 
 def compute_mean_shape(images):
     result = np.zeros((194,2))
