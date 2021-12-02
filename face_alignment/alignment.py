@@ -1,6 +1,11 @@
 from matplotlib.patches import Circle
 import numpy as np
+
 from face_detection.face_detection import get_circle_bounding_box_for_image
+
+
+
+
 
 def get_bounding_coords(image, circle):
     x1 = (circle[0][0][0] - circle[0][1])
@@ -20,7 +25,7 @@ def extract_coords_features(image, circle , n=400):
     
   
 def align_mean_shape(mean_shape, path):
-    circle            = get_circle_bounding_box_for_image(path)[0]
+    circle            = get_circle_bounding_box_for_image(path, 'default')[0]
     center_bb         = circle[0]
     radius            = circle[1]
     scale_factor      = radius/450
