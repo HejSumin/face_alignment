@@ -1,12 +1,13 @@
 import uuid
 import graphviz
+from graphviz.dot import node
 
 _INSERT, _DELETE = range(2)
 
 class Leaf:
     
     def __init__(self, avarage_resdiual_image_vector):
-        self.id = uuid.uuid4()
+        self.id = uuid.uuid4().hex
         self.avarage_residual_image_vector = avarage_resdiual_image_vector
 
     def get_node_description(self, detailed=False, root=False):
@@ -18,7 +19,7 @@ class Leaf:
 class Node:
 
     def __init__(self, x1, x2, threshold):
-        self.id = uuid.uuid4()
+        self.id = uuid.uuid4().hex
         self.x1 = x1
         self.x2 = x2
         self.threshold = threshold
@@ -63,14 +64,20 @@ class Regression_Tree:
         self.update_dot_graphviz(node, parent_id)
         return node
 
-    def __update_childs(self, position, id, mode):
-        if position is None:
+    def __update_childs(self, parent_id, id, mode):
+        if parent_id is None:
             return
         else:
-            if self[position].left_child_id == None:
-                self[position].update_child(child_id=id, left=True, mode=mode)
+            if self[parent_id].left_child_id == None:
+                self[parent_id].update_child(child_id=id, left=True, mode=mode)
             else:
-                self[position].update_child(child_id=id, left=False, mode=mode)
+                self[parent_id].update_child(child_id=id, left=False, mode=mode)
+
+    def find_node_by_id(self, node_id):
+        return self[node_id]
+
+    def get_root_node(self):
+        return self._nodes[0]
 
     def get_tree_description(self, detailed=False):
         result = "<< 🌳 regression tree 🌳 >>\n\n"
@@ -78,9 +85,9 @@ class Regression_Tree:
             result += node.get_node_description(detailed, root=True if index == 0 else False) + "\n"
         return result + "\n<< 🌳 regression tree 🌳 >>\n"
 
-    def _get_index(self, position):
+    def _get_index(self, node_id):
         for index, node in enumerate(self._nodes):
-            if node.id == position:
+            if node.id == node_id:
                 break
         return index
 
