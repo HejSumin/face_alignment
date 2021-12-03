@@ -54,14 +54,14 @@ class Regression_Tree:
         leaf = Leaf(avarage_residual_image_vector)
         self._nodes.append(leaf)
         self.__update_childs(parent_id, leaf.id, _INSERT)
-        self.update_dot_graphviz(leaf, parent_id)
+        #self.update_dot_graphviz(leaf, parent_id)
         return leaf
 
     def create_node(self, x1, x2, threshold, parent_id=None):
         node = Node(x1, x2, threshold)
         self._nodes.append(node)
         self.__update_childs(parent_id, node.id, _INSERT)
-        self.update_dot_graphviz(node, parent_id)
+        #self.update_dot_graphviz(node, parent_id)
         return node
 
     def __update_childs(self, parent_id, id, mode):

@@ -86,7 +86,7 @@ def _generate_random_candidate_splits(amount_extraced_features, amount_candidate
     return random_candidate_splits
 
 def _generate_root_node(regression_tree, I_grayscale_image_matrix, residual_image_vector_matrix, Q_I_at_root):
-    random_candidate_splits_root = _generate_random_candidate_splits(I_grayscale_image_matrix.shape[0])
+    random_candidate_splits_root = _generate_random_candidate_splits(I_grayscale_image_matrix.shape[1])
     (best_x1_pixel_index_root, best_x2_pixel_index_root, best_threshold_root), Q_theta_l_root, Q_theta_r_root, mu_theta_root = _select_best_candidate_split_for_node(
         I_grayscale_image_matrix,
         residual_image_vector_matrix,
@@ -115,7 +115,7 @@ def _generate_child_nodes(
         right_leaf_node = _generate_leaf_node(regression_tree, mu_theta_r, parent_id=current_node_id)
         return True
 
-    random_candidate_splits_left_child = _generate_random_candidate_splits(I_grayscale_image_matrix.shape[0])
+    random_candidate_splits_left_child = _generate_random_candidate_splits(I_grayscale_image_matrix.shape[1])
     (best_x1_pixel_index_left_child, best_x2_pixel_index_left_child, best_threshold_left_child), Q_theta_l_left_child, Q_theta_r_left_child, mu_theta_left_child = _select_best_candidate_split_for_node(
         I_grayscale_image_matrix,
         residual_image_vector_matrix,
@@ -124,7 +124,7 @@ def _generate_child_nodes(
         np.sum(mu_parent_node, axis=0)
     )
 
-    random_candidate_splits_right_child = _generate_random_candidate_splits(I_grayscale_image_matrix.shape[0])
+    random_candidate_splits_right_child = _generate_random_candidate_splits(I_grayscale_image_matrix.shape[1])
     (best_x1_pixel_index_right_child, best_x2_pixel_index_right_child, best_threshold_right_child), Q_theta_l_right_child, Q_theta_r_right_child, mu_theta_right_child = _select_best_candidate_split_for_node(
         I_grayscale_image_matrix,
         residual_image_vector_matrix,
@@ -175,7 +175,7 @@ def generate_regression_tree(I_grayscale_image_matrix, residual_image_vector_mat
     root_node, Q_theta_l_root, Q_theta_r_root, mu_theta_root = _generate_root_node(regression_tree, I_grayscale_image_matrix, residual_image_vector_matrix, Q_I_at_root)
 
     regression_tree_generation_successful = _generate_child_nodes(regression_tree, root_node.id, 0, _REGRESSION_TREE_MAX_DEPTH, I_grayscale_image_matrix, residual_image_vector_matrix, Q_theta_l_root, Q_theta_r_root, mu_theta_root)
-    print("🌳 regression tree successfully generated ... ", regression_tree_generation_successful)
+    #print("🌳 regression tree successfully generated ... ", regression_tree_generation_successful)
 
     return regression_tree
 
@@ -185,8 +185,6 @@ def get_avarage_residual_image_vector(regression_tree, I_grayscale_image, curren
         current_node = regression_tree.get_root_node()
     else:
         current_node = regression_tree.find_node_by_id(current_node_id)
-
-    print(current_node.get_node_description())
 
     if  isinstance(current_node, Leaf):
         return current_node.avarage_residual_image_vector
@@ -199,18 +197,18 @@ def get_avarage_residual_image_vector(regression_tree, I_grayscale_image, curren
 # TODO OPTIONAL restirct depth by setting minimum amount of images bucketized in one node/leaf
 # TODO build function to search trough the regression tree in order to find correct landmark delta values for each Image
 
-I_grayscale_image_matrix = np.random.randint(0, 256, (20*5, 400)) # shape (N=n*R, #extraced pixels) # TODO Rename matrix to something with triplets
-residual_image_vector_matrix = np.random.rand(20*5, 194) # only positive values for test example ; shape (N=n*R, 194)
+# I_grayscale_image_matrix = np.random.randint(0, 256, (20*5, 400)) # shape (N=n*R, #extraced pixels) # TODO Rename matrix to something with triplets
+# residual_image_vector_matrix = np.random.rand(20*5, 194) # only positive values for test example ; shape (N=n*R, 194)
 
-regression_tree = generate_regression_tree(I_grayscale_image_matrix, residual_image_vector_matrix)
+# regression_tree = generate_regression_tree(I_grayscale_image_matrix, residual_image_vector_matrix)
 
-print("avarage_residual_image_vector: ", get_avarage_residual_image_vector(regression_tree, I_grayscale_image_matrix[0]))
+# print("avarage_residual_image_vector: ", get_avarage_residual_image_vector(regression_tree, I_grayscale_image_matrix[0]))
 
-if _DEBUG:
-    print()
-    print(regression_tree.get_tree_description(detailed=_DEBUG_DETAILED))
-    if _DEBUG_GRAPHVIZ:
-        graphviz = regression_tree.get_dot_graphviz_source()
-        graphviz_file = open('./tree/graphviz_output.txt', 'w', encoding='utf-8')
-        graphviz_file.write(graphviz)
-        graphviz_file.close()
+# if _DEBUG:
+#     print()
+#     print(regression_tree.get_tree_description(detailed=_DEBUG_DETAILED))
+#     if _DEBUG_GRAPHVIZ:
+#         graphviz = regression_tree.get_dot_graphviz_source()
+#         graphviz_file = open('./tree/graphviz_output.txt', 'w', encoding='utf-8')
+#         graphviz_file.write(graphviz)
+#         graphviz_file.close()
