@@ -179,6 +179,8 @@ def generate_regression_tree(I_grayscale_image_matrix, residual_image_vector_mat
 
     return regression_tree
 
+# TODO give back average residual image vectors while building
+
 def get_avarage_residual_image_vector(regression_tree, I_grayscale_image, current_node_id=None):
     current_node = None
     if current_node_id is None:
