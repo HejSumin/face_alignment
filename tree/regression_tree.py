@@ -1,20 +1,21 @@
 import uuid
 import graphviz
+import numpy as np
 from graphviz.dot import node
 
 _INSERT, _DELETE = range(2)
 
 class Leaf:
     
-    def __init__(self, avarage_resdiual_image_vector):
+    def __init__(self, avarage_residual_vector):
         self.id = uuid.uuid4().hex
-        self.avarage_residual_image_vector = avarage_resdiual_image_vector
+        self.avarage_residual_vector = avarage_residual_vector
 
     def get_node_description(self, detailed=False, root=False):
-        return '[🍂 leaf, id: %s,\n -- avarage_residual_image_vector: %s]' % (self.id, self.avarage_residual_image_vector if detailed else self.avarage_residual_image_vector.shape)
+        return '[🍂 leaf, id: %s,\n -- avarage_residual_vector: %s]' % (self.id, self.avarage_residual_vector if detailed else self.avarage_residual_vector.shape)
 
     def get_dot_grahphviz_description(self, root=False):
-        return '🍂 leaf, ⌀_residual_i_v: %s' % (str(self.avarage_residual_image_vector.shape))
+        return '🍂 leaf, ⌀_residual_v: %s' % (str(self.avarage_residual_vector.shape))
 
 class Node:
 
@@ -46,12 +47,13 @@ class Node:
 
 class Regression_Tree:
 
-    def __init__(self):
+    def __init__(self, avarage_residuals_matrix_shape):
         self._nodes = []
+        self._avarage_residuals_matrix = np.empty(avarage_residuals_matrix_shape)
         self._dot_graphviz = graphviz.Digraph('regression-tree', comment='A single regression tree')  
 
-    def create_leaf(self, avarage_residual_image_vector, parent_id=None):
-        leaf = Leaf(avarage_residual_image_vector)
+    def create_leaf(self, avarage_residual_vector, parent_id=None):
+        leaf = Leaf(avarage_residual_vector)
         self._nodes.append(leaf)
         self.__update_childs(parent_id, leaf.id, _INSERT)
         #self.update_dot_graphviz(leaf, parent_id)
@@ -73,6 +75,12 @@ class Regression_Tree:
             else:
                 self[parent_id].update_child(child_id=id, left=False, mode=mode)
 
+    def get_avarage_residuals_matrix(self):
+        return self._avarage_residuals_matrix
+
+    def append_avarage_residuals_matrix(self, avarage_residual_vector, Q_I_at_node):
+        self._avarage_residuals_matrix[Q_I_at_node] = avarage_residual_vector
+    
     def find_node_by_id(self, node_id):
         return self[node_id]
 
