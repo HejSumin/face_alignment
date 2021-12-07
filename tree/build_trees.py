@@ -24,13 +24,13 @@ def update_f_k_matrix(regression_tree, f_k_minus_1_matrix, learning_rate=_LEARNI
     f_k_matrix = f_k_minus_1_matrix + learning_rate * g_k_matrix
     return f_k_matrix
 
-# [0,0,[grayscale values],0,1,1,1,1,2,2,2,2,]
-images = 200
-
+images = 2000
+landmarks = 194
+R = 20
 n_image_matrix = np.random.randint(0, 256, (images, 400))
-I_grayscale_matrix = np.repeat(n_image_matrix, repeats=20, axis=0) # shape (N=n*R, #extraced pixels)
-S_delta_matrix = np.random.randint(1, 10, (20*images, 194)) * np.random.rand(20*images, 194) # 20 = R , images = amount of actual Images I
-f_0_matrix = np.random.randint(1, 10, (images*20, 194)) * np.random.rand(images*20, 194)
+I_grayscale_matrix = np.repeat(n_image_matrix, repeats=R, axis=0) # shape (N=n*R, #extraced pixels)
+S_delta_matrix = np.random.randint(1, 10, (R*images, landmarks)) * np.random.rand(R*images, landmarks) # 20 = R , images = amount of actual Images I
+f_0_matrix = np.random.randint(1, 10, (images*R, landmarks)) * np.random.rand(images*R, landmarks)
 
 start = timer()
 r_t_matrix = build_regression_trees(I_grayscale_matrix, S_delta_matrix, f_0_matrix)

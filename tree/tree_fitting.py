@@ -5,8 +5,8 @@ from timeit import default_timer as timer
 from datetime import timedelta
 
 _DEBUG = True
-_DEBUG_DETAILED = True
-_DEBUG_GRAPHVIZ = True
+_DEBUG_DETAILED = False
+_DEBUG_GRAPHVIZ = False
 
 """
 Hyperparameters
@@ -42,50 +42,52 @@ Returns
     (pixel x1, pixel x2, pixel intensity threshold), mu_theta : best candidate split triplet and corresponding Q_theta_l, Q_thetas_r, mu_theta value needed for calculation in the next iteration
 """
 def _select_best_candidate_split_for_node(I_grayscale_matrix, residuals_matrix, theta_candidate_splits, Q_I_at_node, mu_parent_node=None):
-    sum_square_error_theta_candidate_splits = []
+    sum_square_error_theta_candidate_splits = np.zeros((theta_candidate_splits.shape[0], 1))
     mu_thetas = []
-    Q_thetas_l =  []
-    Q_thetas_r = []
+    Q_thetas_l = np.zeros((I_grayscale_matrix.shape[0], theta_candidate_splits.shape[0]))
+    Q_thetas_r = np.zeros((I_grayscale_matrix.shape[0], theta_candidate_splits.shape[0]))
 
-    for theta in theta_candidate_splits:
-        x1, x2, threshold = theta
-        Q_theta_l = []
-        Q_theta_r = []
+    for i, theta in enumerate(theta_candidate_splits):
+        x1, x2, threshold = theta[0], theta[1], theta[2]
+        Q_theta_l = np.zeros((I_grayscale_matrix.shape[0], 1))
+        Q_theta_r = np.zeros((I_grayscale_matrix.shape[0], 1))
 
         # bucketize images based on theta candidate split
-        for index in Q_I_at_node:
+        Q_I_at_node_indices = np.flatnonzero(Q_I_at_node)
+        for index in Q_I_at_node_indices:
             if np.abs(I_grayscale_matrix[index][x1] - I_grayscale_matrix[index][x2]) > threshold: 
-                Q_theta_l.append(index)
+                Q_theta_l[index] = 1
             else:
-                Q_theta_r.append(index)
+                Q_theta_r[index] = 1
 
-        mu_theta_l = (len(Q_theta_l) and 1 / len(Q_theta_l) or 0) * np.sum(residuals_matrix[Q_theta_l], axis=0) 
-        mu_theta_r = np.empty(residuals_matrix[Q_theta_r].shape)
-        # if mu_parent_node is None: # True if selecting candidate split for root node
-        mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * np.sum(residuals_matrix[Q_theta_r], axis=0)
-        # TODO Something is wrong here when one mu_theta is a zero vector FIX THIS!!!
-        # else:
-        #     mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * (len(Q_I_at_node) * mu_parent_node - len(Q_theta_l) * mu_theta_l)
+        Q_theta_l_indices = np.flatnonzero(Q_theta_l)
+        Q_theta_r_indices = np.flatnonzero(Q_theta_r)
+        mu_theta_l = (len(Q_theta_l_indices) and 1 / len(Q_theta_l_indices) or 0) * np.sum(residuals_matrix[Q_theta_l_indices], axis=0) 
+        mu_theta_r = np.empty(residuals_matrix[Q_theta_r_indices].shape)
+        if mu_parent_node is None: # True if selecting candidate split for root node
+            mu_theta_r = (len(Q_theta_r_indices) and 1 / len(Q_theta_r_indices) or 0) * np.sum(residuals_matrix[Q_theta_r_indices], axis=0)
+        else:
+            mu_theta_r = (len(Q_theta_r_indices) and 1 / len(Q_theta_r_indices) or 0) * (len(Q_I_at_node_indices) * mu_parent_node -  len(Q_theta_l_indices) * mu_theta_l)
         
-        sum_square_error_theta = (len(Q_theta_l) * np.matmul(mu_theta_l.T, mu_theta_l)) + (len(Q_theta_r) * np.matmul(mu_theta_r.T, mu_theta_r)) 
-        sum_square_error_theta_candidate_splits.append(sum_square_error_theta)
+        sum_square_error_theta = (len(Q_theta_l_indices) * np.matmul(mu_theta_l.T, mu_theta_l)) + (len(Q_theta_r_indices) * np.matmul(mu_theta_r.T, mu_theta_r)) 
+        sum_square_error_theta_candidate_splits[i] = sum_square_error_theta
         mu_thetas.append((mu_theta_l , mu_theta_r))
-        Q_thetas_l.append(Q_theta_l)
-        Q_thetas_r.append(Q_theta_r)
+        Q_thetas_l[:,i] = Q_theta_l[:,0]
+        Q_thetas_r[:,i] = Q_theta_r[:,0]
 
     best_theta_candidate_split_index = np.argmax(sum_square_error_theta_candidate_splits)
-    return theta_candidate_splits[best_theta_candidate_split_index],  Q_thetas_l[best_theta_candidate_split_index], Q_thetas_r[best_theta_candidate_split_index], mu_thetas[best_theta_candidate_split_index]
+    return theta_candidate_splits[best_theta_candidate_split_index],  Q_thetas_l[:,best_theta_candidate_split_index], Q_thetas_r[:,best_theta_candidate_split_index], mu_thetas[best_theta_candidate_split_index]
 
 def _generate_random_candidate_splits(amount_extraced_features, amount_candidate_splits=_AMOUNT_RANDOM_CANDIDATE_SPLITS):
-    random_candidate_splits = []
-    for _ in range(0, amount_candidate_splits): 
-        random_x1_pixel_index = np.random.randint(0, amount_extraced_features) # TODO select with prior
+    random_candidate_splits = np.empty((amount_candidate_splits, 3), dtype=int)
+    for i in range(0, amount_candidate_splits): 
+        random_x1_pixel_index = np.random.randint(0, amount_extraced_features) # TODO optional: select with prior
         random_x2_pixel_index = np.random.randint(0, amount_extraced_features)
         while (random_x1_pixel_index == random_x2_pixel_index):
             random_x2_pixel_index = np.random.randint(0, amount_extraced_features)
 
         random_threshold = np.random.randint(0, 256) # we take the absolute value for the pixel intensity differnece (0-255)
-        random_candidate_splits.append((random_x1_pixel_index, random_x2_pixel_index, random_threshold))
+        random_candidate_splits[i] = np.array([random_x1_pixel_index, random_x2_pixel_index, random_threshold])
     return random_candidate_splits
 
 def _generate_root_node(regression_tree, I_grayscale_matrix, residuals_matrix, Q_I_at_root):
@@ -112,10 +114,11 @@ def _generate_child_nodes(
         Q_theta_r,
         mu_parent_node
     ):
+    mu_theta_l, mu_theta_r = mu_parent_node
+
     if current_depth == max_depth-1:
-        mu_theta_l, mu_theta_r = mu_parent_node
-        left_leaf_node = _generate_leaf_node(regression_tree, mu_theta_l, parent_id=current_node_id)
-        right_leaf_node = _generate_leaf_node(regression_tree, mu_theta_r, parent_id=current_node_id)
+        _generate_leaf_node(regression_tree, mu_theta_l, parent_id=current_node_id)
+        _generate_leaf_node(regression_tree, mu_theta_r, parent_id=current_node_id)
         regression_tree.append_avarage_residuals_matrix(mu_theta_l, Q_theta_l) # used for training as result of g_k
         regression_tree.append_avarage_residuals_matrix(mu_theta_r, Q_theta_r) # used for training as result of g_k
         return True
@@ -126,7 +129,7 @@ def _generate_child_nodes(
         residuals_matrix,
         random_candidate_splits_left_child,
         Q_theta_l,
-        np.sum(mu_parent_node, axis=0)
+        mu_theta_l
     )
 
     random_candidate_splits_right_child = _generate_random_candidate_splits(I_grayscale_matrix.shape[1])
@@ -135,7 +138,7 @@ def _generate_child_nodes(
         residuals_matrix,
         random_candidate_splits_right_child,
         Q_theta_r,
-        np.sum(mu_parent_node, axis=0)
+        mu_theta_r
     )
 
     # we are always creating two new nodes at a time
@@ -167,15 +170,13 @@ def _generate_child_nodes(
     ) 
 
 def generate_regression_tree(I_grayscale_matrix, residuals_matrix):
-    Q_I_at_root = [i for i in range(0, len(I_grayscale_matrix))]
+    Q_I_at_root = np.ones((I_grayscale_matrix.shape[0], 1))
 
     regression_tree = Regression_Tree(avarage_residuals_matrix_shape=residuals_matrix.shape)
     root_node, Q_theta_l_root, Q_theta_r_root, mu_theta_root = _generate_root_node(regression_tree, I_grayscale_matrix, residuals_matrix, Q_I_at_root)
 
     success = _generate_child_nodes(regression_tree, root_node.id, 0, _REGRESSION_TREE_MAX_DEPTH, I_grayscale_matrix, residuals_matrix, Q_theta_l_root, Q_theta_r_root, mu_theta_root)
     return regression_tree
-
-# TODO give back average residual image vectors while building
 
 def get_avarage_residual_vector_for_image(regression_tree, I_grayscale, current_node_id=None):
     current_node = None
@@ -192,24 +193,29 @@ def get_avarage_residual_vector_for_image(regression_tree, I_grayscale, current_
         else:
             return get_avarage_residual_vector_for_image(regression_tree, current_node.right_child_id, I_grayscale)
 
-# images = 2000
-# n_image_matrix = np.random.randint(0, 256, (images, 400))
-# I_grayscale_matrix = np.repeat(n_image_matrix, repeats=20, axis=0) # shape (N=n*R, #extraced pixels)
-# residuals_matrix = np.random.rand(20*images, 194) # only positive values for test example ; shape (N=n*R, 194)
+def run_test_example():
+    images = 2000
+    landmarks = 194
+    R = 20
+    n_image_matrix = np.random.randint(0, 256, (images, 20))
+    I_grayscale_matrix = np.repeat(n_image_matrix, repeats=R, axis=0) # shape (N=n*R, #extraced pixels)
+    residuals_matrix = np.random.rand(R*images, landmarks) # only positive values for test example ; shape (N=n*R, 194)
 
-# start = timer()
-# regression_tree = generate_regression_tree(I_grayscale_matrix, residuals_matrix)
-# end = timer()
+    start = timer()
+    regression_tree = generate_regression_tree(I_grayscale_matrix, residuals_matrix)
+    end = timer()
 
-# if _DEBUG:
-#     if _DEBUG_DETAILED:
-#         print("I_grayscale_matrix : " + str(I_grayscale_matrix))
-#         print("residuals_matrix : " + str(residuals_matrix))
-#     print()
-#     print(regression_tree.get_tree_description(detailed=_DEBUG_DETAILED))
-#     print("Time: ", timedelta(seconds=end-start))
-#     if _DEBUG_GRAPHVIZ:
-#         graphviz = regression_tree.get_dot_graphviz_source()
-#         graphviz_file = open('./tree/graphviz_output.txt', 'w', encoding='utf-8')
-#         graphviz_file.write(graphviz)
-#         graphviz_file.close()
+    if _DEBUG:
+        if _DEBUG_DETAILED:
+            print("I_grayscale_matrix : " + str(I_grayscale_matrix))
+            print("residuals_matrix : " + str(residuals_matrix))
+        print()
+        print(regression_tree.get_tree_description(detailed=_DEBUG_DETAILED))
+        print("Time: ", timedelta(seconds=end-start))
+        if _DEBUG_GRAPHVIZ:
+            graphviz = regression_tree.get_dot_graphviz_source()
+            graphviz_file = open('./tree/graphviz_output.txt', 'w', encoding='utf-8')
+            graphviz_file.write(graphviz)
+            graphviz_file.close()
+
+run_test_example()
