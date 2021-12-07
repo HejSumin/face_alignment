@@ -44,39 +44,36 @@ Returns
 def _select_best_candidate_split_for_node(I_grayscale_matrix, residuals_matrix, theta_candidate_splits, Q_I_at_node, mu_parent_node=None):
     sum_square_error_theta_candidate_splits = np.zeros((theta_candidate_splits.shape[0], 1))
     mu_thetas = []
-    Q_thetas_l = np.zeros((I_grayscale_matrix.shape[0], theta_candidate_splits.shape[0]))
-    Q_thetas_r = np.zeros((I_grayscale_matrix.shape[0], theta_candidate_splits.shape[0]))
+    Q_thetas_l = []
+    Q_thetas_r = []
 
     for i, theta in enumerate(theta_candidate_splits):
         x1, x2, threshold = theta[0], theta[1], theta[2]
-        Q_theta_l = np.zeros((I_grayscale_matrix.shape[0], 1))
-        Q_theta_r = np.zeros((I_grayscale_matrix.shape[0], 1))
+        Q_theta_l = []
+        Q_theta_r = []
 
         # bucketize images based on theta candidate split
-        Q_I_at_node_indices = np.flatnonzero(Q_I_at_node)
-        for index in Q_I_at_node_indices:
+        for index in Q_I_at_node:
             if np.abs(I_grayscale_matrix[index][x1] - I_grayscale_matrix[index][x2]) > threshold: 
-                Q_theta_l[index] = 1
+                Q_theta_l.append(index)
             else:
-                Q_theta_r[index] = 1
+                Q_theta_r.append(index)
 
-        Q_theta_l_indices = np.flatnonzero(Q_theta_l)
-        Q_theta_r_indices = np.flatnonzero(Q_theta_r)
-        mu_theta_l = (len(Q_theta_l_indices) and 1 / len(Q_theta_l_indices) or 0) * np.sum(residuals_matrix[Q_theta_l_indices], axis=0) 
-        mu_theta_r = np.empty(residuals_matrix[Q_theta_r_indices].shape)
+        mu_theta_l = (len(Q_theta_l) and 1 / len(Q_theta_l) or 0) * np.sum(residuals_matrix[Q_theta_l], axis=0) 
+        mu_theta_r = np.empty(residuals_matrix[Q_theta_r].shape)
         if mu_parent_node is None: # True if selecting candidate split for root node
-            mu_theta_r = (len(Q_theta_r_indices) and 1 / len(Q_theta_r_indices) or 0) * np.sum(residuals_matrix[Q_theta_r_indices], axis=0)
+            mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * np.sum(residuals_matrix[Q_theta_r], axis=0)
         else:
-            mu_theta_r = (len(Q_theta_r_indices) and 1 / len(Q_theta_r_indices) or 0) * (len(Q_I_at_node_indices) * mu_parent_node -  len(Q_theta_l_indices) * mu_theta_l)
+            mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * (len(Q_I_at_node) * mu_parent_node -  len(Q_theta_l) * mu_theta_l)
         
-        sum_square_error_theta = (len(Q_theta_l_indices) * np.matmul(mu_theta_l.T, mu_theta_l)) + (len(Q_theta_r_indices) * np.matmul(mu_theta_r.T, mu_theta_r)) 
+        sum_square_error_theta = (len(Q_theta_l) * np.matmul(mu_theta_l.T, mu_theta_l)) + (len(Q_theta_r) * np.matmul(mu_theta_r.T, mu_theta_r)) 
         sum_square_error_theta_candidate_splits[i] = sum_square_error_theta
         mu_thetas.append((mu_theta_l , mu_theta_r))
-        Q_thetas_l[:,i] = Q_theta_l[:,0]
-        Q_thetas_r[:,i] = Q_theta_r[:,0]
+        Q_thetas_l.append(Q_theta_l)
+        Q_thetas_r.append(Q_theta_r)
 
     best_theta_candidate_split_index = np.argmax(sum_square_error_theta_candidate_splits)
-    return theta_candidate_splits[best_theta_candidate_split_index],  Q_thetas_l[:,best_theta_candidate_split_index], Q_thetas_r[:,best_theta_candidate_split_index], mu_thetas[best_theta_candidate_split_index]
+    return theta_candidate_splits[best_theta_candidate_split_index],  Q_thetas_l[best_theta_candidate_split_index], Q_thetas_r[best_theta_candidate_split_index], mu_thetas[best_theta_candidate_split_index]
 
 def _generate_random_candidate_splits(amount_extraced_features, amount_candidate_splits=_AMOUNT_RANDOM_CANDIDATE_SPLITS):
     random_candidate_splits = np.empty((amount_candidate_splits, 3), dtype=int)
@@ -170,7 +167,7 @@ def _generate_child_nodes(
     ) 
 
 def generate_regression_tree(I_grayscale_matrix, residuals_matrix):
-    Q_I_at_root = np.ones((I_grayscale_matrix.shape[0], 1))
+    Q_I_at_root = np.arange(0, I_grayscale_matrix.shape[0])
 
     regression_tree = Regression_Tree(avarage_residuals_matrix_shape=residuals_matrix.shape)
     root_node, Q_theta_l_root, Q_theta_r_root, mu_theta_root = _generate_root_node(regression_tree, I_grayscale_matrix, residuals_matrix, Q_I_at_root)

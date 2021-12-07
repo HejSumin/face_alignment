@@ -79,8 +79,7 @@ class Regression_Tree:
         return self._avarage_residuals_matrix
 
     def append_avarage_residuals_matrix(self, avarage_residual_vector, Q_I_at_node):
-        indices = np.flatnonzero(Q_I_at_node)
-        self._avarage_residuals_matrix[indices] = avarage_residual_vector
+        self._avarage_residuals_matrix[Q_I_at_node] = avarage_residual_vector
     
     def find_node_by_id(self, node_id):
         return self[node_id]
