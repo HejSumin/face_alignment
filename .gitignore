@@ -130,4 +130,4 @@ dmypy.json
 
 # training and testing data
 /data
-regression_tree/graphviz_output.txt
+tree/graphviz_output.txt
