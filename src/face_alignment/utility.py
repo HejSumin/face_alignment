@@ -25,7 +25,7 @@ def create_training_triplets():
     files = get_all_file_names("train_1")
     
     #NOTE this is a hyper parameter
-    R = 20
+    R = 1
 
     for f in files:
         I_path     = f.replace('.jpg', '')
@@ -43,11 +43,11 @@ def create_training_triplets():
             S_hat_x, S_hat_y       = get_landmark_coords_from_file(S_hat)
             S_delta_x              = S_true_x - S_hat_x
             S_delta_y              = S_true_y - S_hat_y
-            S_hat                  = np.ndarray.flatten(np.array(list(zip(S_hat_x, S_hat_y)))).T
-            S_delta                = np.ndarray.flatten(np.array(list(zip(S_delta_x, S_delta_y)))).T
+            S_hat                  = (list(zip(S_hat_x, S_hat_y)))
+            S_delta                = (list(zip(S_delta_x, S_delta_y)))
         
             triplets.append((I, S_hat, S_delta))
-    
+
     return np.array(triplets)
 
 def read_landmarks_from_file(file):
@@ -85,5 +85,3 @@ def compute_mean_shape(images):
         shape = images[i][1]
         result = result + shape
     return result / len(images)
-        
-        

@@ -11,9 +11,11 @@ import numpy as np
 # S_delta_matrix = np.random.randint(1, 10, (R*images, landmarks)) * np.random.rand(R*images, landmarks) # 20 = R , images = amount of actual Images I
 
 training_data = fa.create_training_triplets()
+print(training_data.shape)
 I_grayscale_matrix = training_data[:,0]
-S_hat_matrix = training_data[:,1]
-S_delta_matrix = training_data[:,2]
+S_hat_matrix = np.array(training_data[:,1])
+S_delta_matrix = np.array((training_data[:,2]))
+# TODO figure out shapes, etc.
 print("I_grayscale_matrix", I_grayscale_matrix.shape)
 print("S_hat_matrix", S_hat_matrix.shape)
 print("S_delta_matrix", S_delta_matrix.shape)
