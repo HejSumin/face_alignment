@@ -1,21 +1,12 @@
 from timeit import default_timer as timer
 from datetime import timedelta
 import src as fa
-import numpy as np
 
-# images = 2000
-# landmarks = 194
-# R = 20
-# n_image_matrix = np.random.randint(0, 256, (images, 400))
-# I_grayscale_matrix = np.repeat(n_image_matrix, repeats=R, axis=0) # shape (N=n*R, #extraced pixels)
-# S_delta_matrix = np.random.randint(1, 10, (R*images, landmarks)) * np.random.rand(R*images, landmarks) # 20 = R , images = amount of actual Images I
+# Paths
+data_path = 'data/'
+annotations_path = 'data/annotation/'
 
-training_data = fa.create_training_triplets()
-print(training_data.shape)
-I_grayscale_matrix = training_data[:,0]
-S_hat_matrix = np.array(training_data[:,1])
-S_delta_matrix = np.array((training_data[:,2]))
-# TODO figure out shapes, etc.
+I_grayscale_matrix, S_hat_matrix, S_delta_matrix = fa.create_training_triplets(train_images_path=data_path+'train_1/')
 print("I_grayscale_matrix", I_grayscale_matrix.shape)
 print("S_hat_matrix", S_hat_matrix.shape)
 print("S_delta_matrix", S_delta_matrix.shape)

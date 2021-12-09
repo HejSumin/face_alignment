@@ -213,5 +213,3 @@ def run_test_example():
             graphviz_file = open('./tree/graphviz_output.txt', 'w', encoding='utf-8')
             graphviz_file.write(graphviz)
             graphviz_file.close()
-
-# run_test_example()
