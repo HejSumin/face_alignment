@@ -21,6 +21,7 @@ def create_training_triplets(train_images_path):
     I_grayscale_matrix = np.empty((N, _AMOUNT_EXTRACTED_FEATURES))
     S_hat_matrix = np.empty((N,_AMOUNT_LANDMARKS*2))
     S_delta_matrix = np.empty((N,_AMOUNT_LANDMARKS*2))
+    S_true_matrix = np.empty((N, _AMOUNT_LANDMARKS*2))
 
     for i, image_file_name in enumerate(image_file_names):
         image_path = train_images_path+image_file_name
@@ -46,8 +47,9 @@ def create_training_triplets(train_images_path):
             I_grayscale_matrix[index] = I_grayscale
             S_hat_matrix[index] = S_hat
             S_delta_matrix[index] = S_delta
+            S_true_matrix[index] = S_true
 
-    return (I_grayscale_matrix, S_hat_matrix, S_delta_matrix)
+    return (I_grayscale_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix)
 
 def _extract_features_for_image(image_path):
     rectangle_bounding_box = get_rectangle_bounding_box_for_image(image_path)
