@@ -7,7 +7,6 @@ def _get_bounding_box_for_image(image_path, frontalface_config='default', circle
     image = cv2.imread(image_path)
     
     width, height, _ = image.shape
-    #image = cv2.resize(image, (width//2, height//2))
     bounding_box_minSize = (width//8, height//8)
 
     image_grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -27,7 +26,9 @@ def _get_bounding_box_for_image(image_path, frontalface_config='default', circle
     return image_bounding_boxes 
 
 def get_circle_bounding_box_for_image(image_path, frontalface_config='default'):
-    return _get_bounding_box_for_image(image_path, frontalface_config, circle=True)
+    circle_bounding_boxes = _get_bounding_box_for_image(image_path, frontalface_config, circle=True)
+    return circle_bounding_boxes[0] if len(circle_bounding_boxes) > 0 else None
 
 def get_rectangle_bounding_box_for_image(image_path, frontalface_config='default'):
-    return _get_bounding_box_for_image(image_path, frontalface_config, circle=False)
+    rectangle_bounding_boxes = _get_bounding_box_for_image(image_path, frontalface_config, circle=False)
+    return rectangle_bounding_boxes[0] if len(rectangle_bounding_boxes) > 0 else None
