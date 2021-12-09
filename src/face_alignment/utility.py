@@ -5,8 +5,8 @@ import pandas as pd
 import os, sys
 
 #data = '~/CS-ITU/3-semester/Advanced Machine Learning/Project/data/'
-data = '../data/'
-annotations = '../data/annotation/'
+data = 'data/'
+annotations = 'data/annotation/'
 
 
 def get_all_file_names(folder):
@@ -18,7 +18,7 @@ def get_image(id_image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     return gray 
 
-def create_test_triplets():
+def create_training_triplets():
     triplets = []
     
     #NOTE remember to set the correct path
@@ -30,10 +30,8 @@ def create_test_triplets():
     for f in files:
         I_path     = f.replace('.jpg', '')
     
-        I = cv2.imread(data +"train_1/"+I_path+".jpg")
-        
-        #return face_detection(I)
-        
+        I = cv2.imread(data +"train_1/"+I_path+".jpg", flags=cv2.IMREAD_GRAYSCALE)
+                
         S_true_x, S_true_y     = get_landmark_coords_from_file(I_path)
         np.random.shuffle(files)
         delta_files = files[:R]
@@ -45,8 +43,8 @@ def create_test_triplets():
             S_hat_x, S_hat_y       = get_landmark_coords_from_file(S_hat)
             S_delta_x              = S_true_x - S_hat_x
             S_delta_y              = S_true_y - S_hat_y
-            S_hat                  = np.array(list(zip(S_hat_x, S_hat_y)))
-            S_delta                = np.array(list(zip(S_delta_x, S_delta_y)))
+            S_hat                  = np.ndarray.flatten(np.array(list(zip(S_hat_x, S_hat_y)))).T
+            S_delta                = np.ndarray.flatten(np.array(list(zip(S_delta_x, S_delta_y)))).T
         
             triplets.append((I, S_hat, S_delta))
     

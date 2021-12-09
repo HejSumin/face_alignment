@@ -1,6 +1,5 @@
 import numpy as np
-from regression_tree import *
-from regression_tree import Leaf
+from src.tree.regression_tree import *
 from timeit import default_timer as timer
 from datetime import timedelta
 
