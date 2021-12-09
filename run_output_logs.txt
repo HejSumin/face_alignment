@@ -53,3 +53,1155 @@ f_k_minus_1_matrix[[2.4907581  2.48026396 2.50206427 ... 2.48676524 2.52214223 2
 --------------------- new run ---------------------
 
 --------------------- new run ---------------------
+
+--------------------- new run ---------------------
+[Succesfully generated tree 	 1 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 2.69901676 17.51689876  2.61791349 ... 19.02713222 11.35333924
+  19.26464492]
+ [ 1.08858856  8.13541587  1.09460781 ...  9.619285    5.78832213
+   9.82984594]
+ [ 2.69901676 17.51689876  2.61791349 ... 19.02713222 11.35333924
+  19.26464492]
+ ...
+ [ 9.234737   42.945994    9.642725   ... 35.645035   39.475244
+  36.375385  ]
+ [ 9.20847432 30.79971864  9.31761087 ... 25.83956217 25.2106498
+  25.90187957]
+ [ 1.08858856  8.13541587  1.09460781 ...  9.619285    5.78832213
+   9.82984594]]
+[Succesfully generated tree 	 2 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 3 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 4 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 5 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 6 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 7 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 8 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 9 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 10 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 11 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 31.87970747  68.13936325  31.57334631 ...  54.99732641  49.96656664
+   55.51785917]
+ [ 24.23967442  38.53628735  24.48880692 ...  34.17302972  39.15153674
+   34.14200028]
+ [ 38.60703838  76.43094294  38.78397973 ...  63.00850938  80.11325169
+   63.74212803]
+ ...
+ [ 11.09660062  75.36522583  11.87007806 ...  69.22887159  55.61181174
+   70.07777913]
+ [ 19.35649838 146.00901548  20.27967235 ... 112.46876216  84.00630763
+  113.01243253]
+ [ -2.56469279   1.09391354  -2.91460238 ...  13.97536144  -4.72071661
+   14.39931613]]
+[Succesfully generated tree 	 12 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 13 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 14 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 15 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 16 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 17 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 18 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 19 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 20 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 21 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 9.22053997e+01  1.54870231e+02  9.24070590e+01 ...  1.23356299e+02
+   1.34084353e+02  1.24375435e+02]
+ [-1.18675678e+01 -9.97556558e+00 -1.06901788e+01 ...  5.40918732e+00
+  -4.88013533e+01  4.69740173e+00]
+ [ 7.81815190e+01  1.67281854e+02  7.83783807e+01 ...  1.27593918e+02
+   1.59095457e+02  1.28914223e+02]
+ ...
+ [ 1.36096174e+01  7.91399626e+01  1.37841913e+01 ...  8.21810869e+01
+   6.74213056e+01  8.28773454e+01]
+ [-2.06013014e-01  2.27025089e+02  1.81387268e+00 ...  1.69838133e+02
+   1.10115897e+02  1.70936693e+02]
+ [ 1.37111238e+00 -1.17185918e-01  7.21035785e-01 ...  1.15881640e+01
+   3.77672994e+00  1.17090868e+01]]
+[Succesfully generated tree 	 22 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 23 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 24 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 25 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 26 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 27 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 28 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 29 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 30 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 31 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 128.99552366  204.42289588  129.26896478 ...  166.73257927
+   181.34162094  167.58749953]
+ [ -59.606894    -45.61519215  -57.20547182 ...  -22.66722359
+  -107.48428127  -23.47443106]
+ [ 103.39031828  232.96626668  103.9422589  ...  176.47910904
+   208.41298992  178.34376926]
+ ...
+ [  23.58959055  101.52913487   24.4998094  ...   98.35395947
+    93.50646908   98.79124056]
+ [ -18.81488054  331.21465197  -15.42887443 ...  270.09947293
+   125.88228135  272.63836063]
+ [  11.4647236    23.33979065   11.07049012 ...   28.2829494
+    26.49002669   28.31216433]]
+[Succesfully generated tree 	 32 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 33 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 34 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 35 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 36 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 37 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 38 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 39 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 40 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 41 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 197.17530643  297.18271109  197.38258513 ...  232.32877823
+   280.737885    233.65567466]
+ [ -78.09825372  -66.72813587  -73.92220422 ...  -42.85782346
+  -146.30123552  -44.24663422]
+ [ 121.24618313  225.31442494  121.62172696 ...  169.4891334
+   228.71648765  171.38096934]
+ ...
+ [   4.55481386   77.17396748    5.5277809  ...   81.88969831
+    67.72497888   81.61974768]
+ [ -20.86073807  358.09020745  -17.22843766 ...  284.01971041
+   128.36934945  286.9551583 ]
+ [  36.41335001    4.34624298   35.26740605 ...   18.39499215
+    28.81935788   18.03505162]]
+[Succesfully generated tree 	 42 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 43 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 44 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 45 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 46 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 47 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 48 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 49 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 50 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 51 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 216.34104553  295.58640243  216.26321009 ...  230.46225684
+   297.76818181  231.21978184]
+ [ -97.76688981  -81.98728828  -92.84813438 ...  -47.09118061
+  -177.16218138  -48.69382288]
+ [ 130.30076019  234.75965585  130.95133912 ...  169.43075383
+   245.44957116  171.36899306]
+ ...
+ [  14.09792292  110.60037232   15.49277049 ...  117.30740731
+    76.58970096  116.61968513]
+ [ -24.73093253  417.15479084  -20.3328524  ...  335.8346712
+   146.89127066  339.14428375]
+ [  -4.43048761  -63.32933256   -6.23712032 ...  -33.03361424
+   -37.43661589  -33.80978739]]
+[Succesfully generated tree 	 52 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 53 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 54 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 55 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 56 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 57 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 58 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 59 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 60 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 61 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 256.01514431  318.87829537  255.65191722 ...  251.04904907
+   330.81307141  251.56310365]
+ [-108.53528666  -89.6271357  -103.09990269 ...  -48.40461967
+  -201.46323591  -50.0556038 ]
+ [ 102.83844556  175.09232964  103.07878952 ...  134.98861944
+   186.20652582  136.2568826 ]
+ ...
+ [  22.2056622   111.93139605   23.49963732 ...  118.56951128
+    87.72612919  117.84990663]
+ [ -29.84869835  433.53713006  -25.72297492 ...  352.18685099
+   149.28733748  355.93546663]
+ [ -19.98306369  -92.19245553  -22.1335231  ...  -55.48072136
+   -61.65781646  -56.37124795]]
+[Succesfully generated tree 	 62 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 63 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 64 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 65 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 66 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 67 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 68 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 69 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 70 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 71 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 275.56685061  322.65558784  274.76942647 ...  252.3956326
+   333.60227894  252.66509476]
+ [-132.27128128  -93.88595719 -125.92512593 ...  -51.81829515
+  -225.66816313  -53.51444513]
+ [  89.04047356  143.6177578    89.51097735 ...  105.4520957
+   154.7943506   106.47278347]
+ ...
+ [  54.55979808  119.79913768   55.97297625 ...  132.23247502
+   122.87608811  131.44632551]
+ [ -47.83764945  479.55138126  -43.5803363  ...  388.81815529
+   146.9122511   392.23976854]
+ [  -8.38298678  -80.60723549  -10.83243242 ...  -47.07474519
+   -48.9259839   -47.79170688]]
+[Succesfully generated tree 	 72 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 73 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 74 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 75 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 76 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 77 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 78 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 79 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 80 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 81 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 290.63466888  339.88408384  289.30062117 ...  269.6620636
+   355.20076327  270.07934933]
+ [-141.07273549 -103.59016217 -134.38889856 ...  -61.31857555
+  -239.62287414  -62.75336163]
+ [  97.96885397  159.94971434   98.91108171 ...  111.74877868
+   166.37723089  112.34784082]
+ ...
+ [  72.10687599  163.39967426   73.70091219 ...  175.20499604
+   157.05875144  173.85697398]
+ [ -27.94698048  532.36740472  -23.3021842  ...  437.89689405
+   171.06488987  440.82220403]
+ [  -7.07382848 -103.99899443   -9.50368741 ...  -68.01983051
+   -59.98857374  -68.84874126]]
+[Succesfully generated tree 	 82 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 83 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 84 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 85 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 86 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 87 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 88 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 89 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 90 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 91 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 312.93137081  350.98401993  311.60997946 ...  278.98796144
+   379.96626918  279.57120992]
+ [-155.5106277  -103.77324031 -147.54309062 ...  -57.00831407
+  -259.10563931  -58.27970501]
+ [ 104.04032062  168.478094    104.8464705  ...  115.01768073
+   181.70475119  115.35440058]
+ ...
+ [ 107.26721808  182.86207868  109.12497643 ...  196.8217333
+   199.29427701  195.45692164]
+ [ -22.26009324  582.26051062  -17.06826162 ...  474.84520344
+   193.28641834  478.01665357]
+ [ -20.78238331 -100.70085745  -23.10849324 ...  -62.91818835
+   -73.41595033  -63.76926918]]
+[Succesfully generated tree 	 92 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 93 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 94 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 95 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 96 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 97 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 98 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 99 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 100 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 101 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 323.06535613  362.96081124  321.46496046 ...  291.21912545
+   391.12883657  291.79345136]
+ [-183.30463236 -118.75121145 -174.50573991 ...  -71.48762237
+  -297.46035504  -72.99397208]
+ [ 119.13532774  188.28628859  119.73582563 ...  129.96188416
+   198.01352106  130.19386182]
+ ...
+ [ 136.38578337  202.03767082  138.38114696 ...  212.89940924
+   241.38841965  211.90484926]
+ [ -21.88106343  592.05175935  -16.0645552  ...  477.75581089
+   204.35681663  481.29210783]
+ [ -24.99258595 -112.20000375  -27.88688332 ...  -70.87390397
+   -88.89587732  -71.71774426]]
+[Succesfully generated tree 	 102 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 103 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 104 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 105 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 106 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 107 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 108 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 109 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 110 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 111 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 338.36476462  367.01689782  336.46635573 ...  296.56324378
+   403.57355897  297.16970231]
+ [-192.44443755 -109.09141988 -182.59715709 ...  -63.41740572
+  -313.11389853  -64.8247492 ]
+ [ 117.07647081  178.29690715  118.00160283 ...  123.54767287
+   191.02320575  123.52873268]
+ ...
+ [ 132.31059796  207.19453109  134.3796795  ...  218.75066808
+   240.07968572  217.62550543]
+ [ -39.10431274  603.19222398  -33.56731023 ...  487.23423254
+   199.03855813  491.07305637]
+ [ -17.23741385 -106.47664499  -19.80491752 ...  -74.0248227
+   -80.26589539  -74.99428309]]
+[Succesfully generated tree 	 112 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 113 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 114 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 115 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 116 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 117 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 118 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 119 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 120 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 121 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 364.17503341  390.68942442  362.55603281 ...  314.97441344
+   435.70079915  315.7844376 ]
+ [-203.04122169 -105.0125628  -191.84444005 ...  -64.99042087
+  -322.81497129  -66.45099002]
+ [ 129.35504753  171.31869987  130.0226685  ...  117.26529431
+   207.26565103  117.18263223]
+ ...
+ [ 141.54505721  212.4955861   143.65773908 ...  225.55466334
+   257.92396592  224.32727679]
+ [ -48.96413214  607.20605935  -42.90050925 ...  494.64030161
+   192.86254029  498.91168533]
+ [  -1.87822918 -101.56489529   -4.5166812  ...  -71.25186887
+   -63.88377575  -72.03130774]]
+[Succesfully generated tree 	 122 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 123 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 124 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 125 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 126 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 127 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 128 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 129 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 130 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 131 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 370.17357886  403.19833821  368.39793333 ...  327.04891424
+   437.61217577  327.92510954]
+ [-203.17319482 -110.29673367 -191.33602567 ...  -66.7202981
+  -326.09921617  -68.03870622]
+ [ 126.34243599  168.26144791  126.90292159 ...  114.57211554
+   206.61680112  114.48208545]
+ ...
+ [ 171.08732775  214.44385909  172.98487115 ...  233.66203319
+   300.72789537  232.30367219]
+ [ -59.45726437  612.61032652  -53.01826994 ...  503.73179147
+   179.07067586  508.12693558]
+ [  -1.00291391 -107.7215824    -3.7602324  ...  -76.22669823
+   -70.22726433  -77.23850103]]
+[Succesfully generated tree 	 132 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 133 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 134 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 135 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 136 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 137 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 138 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 139 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 140 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 141 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 383.55074051  411.64325065  381.89948633 ...  331.22332538
+   449.78231427  332.23172028]
+ [-216.22189035 -116.59885246 -203.23949445 ...  -72.05762238
+  -341.82713126  -73.34148776]
+ [ 116.97280972  168.36204436  117.93953583 ...  115.12365464
+   197.62137234  114.79865906]
+ ...
+ [ 179.83559207  207.62534531  181.61412165 ...  233.04551353
+   311.0520862   231.70181803]
+ [ -64.17272346  626.07558094  -57.77021475 ...  517.82239936
+   181.41616457  522.23869478]
+ [  11.82775432 -118.08667393    9.0618635  ...  -87.98122731
+   -66.94689605  -89.1866811 ]]
+[Succesfully generated tree 	 142 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 143 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 144 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 145 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 146 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 147 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 148 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 149 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 150 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 151 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 386.0454729   420.08145408  384.59885149 ...  337.19974407
+   449.69945769  338.00248029]
+ [-219.38848065 -101.56528963 -205.4530881  ...  -58.90226746
+  -345.03912136  -60.24746373]
+ [ 120.90850804  160.31933406  121.68105574 ...  105.38189754
+   198.13239355  104.8372363 ]
+ ...
+ [ 186.07443119  211.88310608  187.78438034 ...  239.85415629
+   313.28254498  238.30901622]
+ [ -59.4332487   624.69023686  -52.73670745 ...  518.65247079
+   174.1683146   522.47896481]
+ [   6.2144641  -125.10500635    3.45118034 ...  -93.44916319
+   -82.8319139   -94.4621636 ]]
+[Succesfully generated tree 	 152 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 153 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 154 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 155 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 156 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 157 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 158 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 159 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 160 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 161 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 3.98824452e+02  4.25133878e+02  3.97238892e+02 ...  3.41433519e+02
+   4.63332616e+02  3.42081021e+02]
+ [-2.28230432e+02 -9.56866478e+01 -2.13395142e+02 ... -5.37253030e+01
+  -3.60169111e+02 -5.50523572e+01]
+ [ 1.23375305e+02  1.57443581e+02  1.24147157e+02 ...  9.90557676e+01
+   2.00708123e+02  9.84376320e+01]
+ ...
+ [ 2.04701398e+02  2.03737893e+02  2.06156421e+02 ...  2.38169142e+02
+   3.29665020e+02  2.36401371e+02]
+ [-7.10372474e+01  6.18985764e+02 -6.45943246e+01 ...  5.14421392e+02
+   1.58073266e+02  5.18505263e+02]
+ [ 2.91304647e+00 -1.29700092e+02  8.16197018e-02 ... -9.64050862e+01
+  -8.68862971e+01 -9.74867711e+01]]
+[Succesfully generated tree 	 162 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 163 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 164 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 165 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 166 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 167 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 168 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 169 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 170 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 171 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 409.22246911  432.2107782   407.54671614 ...  346.42855922
+   472.1328595   347.07933612]
+ [-251.46095024  -77.47211232 -233.04730667 ...  -45.98041438
+  -385.25498648  -47.34094031]
+ [ 115.02042786  156.45437607  115.52919877 ...   95.30361873
+   191.88416729   94.74396133]
+ ...
+ [ 207.20918591  205.80646456  208.72138025 ...  240.43362984
+   334.42425408  238.38204937]
+ [ -84.18024324  613.60393544  -77.53923649 ...  513.0892782
+   141.68439903  517.21449359]
+ [   5.78083869 -122.93090548    2.9459402  ...  -91.78752706
+   -88.02130107  -92.90319812]]
+[Succesfully generated tree 	 172 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 173 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 174 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 175 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 176 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 177 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 178 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 179 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 180 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 181 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 414.10566339  443.60511798  412.34102174 ...  355.02839006
+   478.15097789  355.79871216]
+ [-256.6981795   -72.89899484 -237.65219754 ...  -45.03176118
+  -390.92849834  -46.42930506]
+ [ 118.18704111  153.7390834   118.71691767 ...   91.3572668
+   193.80991832   90.65358908]
+ ...
+ [ 213.35621707  206.48318945  214.7885473  ...  243.64395965
+   335.47284406  241.23296003]
+ [ -97.95896703  613.87637285  -91.04751336 ...  515.61288461
+   132.72440878  519.97773412]
+ [   9.25598509 -119.18594535    6.24176921 ...  -90.46808277
+   -84.9022075   -91.47360135]]
+[Succesfully generated tree 	 182 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 183 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 184 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 185 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 186 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 187 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 188 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 189 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 190 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 191 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 414.81536927  448.87701678  413.10608473 ...  360.49286505
+   473.90910288  361.16603828]
+ [-260.09644445  -75.23626663 -240.6724505  ...  -46.16583529
+  -394.97121888  -47.49227195]
+ [ 119.7427569   155.23498038  120.22034099 ...   89.77118306
+   199.82244487   88.94202925]
+ ...
+ [ 218.01076225  207.82715939  219.52024189 ...  245.54897513
+   342.35006484  243.06625145]
+ [ -99.84031868  609.68826095  -92.71690094 ...  511.46953141
+   131.50283557  515.79108369]
+ [  11.01204105 -121.40619705    7.9169973  ...  -90.77014149
+   -86.49510819  -91.89196212]]
+[Succesfully generated tree 	 192 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 193 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 194 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 195 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 196 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 197 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 198 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 199 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 200 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 201 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 426.87804242  458.2797215   424.96888658 ...  369.7490693
+   483.56563369  370.38416912]
+ [-271.97466846  -73.78490384 -252.10424913 ...  -41.79807081
+  -408.39139469  -43.37048005]
+ [ 116.76667358  158.74599055  117.16323216 ...   93.37592003
+   196.3717973    92.48977882]
+ ...
+ [ 219.02167299  211.81988416  220.56763614 ...  251.77931715
+   344.10975681  249.26672269]
+ [ -98.93444883  609.06389435  -91.55644809 ...  513.9722129
+   131.50440199  518.37988621]
+ [   8.5398993  -120.19798121    5.36762304 ...  -90.04326208
+   -89.70199055  -91.1717767 ]]
+[Succesfully generated tree 	 202 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 203 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 204 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 205 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 206 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 207 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 208 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 209 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 210 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 211 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 440.5624383   477.14034145  438.58147203 ...  384.170498
+   489.20984905  384.6236799 ]
+ [-272.58186862  -67.73239144 -252.17499604 ...  -37.5122728
+  -409.91072328  -39.35049264]
+ [ 117.63314208  156.88419204  117.95302537 ...   93.70945951
+   196.34062456   92.84698497]
+ ...
+ [ 223.55044575  212.19150959  225.30777387 ...  252.76027007
+   349.16070001  249.92564976]
+ [-101.66932986  608.5713137   -94.34925658 ...  512.40162564
+   131.37634503  517.05751353]
+ [   7.67994671 -126.61409635    3.75401169 ...  -95.73721084
+   -97.43911815  -96.85586989]]
+[Succesfully generated tree 	 212 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 213 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 214 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 215 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 216 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 217 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 218 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 219 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 220 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 221 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 443.40100703  481.7517302   441.27320067 ...  387.60116942
+   491.97104505  388.10274409]
+ [-274.80247154  -59.43773321 -253.53917597 ...  -31.18782501
+  -414.83013177  -33.04083174]
+ [ 114.85491993  156.03954662  115.14602211 ...   91.95765696
+   196.88064655   91.14960848]
+ ...
+ [ 228.96459633  215.6005982   230.81761157 ...  258.53326655
+   355.76877639  255.53546102]
+ [-101.28040951  606.62910082  -93.83213919 ...  511.55478968
+   130.13246837  516.24412484]
+ [   9.63189695 -129.58569844    5.74367662 ...  -96.87458434
+  -101.04312535  -97.99365017]]
+[Succesfully generated tree 	 222 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 223 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 224 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 225 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 226 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 227 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 228 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 229 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 230 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 231 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 449.35808412  482.49616251  447.13896516 ...  387.16321229
+   497.74986201  387.82790511]
+ [-278.91006693  -50.41747683 -256.97481087 ...  -23.91416674
+  -419.9103013   -25.69499672]
+ [ 114.87916637  158.1068857   115.06283475 ...   95.26079499
+   197.32203421   94.61298016]
+ ...
+ [ 234.70528003  212.91523964  236.46547835 ...  256.99997573
+   359.17554189  253.9328407 ]
+ [-107.1666366   610.35359608  -99.58227039 ...  513.36580054
+   127.86189989  518.21732953]
+ [   6.88678249 -131.58573505    2.99920845 ...  -98.43093014
+  -105.05716728  -99.53376961]]
+[Succesfully generated tree 	 232 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 233 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 234 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 235 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 236 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 237 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 238 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 239 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 240 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 241 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 453.46823186  487.06312589  451.23719467 ...  390.01719312
+   500.82678536  390.61231474]
+ [-279.39565096  -47.43571617 -256.99297575 ...  -21.98433821
+  -420.67628175  -23.7448427 ]
+ [ 113.61362205  161.12308947  113.74023899 ...   96.39442309
+   194.68641983   95.71581308]
+ ...
+ [ 235.82301779  211.54827007  237.60145141 ...  257.95636905
+   361.39426158  254.76509916]
+ [-107.95095481  614.08771354 -100.13470998 ...  516.26118094
+   125.94462852  521.20442604]
+ [   8.7205249  -131.16558334    4.83270291 ...  -97.15047031
+  -110.30293503  -98.38631772]]
+[Succesfully generated tree 	 242 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 243 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 244 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 245 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 246 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 247 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 248 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 249 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 250 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 251 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 460.08656983  494.984305    457.94898736 ...  394.69813326
+   504.43166649  395.15520189]
+ [-285.31871923  -36.57138096 -261.59035795 ...  -15.38749695
+  -426.8808551   -17.15641394]
+ [ 111.59424952  160.96990077  111.38559772 ...   96.50880859
+   190.69934685   95.88555035]
+ ...
+ [ 243.55914062  210.72473344  245.42692386 ...  261.66105441
+   369.26189309  258.25221129]
+ [-108.17532963  612.63243206 -100.37729622 ...  515.33574441
+   124.36458847  520.4510343 ]
+ [   8.18189896 -131.28291178    4.22242468 ...  -96.95155094
+  -112.25591273  -98.23075712]]
+[Succesfully generated tree 	 252 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 253 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 254 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 255 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 256 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 257 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 258 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 259 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 260 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 261 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 460.12747203  498.30166316  457.84459364 ...  397.34986034
+   502.80883477  397.79671149]
+ [-287.57634777  -28.50840645 -263.05979699 ...   -9.1948688
+  -430.58865016  -11.08279321]
+ [ 111.8644784   160.66936138  111.53647076 ...   94.91889261
+   190.33816428   94.37131478]
+ ...
+ [ 247.65259517  213.22882367  249.54032025 ...  264.38412913
+   372.50178913  260.97444316]
+ [-112.29791647  613.69526012 -104.23944212 ...  517.05518465
+   121.16501438  522.04114622]
+ [   6.91061183 -132.82694001    2.87254269 ...  -96.75037634
+  -112.47986835  -97.97189675]]
+[Succesfully generated tree 	 262 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 263 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 264 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 265 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 266 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 267 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 268 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 269 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 270 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 271 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 4.61762577e+02  4.99125081e+02  4.59430223e+02 ...  3.98815059e+02
+   5.03749237e+02  3.99097861e+02]
+ [-2.92960124e+02 -2.26062831e+01 -2.67964929e+02 ... -5.12128914e+00
+  -4.34274169e+02 -6.96004248e+00]
+ [ 1.13231649e+02  1.59884889e+02  1.12657921e+02 ...  9.45104967e+01
+   1.92401409e+02  9.39259015e+01]
+ ...
+ [ 2.49961669e+02  2.11830813e+02  2.51820201e+02 ...  2.64566255e+02
+   3.76030795e+02  2.61089765e+02]
+ [-1.12591567e+02  6.13434086e+02 -1.04563860e+02 ...  5.17339390e+02
+   1.20727782e+02  5.22347668e+02]
+ [ 4.57727495e+00 -1.34063530e+02  5.05513763e-01 ... -9.92094449e+01
+  -1.15216310e+02 -1.00394237e+02]]
+[Succesfully generated tree 	 272 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 273 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 274 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 275 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 276 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 277 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 278 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 279 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 280 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 281 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 462.61026864  500.25932406  460.27090863 ...  400.64885165
+   503.02911418  400.94126317]
+ [-299.49167067  -10.26428737 -273.31813425 ...    3.27990492
+  -438.87300362    1.47230816]
+ [ 115.93933155  158.91898664  115.22441998 ...   95.76945077
+   192.53992877   95.20562987]
+ ...
+ [ 255.69025879  212.78202562  257.47980176 ...  269.68435796
+   378.92653583  265.97901893]
+ [-110.6473073   612.96299892 -102.5778984  ...  519.65299834
+   118.88201595  524.51597325]
+ [   2.6034826  -136.72560513   -1.65835516 ... -102.74906493
+  -118.0736346  -103.91181432]]
+[Succesfully generated tree 	 282 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 283 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 284 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 285 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 286 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 287 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 288 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 289 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 290 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 291 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 465.33521562  504.7968404   463.03988601 ...  402.58411645
+   503.17867198  402.79727261]
+ [-300.25919298   -6.89704089 -273.88564997 ...    5.47090593
+  -441.22183099    3.76871425]
+ [ 117.55001024  160.42711735  116.68374685 ...   97.95131032
+   194.84271369   97.50102995]
+ ...
+ [ 256.05580454  212.56318297  257.96049539 ...  270.63638158
+   379.27287429  266.83980361]
+ [-113.70962652  612.93133181 -105.63481581 ...  520.01539727
+   119.53098966  524.92295973]
+ [   5.36566286 -138.16208311    0.89276352 ... -104.04875637
+  -119.45660215 -105.2273511 ]]
+[Succesfully generated tree 	 292 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 293 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 294 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 295 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 296 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 297 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 298 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 299 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 300 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 301 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 467.32680595  506.22536529  465.01918377 ...  404.16373172
+   503.54752049  404.40469923]
+ [-302.64960083   -3.53509987 -276.0299186  ...    6.90839066
+  -442.36454207    5.18405094]
+ [ 115.51664302  159.40677722  114.55771665 ...   97.67346897
+   193.13100186   97.13788561]
+ ...
+ [ 259.38863269  213.16438906  261.35312554 ...  273.5220099
+   382.12643656  269.44702179]
+ [-113.53932028  611.94712742 -105.54884486 ...  520.41450415
+   119.8700334   525.39420171]
+ [   2.22225361 -138.87619906   -2.34223741 ... -105.6205443
+  -121.27965778 -106.7506954 ]]
+[Succesfully generated tree 	 302 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 303 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 304 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 305 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 306 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 307 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 308 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 309 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 310 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 311 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 4.70083525e+02  5.09207286e+02  4.67799720e+02 ...  4.05951189e+02
+   5.05034450e+02  4.06121762e+02]
+ [-3.07737490e+02  3.41621734e+00 -2.80190196e+02 ...  1.05342962e+01
+  -4.45751677e+02  8.91174893e+00]
+ [ 1.14884341e+02  1.58702022e+02  1.13813055e+02 ...  9.70245171e+01
+   1.92206115e+02  9.65716437e+01]
+ ...
+ [ 2.62685754e+02  2.13041405e+02  2.64635428e+02 ...  2.74783916e+02
+   3.83511667e+02  2.70651976e+02]
+ [-1.16192276e+02  6.12504186e+02 -1.08040060e+02 ...  5.20944382e+02
+   1.19100304e+02  5.25854670e+02]
+ [ 4.50322377e+00 -1.41552895e+02 -2.26627162e-01 ... -1.08411698e+02
+  -1.25037514e+02 -1.09467657e+02]]
+[Succesfully generated tree 	 312 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 313 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 314 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 315 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 316 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 317 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 318 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 319 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 320 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 321 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 473.20652855  510.81759156  470.89950311 ...  407.27514773
+   506.31229345  407.48044502]
+ [-308.59151196    5.29454556 -280.77517345 ...   11.75499497
+  -446.78755366   10.08710943]
+ [ 114.15774425  158.49418341  113.12068517 ...   96.31257257
+   192.70887808   95.85522912]
+ ...
+ [ 264.94245491  213.16182004  266.89492341 ...  275.00209348
+   386.32516363  270.81578852]
+ [-116.22707424  612.83682215 -108.08704192 ...  521.49759143
+   117.44254009  526.46421963]
+ [   4.06308612 -142.85496921   -0.88363024 ... -109.15057979
+  -128.10424753 -110.08864106]]
+[Succesfully generated tree 	 322 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 323 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 324 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 325 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 326 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 327 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 328 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 329 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 330 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 331 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 473.80457635  512.76078117  471.53138846 ...  408.28683058
+   506.64661467  408.49193326]
+ [-309.50640688    7.98272482 -281.41210166 ...   12.21511469
+  -447.04221309   10.48497149]
+ [ 115.14452045  159.04969529  114.05966623 ...   96.72792247
+   194.27835192   96.27266351]
+ ...
+ [ 267.70067814  214.53929014  269.65011078 ...  277.75252886
+   386.62672855  273.51523948]
+ [-116.54411983  612.59434303 -108.28945937 ...  521.34307706
+   116.50622054  526.48246628]
+ [   4.23304661 -143.7833164    -0.75821256 ... -109.3701448
+  -130.10021577 -110.32755701]]
+[Succesfully generated tree 	 332 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 333 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 334 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 335 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 336 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 337 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 338 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 339 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 340 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 341 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 4.76216435e+02  5.15431342e+02  4.73809016e+02 ...  4.09711756e+02
+   5.06787947e+02  4.09912860e+02]
+ [-3.10571028e+02  8.94599722e+00 -2.82370226e+02 ...  1.31680760e+01
+  -4.47327504e+02  1.14976929e+01]
+ [ 1.14188301e+02  1.59123666e+02  1.13076260e+02 ...  9.67917224e+01
+   1.94627027e+02  9.63807986e+01]
+ ...
+ [ 2.67539303e+02  2.15453272e+02  2.69480526e+02 ...  2.79475948e+02
+   3.87150532e+02  2.75217722e+02]
+ [-1.16952553e+02  6.12231133e+02 -1.08685392e+02 ...  5.21957060e+02
+   1.16823072e+02  5.27182790e+02]
+ [ 4.49794464e+00 -1.43986922e+02 -5.67974080e-01 ... -1.09845418e+02
+  -1.29695546e+02 -1.10822095e+02]]
+[Succesfully generated tree 	 342 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 343 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 344 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 345 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 346 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 347 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 348 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 349 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 350 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 351 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 476.67686925  516.91965067  474.28622755 ...  409.94968902
+   506.57826661  410.11873103]
+ [-310.72822625    9.6452524  -282.38016564 ...   13.65884002
+  -448.18042221   11.99422969]
+ [ 115.48566851  159.52606878  114.24968573 ...   96.6921193
+   195.42466628   96.26873808]
+ ...
+ [ 267.92796079  215.99576606  269.87307302 ...  280.05939536
+   387.7026572   275.77339337]
+ [-117.52092103  612.34856585 -109.26391308 ...  522.0706424
+   116.60672934  527.31588134]
+ [   4.31274062 -144.55780837   -0.83457152 ... -110.10573991
+  -130.39046419 -110.99632978]]
+[Succesfully generated tree 	 352 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 353 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 354 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 355 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 356 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 357 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 358 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 359 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 360 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 361 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 477.26285148  517.56066042  474.88122864 ...  410.37119272
+   505.87558946  410.50311304]
+ [-311.04659609   11.86952677 -282.36439493 ...   15.65796889
+  -448.7101662    14.02920541]
+ [ 115.08167145  160.02787194  113.82486389 ...   97.44595189
+   196.0608495    96.99486745]
+ ...
+ [ 268.85102294  215.81871284  270.80226472 ...  280.14601033
+   387.91514775  275.80178421]
+ [-118.31700439  611.4484868  -110.09965466 ...  521.60309927
+   116.54840099  526.86212445]
+ [   4.36181123 -144.96104373   -0.82959985 ... -110.73931883
+  -130.94776981 -111.59605056]]
+[Succesfully generated tree 	 362 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 363 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 364 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 365 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 366 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 367 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 368 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 369 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 370 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 371 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 478.06537322  517.2582505   475.64015972 ...  410.6158604
+   506.33093156  410.75082589]
+ [-313.44240972   14.64209303 -284.30302593 ...   17.15599575
+  -450.96193718   15.4866269 ]
+ [ 115.71108037  159.51763587  114.27270813 ...   97.21442053
+   196.74742395   96.75819518]
+ ...
+ [ 270.04955706  216.30710576  272.03868155 ...  281.12566627
+   388.44712128  276.78746385]
+ [-117.7599865   610.77346108 -109.53459725 ...  521.10674461
+   116.67388489  526.40838479]
+ [   6.34769056 -147.17416868    1.0978447  ... -111.8299911
+  -131.7683826  -112.61467266]]
+[Succesfully generated tree 	 372 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 373 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 374 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 375 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 376 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 377 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 378 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 379 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 380 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 381 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 477.63701245  518.35160633  475.26354376 ...  411.15019925
+   506.33715757  411.26594701]
+ [-314.33283088   14.97806004 -285.15411387 ...   17.58660924
+  -451.21264103   15.93475247]
+ [ 116.58479321  159.35097806  115.10844583 ...   97.62776378
+   197.15640663   97.15957812]
+ ...
+ [ 270.37509722  215.75501212  272.37058701 ...  281.79161966
+   388.61143271  277.37296593]
+ [-117.76641852  609.79927623 -109.62855309 ...  521.05426115
+   117.1724074   526.42187552]
+ [   6.52055126 -148.26162338    1.18245427 ... -112.86933619
+  -133.29591997 -113.58486621]]
+[Succesfully generated tree 	 382 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 383 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 384 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 385 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 386 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 387 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 388 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 389 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 390 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 391 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 479.19317564  518.04289676  476.7560812  ...  411.25271399
+   506.57287117  411.43721   ]
+ [-314.13177391   15.96113576 -284.84786775 ...   18.62421633
+  -451.49042335   16.92476952]
+ [ 116.0423497   159.39240672  114.54813677 ...   97.41414639
+   196.7212223    96.919639  ]
+ ...
+ [ 270.350134    215.09766102  272.39383451 ...  282.64904239
+   389.24395355  278.21378077]
+ [-117.21072339  610.18477523 -109.12002666 ...  521.55041677
+   117.44622989  526.85280955]
+ [   6.55262832 -148.94907139    1.1614869  ... -113.31521799
+  -133.58426131 -113.97778718]]
+[Succesfully generated tree 	 392 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 393 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 394 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 395 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 396 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 397 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 398 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 399 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 400 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 401 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 480.86656995  519.24323623  478.44961569 ...  411.89001158
+   506.53421224  412.00532299]
+ [-314.59262636   16.61852938 -285.24348711 ...   18.95249858
+  -451.33718517   17.26829382]
+ [ 117.52814498  159.51814718  115.96923259 ...   97.36919079
+   196.84924363   96.90456387]
+ ...
+ [ 269.93783734  214.66858699  271.98809541 ...  283.13825013
+   389.99612871  278.61505313]
+ [-117.7573115   610.25169284 -109.63952001 ...  521.50640087
+   117.09183914  526.72545777]
+ [   6.28923985 -149.66084101    0.87950556 ... -113.96402577
+  -134.11468375 -114.60226475]]
+[Succesfully generated tree 	 402 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 403 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 404 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 405 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 406 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 407 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 408 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 409 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 410 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 411 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 481.21107349  520.32784833  478.76104737 ...  412.23361267
+   506.78226276  412.41228464]
+ [-314.77421888   17.6417808  -285.35596731 ...   19.69527935
+  -451.99309359   18.00523558]
+ [ 117.62065149  160.16464026  116.04851082 ...   97.3082748
+   196.69807049   96.84152108]
+ ...
+ [ 269.87997903  214.63914075  271.91255955 ...  283.65745862
+   389.63649965  279.13548344]
+ [-118.06438659  610.16693722 -109.95152844 ...  521.26802838
+   116.4041616   526.50252149]
+ [   7.70073115 -150.3782544     2.19497945 ... -114.2367913
+  -134.95424964 -114.8654123 ]]
+[Succesfully generated tree 	 412 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 413 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 414 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 415 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 416 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 417 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 418 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 419 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 420 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 421 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 482.16889416  520.7479593   479.72654397 ...  412.54410474
+   506.43071068  412.68402347]
+ [-314.95176908   18.60460203 -285.44932634 ...   20.43910814
+  -451.85570575   18.73299707]
+ [ 118.18362944  160.00446243  116.58330707 ...   97.3096593
+   196.9924674    96.79106482]
+ ...
+ [ 270.20160576  215.01346683  272.25794512 ...  284.22613997
+   389.87592447  279.7467023 ]
+ [-117.59369331  610.56843382 -109.48615037 ...  521.59779768
+   116.35091436  526.80659621]
+ [   8.44842785 -150.54559409    2.86176846 ... -115.39529398
+  -136.30914982 -115.98789926]]
+[Succesfully generated tree 	 422 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 423 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 424 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 425 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 426 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 427 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 428 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 429 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 430 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 431 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 482.55147885  521.00576972  480.06056374 ...  412.79994019
+   506.76458348  412.95370897]
+ [-315.63527258   19.64297496 -285.99087227 ...   20.99358373
+  -453.01281834   19.22662506]
+ [ 118.49273522  159.80803967  116.85847885 ...   97.06682244
+   197.26545278   96.52202363]
+ ...
+ [ 270.8801028   214.67301297  272.91460831 ...  284.6026126
+   390.11029736  280.06873665]
+ [-118.87809326  609.76122515 -110.80079095 ...  520.98610068
+   115.99310463  526.16299999]
+ [   8.38449036 -150.64558024    2.79745349 ... -115.40966406
+  -136.38293965 -116.00617463]]
+[Succesfully generated tree 	 432 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 433 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 434 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 435 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 436 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 437 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 438 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 439 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 440 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 441 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 482.37485592  521.41825156  479.91331009 ...  413.02575542
+   506.90313151  413.18289459]
+ [-315.88360344   19.62490921 -286.21195126 ...   21.14364054
+  -453.09248743   19.38650798]
+ [ 118.41535128  160.26265169  116.80976007 ...   97.2892855
+   197.04137316   96.7677736 ]
+ ...
+ [ 271.0287159   214.74372195  273.06637246 ...  284.76612575
+   390.371475    280.22369598]
+ [-119.40343852  609.61915948 -111.28670788 ...  520.83230843
+   115.8119975   526.00488099]
+ [   9.29502878 -150.86917173    3.67200873 ... -115.25699689
+  -136.99312956 -115.83194072]]
+[Succesfully generated tree 	 442 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 443 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 444 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 445 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 446 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 447 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 448 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 449 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 450 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 451 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 483.06008987  521.81343979  480.56807993 ...  413.21506414
+   506.96394621  413.40418817]
+ [-316.28053711   20.26631717 -286.53597184 ...   21.30407871
+  -453.37796991   19.55153718]
+ [ 118.97624981  160.2001658   117.33783743 ...   97.02209307
+   197.32905291   96.54036552]
+ ...
+ [ 271.33455214  214.63185016  273.33934316 ...  285.15954079
+   390.67997777  280.59332829]
+ [-120.03167497  610.19932017 -111.84376179 ...  520.81565889
+   115.35251733  525.99166034]
+ [   9.32042085 -150.74741117    3.66339624 ... -115.14378217
+  -137.00631299 -115.6925085 ]]
+[Succesfully generated tree 	 452 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 453 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 454 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 455 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 456 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 457 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 458 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 459 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 460 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 461 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 483.6292778   522.03516976  481.11561165 ...  413.4995313
+   507.22447016  413.66112629]
+ [-317.0393598    21.2967776  -287.16828395 ...   21.62190274
+  -453.73758557   19.89992307]
+ [ 119.24015763  160.33080934  117.55034814 ...   97.03406894
+   197.75741762   96.59825769]
+ ...
+ [ 271.36244164  214.7899503   273.36977321 ...  285.69532998
+   390.96340837  281.12146656]
+ [-120.59315243  609.9563621  -112.39979214 ...  520.5448545
+   115.78784302  525.71601995]
+ [   9.56074569 -150.88864055    3.89034013 ... -115.20242798
+  -137.37664527 -115.77925937]]
+[Succesfully generated tree 	 462 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 463 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 464 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 465 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 466 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 467 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 468 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 469 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 470 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 471 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 483.9497671   522.00983769  481.41949231 ...  413.66379876
+   507.3015542   413.85719485]
+ [-317.39043896   21.46283533 -287.51344208 ...   21.74893915
+  -453.846698     20.04307404]
+ [ 119.63723797  160.49420252  117.92133154 ...   96.92074178
+   197.69566572   96.48930897]
+ ...
+ [ 271.61357892  214.99934413  273.58732132 ...  286.55665587
+   391.17285093  281.96701783]
+ [-120.87325286  610.15470435 -112.64012905 ...  520.48115701
+   115.45656727  525.67473634]
+ [  10.14576957 -151.22067842    4.48133587 ... -115.38557073
+  -137.57903438 -115.93081132]]
+[Succesfully generated tree 	 472 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 473 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 474 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 475 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 476 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 477 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 478 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 479 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 480 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 481 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 484.2302521   522.55067854  481.67527689 ...  414.09767675
+   507.47569364  414.2919161 ]
+ [-317.56426809   21.56235244 -287.68204704 ...   21.71220911
+  -454.01971766   20.00660237]
+ [ 120.03991965  160.40396775  118.30783613 ...   97.08977828
+   197.92344953   96.6568551 ]
+ ...
+ [ 271.7594699   215.01952299  273.74529483 ...  286.77546527
+   391.56481958  282.19129234]
+ [-120.93719598  609.80045224 -112.71888994 ...  520.43551915
+   115.40803978  525.62727934]
+ [  10.05472367 -151.14433992    4.38046815 ... -115.54972812
+  -137.98464301 -116.07596191]]
+[Succesfully generated tree 	 482 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 483 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 484 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 485 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 486 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 487 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 488 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 489 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 490 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 491 	 of a total of 	 500 	 trees]
+f_k_minus_1_matrix[[ 484.68081007  522.88069692  482.11899711 ...  414.22395747
+   507.6017465   414.45415822]
+ [-318.19573322   22.38335507 -288.17292281 ...   22.18369361
+  -454.15078329   20.4855767 ]
+ [ 120.30420544  160.4865115   118.53233921 ...   97.02889212
+   198.06299186   96.59479951]
+ ...
+ [ 271.4125472   215.16508108  273.42387507 ...  286.97774262
+   391.54798862  282.38619542]
+ [-121.27027649  609.42029299 -113.02173517 ...  520.31952032
+   115.10839267  525.51349401]
+ [  10.34742097 -151.34615201    4.63966696 ... -115.75884877
+  -138.23291069 -116.26795339]]
+[Succesfully generated tree 	 492 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 493 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 494 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 495 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 496 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 497 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 498 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 499 	 of a total of 	 500 	 trees]
+[Succesfully generated tree 	 500 	 of a total of 	 500 	 trees]

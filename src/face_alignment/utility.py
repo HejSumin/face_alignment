@@ -1,18 +1,17 @@
+from src.face_alignment.alignment import *
+from src.face_detection.face_detection import *
+
 import numpy as np 
 import cv2 as cv2
 import matplotlib.pyplot as plt
-from numpy.core.fromnumeric import ndim
-from numpy.lib.function_base import append
-from numpy.lib.shape_base import array_split
-import pandas as pd
-import os, sys
+import os
 
 # Paths
 data_path = 'data/'
 annotations_path = 'data/annotation/'
 
 # Hyperparameter
-_R = 1
+_R = 20
 _AMOUNT_EXTRACTED_FEATURES = 400
 _AMOUNT_LANDMARKS = 194
 
@@ -24,7 +23,10 @@ def create_training_triplets(train_images_path):
     S_delta_matrix = np.empty((N,_AMOUNT_LANDMARKS*2))
 
     for i, image_file_name in enumerate(image_file_names):
-        I_grayscale = _get_image(train_images_path+image_file_name)
+        image_path = train_images_path+image_file_name
+        I_grayscale = _extract_features_for_image(image_path)
+        if I_grayscale is None: # skip image if bounding box is not found (None)
+            continue
 
         image_id = image_file_name.replace('.jpg', '')
         S_true = get_landmark_coords_for_image(image_id)
@@ -47,13 +49,27 @@ def create_training_triplets(train_images_path):
 
     return (I_grayscale_matrix, S_hat_matrix, S_delta_matrix)
 
+def _extract_features_for_image(image_path):
+    rectangle_bounding_box = get_rectangle_bounding_box_for_image(image_path)
+    if rectangle_bounding_box is None: # check if bounding box was found in image
+       return None 
+    else:
+        extracted_coords_features = extract_coords_features_from_rectangle(rectangle_bounding_box, _AMOUNT_EXTRACTED_FEATURES)
+
+        I_grayscale_all_features = _get_image(image_path)
+        I_grayscale = []
+        for index in range(0, _AMOUNT_EXTRACTED_FEATURES):
+            x, y = extracted_coords_features[index]
+            I_grayscale.append(I_grayscale_all_features[y, x])
+        return I_grayscale
+
 def _get_all_file_names_for_folder(folder_path):
     return os.listdir(folder_path)
 
 def _get_image(image_file_path):
     image = cv2.imread(image_file_path)
-    I_grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    return I_grayscale 
+    I_grayscale_full_features = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    return I_grayscale_full_features 
 
 def get_landmarks_from_file(file_path):
     with open(file_path, "r") as file:
