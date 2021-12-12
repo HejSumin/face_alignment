@@ -21,17 +21,32 @@ def equation_8(params, x_bar, x):
     return np.sum(euclidean_distances(x_bar - np.dot(x*scale, R)))
 
 
-def align_shapes(shape1, shape2):
-    mean  = np.mean(shape2, axis=0)
-    align = shape1 - mean
-    return align
+def center_shape(shape):
+    mean = np.mean(shape, axis=0)
+    return shape-mean
+
+
     
 def optimize_equation_8(x_bar, x):
     res  = opt.fmin(func=equation_8, x0=[0,0], args=(x_bar, x))
     return res
 
 
-def get_bounding_coords(image, circle):
+def extract_coords_from_mean_shape(mean_shape, offset=100, n=400):
+    
+    x_mean_shape =  [x[0] for x in mean_shape]
+    y_mean_shape =  [x[1] for x in mean_shape]
+
+    xmin = np.min(x_mean_shape) - offset
+    xmax = np.max(x_mean_shape) + offset
+    ymin = np.min(y_mean_shape) - offset * 1.5
+    ymax = np.max(y_mean_shape) + offset
+
+    xs = np.random.randint(xmin,xmax, size=n)
+    ys = np.random.randint(ymin,ymax, size=n)    
+    return np.array(list(zip(xs,ys)))
+    
+def get_bounding_coords( circle):
     x1 = (circle[0][0][0] - circle[0][1])
     x2 = (circle[0][0][0] + circle[0][1])
     y1 = (circle[0][0][1] - circle[0][1])
@@ -40,7 +55,7 @@ def get_bounding_coords(image, circle):
             
 
 
-def extract_coords_features(image, circle , n=400): 
+def extract_coords_features(circle , n=400): 
     y1, y2, x1, x2 = get_bounding_coords(image, circle)
     xs = np.random.randint(x1,x2, size=n)
     ys = np.random.randint(y1,y2, size=n)    
