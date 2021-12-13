@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
 import scipy.optimize as opt
 import math
+import sys
 from face_detection.face_detection import get_circle_bounding_box_for_image
 
 
@@ -28,8 +29,52 @@ def center_shape(shape):
 
     
 def optimize_equation_8(x_bar, x):
-    res  = opt.fmin(func=equation_8, x0=[0,0], args=(x_bar, x))
+    res  = opt.fmin(func=equation_8, x0=[1,0], args=(x_bar, x))
     return res
+
+
+def find_closest_landmark(feature, landmarks):
+    
+    min_distance = sys.float_info.max
+    closest_landmark = -1
+
+    for index, landmark in enumerate(landmarks): 
+            distance = np.linalg.norm( landmark - feature)
+
+            if distance < min_distance:
+                min_distance = distance 
+                closest_landmark = index
+                
+    return closest_landmark
+
+def gen_list_of_closest_landmarks(features, landmarks):
+    closest_landmarks = []
+
+    for feature in features:
+        closest_landmarks.append(find_closest_landmark(feature, landmarks))
+        
+    return closest_landmarks
+    
+
+def transform_features(s0, s1, features0):
+    #Takes a set of landmarks s0 with a corresponding set of features features0 and warps these features to fit on
+    #the set of landmarks given by s1. 
+    
+    #Assumption: Both sets of landmarks s0 and s1 are centered when given as input
+    
+    opt = optimize_equation_8(s1, s0)
+    R = rotate_matrix(opt[1])
+    scale = opt[0]
+    
+    closest_landmarks = gen_list_of_closest_landmarks(features0, s0)
+    landmarks_positions = np.array([list(s0[i]) for i in closest_landmarks ])
+    offsets = features0 - landmarks_positions
+    
+    landmarks_positions_s1 = np.array([list(s1[i]) for i in closest_landmarks ])
+    features1 = landmarks_positions_s1 + np.dot(offsets*scale, R)
+    
+    return features1 
+    
 
 
 def extract_coords_from_mean_shape(mean_shape, offset=100, n=400):
