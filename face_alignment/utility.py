@@ -19,120 +19,92 @@ def get_image(id_image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     return gray 
 
-def create_training_data():
-    triplets = []
-    #NOTE remember to set the correct path
-    files = get_all_file_names("train_1")
-    #NOTE this is a hyper parameter
-    R = 1
+def get_mean_shape_from_files(filename):
+
+    files = get_all_file_names(filename)
     shapes = []
     for f in files:
         I_path                 = f.replace('.jpg', '')
         S_true_x, S_true_y     = get_landmark_coords_from_file(I_path)
         S                      = np.array(list(zip(S_true_x, S_true_y)))
         shapes.append(S)
-    mean_shape = center_shape(compute_mean_shape(shapes))
-    features = extract_coords_from_mean_shape(mean_shape, offset=50, n=10)
+    return compute_mean_shape(shapes)
+
     
+
+def create_training_data(filename):
+    training_data = []
+    files = get_all_file_names(filename)
+    
+    #NOTE this is a hyper parameter
+    R = 1
+    
+    mean_shape = get_mean_shape_from_files("train_1")
+    mean_shape = center_shape(mean_shape)
+    features = extract_coords_from_mean_shape(mean_shape, offset=50, n=10)
     
     for f in files[10:11]:
         I_path     = f.replace('.jpg', '')
         I          = cv2.imread(data +"train_1/"+I_path+".jpg", cv2.IMREAD_GRAYSCALE)
-        
         bb         = get_rectangle_bounding_box_for_image(data +"train_1/"+I_path+".jpg", frontalface_config='default')
-        
         S_true_x, S_true_y     = get_landmark_coords_from_file(I_path)
         np.random.shuffle(files)
+
+        #Select the R number of duplicates for image 
         delta_files = files[:R]
 
         #NOTE this is the case when delta_file == file
         if I_path in delta_files:
             delta_files = delta_files.remove(I_path)
             delta_files.append(files[20])
-        #S_true_x_mean = np.mean(S_true_x)
-        #S_true_y_mean = np.mean(S_true_y)
 
         for d in delta_files:
             S_hat                  = d.replace(".jpg", '')
             S_hat_x, S_hat_y       = get_landmark_coords_from_file(S_hat)
-
-            S_hat_x_mean           = np.mean(S_hat_x)
-            S_hat_y_mean           = np.mean(S_hat_y)
+            S_hat                  = np.array(list(zip(S_hat_x, S_hat_y)))
+            #S_hat_x_mean           = np.mean(S_hat_x)
+            #S_hat_y_mean           = np.mean(S_hat_y)
             
+
+            #NOTE move s hat to bb
             bb_center_x            = bb[0][0] + bb[0][2]/2   #bb[0][0] = x coord, bb[0][2] = w
             bb_center_y            = bb[0][1] + 1.2*(bb[0][3]/2)  #bb[0][1]  = y coord, bb[0][3] = h               
-
-            
-            diff_x                 = bb_center_x - S_hat_x_mean
-            diff_y                 = bb_center_y - S_hat_y_mean
-
-            #NOTE we do this to make a crude approximation of the true shape with the s hat shape to make alignment easier
-            
-            S_hat_x                += diff_x
-            S_hat_y                += diff_y
-            S_hat                  = np.array(list(zip(S_hat_x, S_hat_y)))
+           # diff_x                 = bb_center_x - S_hat_x_mean
+           # diff_y                 = bb_center_y - S_hat_y_mean
+           # S_hat_x                += diff_x
+           # S_hat_y                += diff_y
+             
             
             #NOTE move s hat to origo
             S_hat_mean             = np.mean(S_hat, axis=0)
             S_hat                  = S_hat-S_hat_mean
-            
+
+
+            #NOTE scalling to bb; We choose to multiply s hat height by some constant to make up for the extra padding the bounding box adds
             S_hat_height           = np.max(S_hat[:,1]) - np.min(S_hat[:,1])
-            
-            # We choose to multiply s hat height by some constant to make up for the extra padding the bounding box adds
             scale_value            = bb[0][3] / (S_hat_height*1.2)
-            
             S_hat                  = S_hat *scale_value
+
+            #NOTE warping; we transform from mean shape coordinate system to s hat system
             features_hat           = transform_features(mean_shape, S_hat, features)
             
-            #NOTE move s hat to center of bb
+            #NOTE move scaled s hat and its features to center of bb
             S_hat                  = S_hat + [bb_center_x, bb_center_y]
             features_hat           += [bb_center_x, bb_center_y]
             
-            
+            #NOTE calculate delta values based scaled and translated s hat and the true shape
             S_delta_x              = S_true_x - S_hat[:,0]
             S_delta_y              = S_true_y - S_hat[:,1]
-            
             S_delta                = np.array(list(zip(S_delta_x, S_delta_y)))
+
+            #NOTE we get the intensities from the images based on the feature points
             features_hat           = features_hat.astype(int)
             intensities            = I[np.array(features_hat[:,0]), np.array(features_hat[:,1])]
             
-            triplets.append((I, S_hat, S_delta, intensities))
+            training_data.append((I, S_hat, S_delta, intensities, features_hat))
 
-    return np.array(triplets)
+    return np.array(training_data)
 
-def create_test_triplets():
-    triplets = []
-    
-    #NOTE remember to set the correct path
-    files = get_all_file_names("train_1")
-    
-    #NOTE this is a hyper parameter
-    R = 20
-
-    for f in files:
-        I_path     = f.replace('.jpg', '')
-    
-        I = cv2.imread(data +"train_1/"+I_path+".jpg")
-        
-        #return face_detection(I)
-        
-        S_true_x, S_true_y     = get_landmark_coords_from_file(I_path)
-        np.random.shuffle(files)
-        delta_files = files[:R]
-        if I_path in delta_files:
-            delta_files = delta_files.remove(I_path)
-            delta_files.append(files[20])
-        for d in delta_files:
-            S_hat = d.replace(".jpg", '')
-            S_hat_x, S_hat_y       = get_landmark_coords_from_file(S_hat)
-            S_delta_x              = S_true_x - S_hat_x
-            S_delta_y              = S_true_y - S_hat_y
-            S_hat                  = np.array(list(zip(S_hat_x, S_hat_y)))
-            S_delta                = np.array(list(zip(S_delta_x, S_delta_y)))
-        
-            triplets.append((I, S_hat, S_delta))
-    
-    return np.array(triplets)
 
 def read_landmarks_from_file(file):
     landmarks_x = []
