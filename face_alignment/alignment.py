@@ -29,7 +29,7 @@ def center_shape(shape):
 
     
 def optimize_equation_8(x_bar, x):
-    res  = opt.fmin(func=equation_8, x0=[1,0], args=(x_bar, x))
+    res  = opt.fmin(func=equation_8, x0=[1,0], args=(x_bar, x), full_output=False, disp=False)
     return res
 
 

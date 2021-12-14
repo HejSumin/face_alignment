@@ -5,6 +5,7 @@ import pandas as pd
 import os, sys
 from face_alignment.alignment import *
 from face_detection.face_detection import *
+from tqdm import tqdm
 #data = '~/CS-ITU/3-semester/Advanced Machine Learning/Project/data/'
 data = '../data/'
 annotations = '../data/annotation/'
@@ -36,17 +37,22 @@ def create_training_data(filename):
     training_data = []
     files = get_all_file_names(filename)
     
-    #NOTE this is a hyper parameter
-    R = 1
+    #NOTE remember to set R
+    R = 20
     
     mean_shape = get_mean_shape_from_files("train_1")
     mean_shape = center_shape(mean_shape)
-    features = extract_coords_from_mean_shape(mean_shape, offset=50, n=10)
+
+    #NOTE remember to set n, which is number of features. Default=400
+    features = extract_coords_from_mean_shape(mean_shape, offset=30, n=400)
     
-    for f in files[10:11]:
+    for f in tqdm(files):
         I_path     = f.replace('.jpg', '')
-        I          = cv2.imread(data +"train_1/"+I_path+".jpg", cv2.IMREAD_GRAYSCALE)
-        bb         = get_rectangle_bounding_box_for_image(data +"train_1/"+I_path+".jpg", frontalface_config='default')
+        I           = cv2.imread(data+filename+"/"+I_path+".jpg", cv2.IMREAD_GRAYSCALE)
+        bb         = get_rectangle_bounding_box_for_image(data +filename+"/"+I_path+".jpg", frontalface_config='default')
+        if(len(bb) == 0):
+            continue
+        
         S_true_x, S_true_y     = get_landmark_coords_from_file(I_path)
         np.random.shuffle(files)
 
@@ -59,6 +65,8 @@ def create_training_data(filename):
             delta_files.append(files[20])
 
         for d in delta_files:
+           
+            #plt.imshow(I)
             S_hat                  = d.replace(".jpg", '')
             S_hat_x, S_hat_y       = get_landmark_coords_from_file(S_hat)
             S_hat                  = np.array(list(zip(S_hat_x, S_hat_y)))
@@ -68,7 +76,7 @@ def create_training_data(filename):
 
             #NOTE move s hat to bb
             bb_center_x            = bb[0][0] + bb[0][2]/2   #bb[0][0] = x coord, bb[0][2] = w
-            bb_center_y            = bb[0][1] + 1.2*(bb[0][3]/2)  #bb[0][1]  = y coord, bb[0][3] = h               
+            bb_center_y            = bb[0][1] + 1.1*(bb[0][3]/2)  #bb[0][1]  = y coord, bb[0][3] = h               
            # diff_x                 = bb_center_x - S_hat_x_mean
            # diff_y                 = bb_center_y - S_hat_y_mean
            # S_hat_x                += diff_x
@@ -82,7 +90,7 @@ def create_training_data(filename):
 
             #NOTE scalling to bb; We choose to multiply s hat height by some constant to make up for the extra padding the bounding box adds
             S_hat_height           = np.max(S_hat[:,1]) - np.min(S_hat[:,1])
-            scale_value            = bb[0][3] / (S_hat_height*1.2)
+            scale_value            = bb[0][3] / (S_hat_height*1.3)
             S_hat                  = S_hat *scale_value
 
             #NOTE warping; we transform from mean shape coordinate system to s hat system
@@ -96,12 +104,19 @@ def create_training_data(filename):
             S_delta_x              = S_true_x - S_hat[:,0]
             S_delta_y              = S_true_y - S_hat[:,1]
             S_delta                = np.array(list(zip(S_delta_x, S_delta_y)))
-
+            #plt.scatter(S_hat[:,0], S_hat[:,1] , color="black", s=1)
+            #plt.scatter(S_hat[:,0] + S_delta[:,0], S_hat[:,1] + S_delta[:,1] , color="red", s=1)
+            
             #NOTE we get the intensities from the images based on the feature points
             features_hat           = features_hat.astype(int)
-            intensities            = I[np.array(features_hat[:,0]), np.array(features_hat[:,1])]
-            
-            training_data.append((I, S_hat, S_delta, intensities, features_hat))
+            #plt.scatter(features_hat[:,0], features_hat[:,1],color="yellow",s=1)
+            #print(features_hat)
+            try:
+                intensities            = I[np.array(features_hat[:,1]), np.array(features_hat[:,0])]
+            except:
+                continue
+            #NOTE we return Image, s hat, s delta, feature intensities values, feature points, and bounding box
+            training_data.append((I, S_hat, S_delta, intensities, features_hat, bb))
 
     return np.array(training_data)
 
