@@ -3,8 +3,6 @@ from sklearn.metrics.pairwise import euclidean_distances
 import scipy.optimize as opt
 import math
 import sys
-from face_detection.face_detection import get_circle_bounding_box_for_image
-
 
 def rotate_matrix(theta):
     T = np.zeros((2,2))

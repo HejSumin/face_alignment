@@ -2,18 +2,21 @@ from timeit import default_timer as timer
 from datetime import timedelta
 import src as fa
 import numpy as np
+from face_alignment.utility import *
 
 # Paths
 data_path = 'data/'
 annotations_path = 'data/annotation/'
 
 print("... starting training ...")
-# print("... creating training data ... ")
-# I_grayscale_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix = fa.create_training_triplets(train_images_path=data_path+'train_1/')
-# # np.save("np_data/run_input_I_grayscale_matrix", I_grayscale_matrix)
-# # np.save("np_data/run_input_S_hat_matrix", S_hat_matrix)
-# # np.save("np_data/run_input_S_delta_matrix", S_delta_matrix)
-# # np.save("np_data/run_input_S_true_matrix", S_true_matrix)
+print("... creating training data ... ")
+t_data = create_training_data("train_1")
+
+I_grayscale_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix = fa.prepare_training_data(t_data)
+np.save("np_data/run_input_I_grayscale_matrix", I_grayscale_matrix)
+np.save("np_data/run_input_S_hat_matrix", S_hat_matrix)
+np.save("np_data/run_input_S_delta_matrix", S_delta_matrix)
+np.save("np_data/run_input_S_true_matrix", S_true_matrix)
 
 print("... loading training data ... ")
 I_grayscale_matrix = np.load("np_data/run_input_I_grayscale_matrix.npy")
@@ -24,7 +27,7 @@ S_true_matrix = np.load("np_data/run_input_S_true_matrix.npy")
 print("... finished loading training data ...")
 print("... starting training in cascade ...")
 start = timer()
-S_hat_matrix = fa.train_multiple_cascades(I_grayscale_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix) 
+S_hat_matrix = fa.train_single_cascade(I_grayscale_matrix, S_hat_matrix, S_delta_matrix) 
 end = timer()
 print(S_hat_matrix)
 

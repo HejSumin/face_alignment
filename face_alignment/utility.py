@@ -3,8 +3,7 @@ import cv2 as cv2
 import matplotlib.pyplot as plt
 import pandas as pd
 import os, sys
-from face_alignment.alignment import *
-from face_detection.face_detection import *
+from src import *
 from tqdm import tqdm
 #data = '~/CS-ITU/3-semester/Advanced Machine Learning/Project/data/'
 data = '../data/'
@@ -31,8 +30,6 @@ def get_mean_shape_from_files(filename):
         shapes.append(S)
     return compute_mean_shape(shapes)
 
-    
-
 def create_training_data(filename):
     training_data = []
     files = get_all_file_names(filename)
@@ -50,10 +47,12 @@ def create_training_data(filename):
         I_path     = f.replace('.jpg', '')
         I           = cv2.imread(data+filename+"/"+I_path+".jpg", cv2.IMREAD_GRAYSCALE)
         bb         = get_rectangle_bounding_box_for_image(data +filename+"/"+I_path+".jpg", frontalface_config='default')
-        if(len(bb) == 0):
+        if(bb is None):
             continue
         
         S_true_x, S_true_y     = get_landmark_coords_from_file(I_path)
+        S_true = get_landmark_coords_for_image(I_path)
+
         np.random.shuffle(files)
 
         #Select the R number of duplicates for image 
@@ -75,8 +74,8 @@ def create_training_data(filename):
             
 
             #NOTE move s hat to bb
-            bb_center_x            = bb[0][0] + bb[0][2]/2   #bb[0][0] = x coord, bb[0][2] = w
-            bb_center_y            = bb[0][1] + 1.1*(bb[0][3]/2)  #bb[0][1]  = y coord, bb[0][3] = h               
+            bb_center_x            = bb[0] + bb[2]/2   #bb[0][0] = x coord, bb[0][2] = w
+            bb_center_y            = bb[1] + 1.1*(bb[3]/2)  #bb[0][1]  = y coord, bb[0][3] = h               
            # diff_x                 = bb_center_x - S_hat_x_mean
            # diff_y                 = bb_center_y - S_hat_y_mean
            # S_hat_x                += diff_x
@@ -90,7 +89,7 @@ def create_training_data(filename):
 
             #NOTE scalling to bb; We choose to multiply s hat height by some constant to make up for the extra padding the bounding box adds
             S_hat_height           = np.max(S_hat[:,1]) - np.min(S_hat[:,1])
-            scale_value            = bb[0][3] / (S_hat_height*1.3)
+            scale_value            = bb[3] / (S_hat_height*1.3)
             S_hat                  = S_hat *scale_value
 
             #NOTE warping; we transform from mean shape coordinate system to s hat system
@@ -116,7 +115,7 @@ def create_training_data(filename):
             except:
                 continue
             #NOTE we return Image, s hat, s delta, feature intensities values, feature points, and bounding box
-            training_data.append((I, S_hat, S_delta, intensities, features_hat, bb))
+            training_data.append((I, S_hat, S_delta, intensities, features_hat, bb, S_true))
 
     return np.array(training_data)
 
