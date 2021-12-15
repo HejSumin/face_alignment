@@ -6,8 +6,8 @@ import os, sys
 from src import *
 from tqdm import tqdm
 #data = '~/CS-ITU/3-semester/Advanced Machine Learning/Project/data/'
-data = '../data/'
-annotations = '../data/annotation/'
+data = 'data/'
+annotations = 'data/annotation/'
 
 
 def get_all_file_names(folder):
