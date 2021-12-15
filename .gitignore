@@ -130,4 +130,7 @@ dmypy.json
 
 # training and testing data
 /data
-tree/graphviz_output.txt
+
+# run generated files that should no be in git
+src/tree/graphviz_output.txt
+/run_output

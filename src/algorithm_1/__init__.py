@@ -1,1 +1,1 @@
-from src.algorithm_1.build_trees import *
+from src.algorithm_1.train_in_cascade import *

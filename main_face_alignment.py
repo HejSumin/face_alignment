@@ -7,25 +7,32 @@ import numpy as np
 data_path = 'data/'
 annotations_path = 'data/annotation/'
 
-I_grayscale_matrix, S_hat_matrix, S_delta_matrix = fa.create_training_triplets(train_images_path=data_path+'train_1/')
-# print("I_grayscale_matrix", I_grayscale_matrix.shape)
-# print("S_hat_matrix", S_hat_matrix.shape)
-# print("S_delta_matrix", S_delta_matrix.shape)
+print("... starting training ...")
+# print("... creating training data ... ")
+# I_grayscale_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix = fa.create_training_triplets(train_images_path=data_path+'train_1/')
+# # np.save("np_data/run_input_I_grayscale_matrix", I_grayscale_matrix)
+# # np.save("np_data/run_input_S_hat_matrix", S_hat_matrix)
+# # np.save("np_data/run_input_S_delta_matrix", S_delta_matrix)
+# # np.save("np_data/run_input_S_true_matrix", S_true_matrix)
 
-np.save("run_input_I_grayscale_matrix", I_grayscale_matrix)
-np.save("run_input_S_hat_matrix", S_hat_matrix)
-np.save("run_input_S_delta_matrix", S_delta_matrix)
+print("... loading training data ... ")
+I_grayscale_matrix = np.load("np_data/run_input_I_grayscale_matrix.npy")
+S_hat_matrix = np.load("np_data/run_input_S_hat_matrix.npy")
+S_delta_matrix = np.load("np_data/run_input_S_delta_matrix.npy")
+S_true_matrix = np.load("np_data/run_input_S_true_matrix.npy")
 
+print("... finished loading training data ...")
+print("... starting training in cascade ...")
 start = timer()
-r_t_matrix = fa.build_regression_trees(I_grayscale_matrix, S_delta_matrix) 
+S_hat_matrix = fa.train_multiple_cascades(I_grayscale_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix) 
 end = timer()
-print(r_t_matrix)
+print(S_hat_matrix)
 
-np.save("run_output_numpy_r_t_matrix", r_t_matrix)
+np.save("run_output/run_output_numpy_S_hat_matrix", S_hat_matrix)
 
-print("Time: ", timedelta(seconds=end-start))
+print("Run finished in: (Time)", timedelta(seconds=end-start))
 
 run_output_results = open('run_output_results.txt', 'a', encoding='utf-8')
-run_output_results.write(str(r_t_matrix) +"\n")
-run_output_results.write("Time: " + str(timedelta(seconds=end-start)))
+run_output_results.write("---------------------run---------------------\n")
+run_output_results.write("Run finished in: (Time)" + str(timedelta(seconds=end-start)) + "\n")
 run_output_results.close()
