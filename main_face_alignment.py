@@ -9,11 +9,11 @@ annotations_path = 'data/annotation/'
 
 print("... starting training ...")
 print("... creating training data ... ")
-training_data = fa.create_training_data(data_path + "train_1_sub/", annotations_path)
+training_data = fa.create_training_data(data_path + "train_1/", annotations_path)
 np.save("np_data/run_input_training_data", training_data)
 
-print("... loading training data ... ")
-training_data = np.load("np_data/run_input_training_data.npy", allow_pickle=True)
+# print("... loading training data ... ")
+# training_data = np.load("np_data/run_input_training_data.npy", allow_pickle=True)
 
 print("... starting training trees 🌳 in cascade ...")
 start = timer()
