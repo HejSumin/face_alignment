@@ -51,15 +51,15 @@ def create_training_triplets(train_images_path):
 
     return (I_grayscale_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix)
 
-def preapare_training_data(training_data):
+def prepare_training_data(training_data):
     N = training_data.shape[0]
     I_grayscale_matrix = np.empty((N, _AMOUNT_EXTRACTED_FEATURES))
     S_hat_matrix = np.empty((N,_AMOUNT_LANDMARKS*2))
     S_delta_matrix = np.empty((N,_AMOUNT_LANDMARKS*2))
     S_true_matrix = np.empty((N, _AMOUNT_LANDMARKS*2))
 
-    for i in range(0, training_data.shape[0]):
-        S_delta = training_data[i,2].flatten().reshape(388,1).T
+    for i in range(0, training_data.shape[0]): # [x1,y1,x2,y2..]
+        S_delta = training_data[i,2].flatten().reshape(388,1).T # (1, 388)
         S_hat = training_data[i,1].flatten().reshape(388,1).T
         I_grayscale = training_data[i,3]
         S_true = training_data[i,6]
