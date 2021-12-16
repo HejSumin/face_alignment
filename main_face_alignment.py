@@ -9,22 +9,26 @@ data_path = 'data/'
 annotations_path = 'data/annotation/'
 
 print("... starting training ...")
-# print("... creating training data ... ")
-# training_data = create_training_data("train_1_sub")
-# np.save("np_data/run_input_training_data", training_data)
+print("... creating training data ... ")
+training_data = create_training_data("train_1_sub")
+np.save("np_data/run_input_training_data", training_data)
 
-# I_grayscale_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix = fa.prepare_training_data(training_data)
-# np.save("np_data/run_input_I_grayscale_matrix", I_grayscale_matrix)
-# np.save("np_data/run_input_S_hat_matrix", S_hat_matrix)
-# np.save("np_data/run_input_S_delta_matrix", S_delta_matrix)
-# np.save("np_data/run_input_S_true_matrix", S_true_matrix)
+I_grayscale_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix = fa.prepare_training_data(training_data)
+np.save("np_data/run_input_I_grayscale_matrix", I_grayscale_matrix)
+np.save("np_data/run_input_S_hat_matrix", S_hat_matrix)
+np.save("np_data/run_input_S_delta_matrix", S_delta_matrix)
+np.save("np_data/run_input_S_true_matrix", S_true_matrix)
 
 print("... loading training data ... ")
-training_data = np.load("np_data/run_input_training_data.npy", allow_pickle=True)
+# training_data = np.load("np_data/run_input_training_data.npy", allow_pickle=True)
 I_grayscale_matrix = np.load("np_data/run_input_I_grayscale_matrix.npy")
 S_hat_matrix = np.load("np_data/run_input_S_hat_matrix.npy")
 S_delta_matrix = np.load("np_data/run_input_S_delta_matrix.npy")
 S_true_matrix = np.load("np_data/run_input_S_true_matrix.npy")
+
+# I_grayscale_matrix = training_data[:, 3]
+# S_delta_matrix = training_data[:,2].reshape(400, 1)
+# S_hat_matrix = training_data[:,1]
 
 print("... finished loading training data ...")
 print("... starting training 🌳 in cascade ...")
