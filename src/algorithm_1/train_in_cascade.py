@@ -1,4 +1,5 @@
 from src.tree.tree_fitting import *
+from src.face_alignment.utility import *
 from tqdm import tqdm
 
 _DEBUG = True
@@ -16,31 +17,45 @@ _LEARNING_RATE = 0.1
 _K = 500
 _T = 10
 
-def train_multiple_cascades(I_grayscale_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix):
-    for t in tqdm(range(0, _T)):
-        r_t_matrix = train_single_cascade(I_grayscale_matrix, S_delta_matrix)
+def train_multiple_cascades(training_data):
+    model_complete_regression_trees = []
+    I_intensities_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix = prepare_training_data_for_tree_cascade(training_data)
+
+    for t in tqdm(range(0, _T), desc="T cascades"):
+        r_t_matrix, model_regression_trees = train_single_cascade(I_intensities_matrix, S_delta_matrix)
+        model_complete_regression_trees.append(model_regression_trees)
+
         S_hat_matrix = S_hat_matrix + r_t_matrix
         S_delta_matrix = S_true_matrix - S_hat_matrix
 
-    return S_hat_matrix
+        training_data_new, I_intensities_matrix_new = update_training_data_with_tree_cascade_result(S_hat_matrix, S_delta_matrix, training_data)
+        training_data = training_data_new
+        I_intensities_matrix = I_intensities_matrix_new
 
-def train_single_cascade(I_grayscale_matrix, S_delta_matrix):
+    return training_data, model_complete_regression_trees
+
+def train_single_cascade(I_intensities_matrix, S_delta_matrix):
+    model_regression_trees = []
+
     f_0_matrix = calculate_f_0_matrix(S_delta_matrix)
     f_k_minus_1_matrix = f_0_matrix
 
-    for k in tqdm(range(0, _K)):
+    for k in tqdm(range(0, _K), desc="K trees"):
         r_i_k_matrix = calculate_residuals_matrix(S_delta_matrix, f_k_minus_1_matrix)
-        regression_tree = generate_regression_tree(I_grayscale_matrix, r_i_k_matrix) #TODO save regression trees
+
+        regression_tree = generate_regression_tree(I_intensities_matrix, r_i_k_matrix)
+        model_regression_trees.append(regression_tree)
+
         f_k_matrix = update_f_k_matrix(regression_tree, f_k_minus_1_matrix)
         f_k_minus_1_matrix = f_k_matrix
 
-    return f_k_minus_1_matrix
+    return f_k_minus_1_matrix, model_regression_trees
 
 def calculate_residuals_matrix(S_delta_matrix, f_k_minus_1_matrix):
     return S_delta_matrix - f_k_minus_1_matrix
 
 def calculate_f_0_matrix(S_delta_matrix):
-    return np.mean(S_delta_matrix, axis=0) # TODO check if correct to use the mean
+    return np.mean(S_delta_matrix, axis=0) #TODO Correct to use mean?
 
 def update_f_k_matrix(regression_tree, f_k_minus_1_matrix, learning_rate=_LEARNING_RATE):
     g_k_matrix = regression_tree.get_avarage_residuals_matrix()

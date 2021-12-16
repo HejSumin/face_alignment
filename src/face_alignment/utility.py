@@ -8,6 +8,11 @@ import math
 from src.face_detection.face_detection import *
 import sys
 
+"""
+Hyperparameters
+
+"""
+_R = 20
 
 def get_all_file_names(folder):
     return os.listdir(folder)
@@ -30,8 +35,6 @@ def compute_mean_shape(images):
         result = result + shape
     return result / len(images)
 
-
-
 def read_landmarks_from_file(file):
     landmarks_x = []
     landmarks_y= []
@@ -42,7 +45,6 @@ def read_landmarks_from_file(file):
         landmarks_x.append(float(coords[0]))
         landmarks_y.append(float(coords[1]))
     return (np.array(landmarks_x, dtype=float), np.array(landmarks_y, dtype=float))
-
 
 def extract_coords_from_mean_shape(mean_shape, offset=100, n=400):
 
@@ -57,9 +59,6 @@ def extract_coords_from_mean_shape(mean_shape, offset=100, n=400):
     xs = np.random.randint(xmin,xmax, size=n)
     ys = np.random.randint(ymin,ymax, size=n)
     return np.array(list(zip(xs,ys)))
-
-
-
 
 def center_shape(shape):
     mean = np.mean(shape, axis=0)
@@ -83,7 +82,6 @@ def optimize_equation_8(x_bar, x):
     res  = opt.fmin(func=equation_8, x0=[1,0], args=(x_bar, x), full_output=False, disp=False)
     return res
 
-
 def find_closest_landmark(feature, landmarks):
 
     min_distance = sys.float_info.max
@@ -106,9 +104,6 @@ def gen_list_of_closest_landmarks(features, landmarks):
 
     return closest_landmarks
 
-
-
-
 def transform_features(s0, s1, features0):
     #Takes a set of landmarks s0 with a corresponding set of features features0 and warps these features to fit on
     #the set of landmarks given by s1.
@@ -128,24 +123,21 @@ def transform_features(s0, s1, features0):
 
     return features1
 
+"""
+This function prepares the training data for the training of the face alignment algorithm
 
+It does this by constructing training triplets (septuplets now) from a set of
+training images and corresponding annotations.
 
+    Parameters:
+        train_folder_path: The relative position of the folder containing the image filenames
+        annotation_folder_path: The relative position of the folder
+
+    Returns:
+        training_data
+
+"""
 def create_training_data(train_folder_path, annotation_folder_path):
-    """
-    This function prepares the training data for the training of the face alignment algorithm
-
-    It does this by constructing training triplets (septuplets now) from a set of
-    training images and corresponding annotations.
-
-        Parameters:
-            train_folder_path: The relative position of the folder containing the image filenames
-            annotation_folder_path: The relative position of the folder
-
-        Returns:
-            training_data
-
-
-    """
     training_data = []
     image_files = get_all_file_names(train_folder_path)
 
@@ -156,10 +148,6 @@ def create_training_data(train_folder_path, annotation_folder_path):
         with open(annotation_folder_path+file) as f:
             first_line = f.readline().replace('\n','')
         image_to_annotation_dict[first_line] = file
-
-
-    #NOTE remember to set R
-    R = 20
 
     #calculate mean shape from all shape files
     mean_shape = get_mean_shape_from_files(image_files,image_to_annotation_dict,annotation_folder_path)
@@ -181,7 +169,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
         np.random.shuffle(image_files)
 
         #Select the R number of duplicates for image
-        delta_files = image_files[:R]
+        delta_files = image_files[:_R]
 
         #NOTE this is the case when delta_file == file
         if I_path in delta_files:
@@ -231,23 +219,57 @@ def create_training_data(train_folder_path, annotation_folder_path):
             training_data.append((I, S_hat, S_delta, intensities, features_hat, bb, S_true))
 
 
-    return np.array(training_data)
+    return np.array(training_data, dtype=object)
 
-def preapare_training_data(training_data):
+def prepare_training_data_for_tree_cascade(training_data):
     N = training_data.shape[0]
-    I_grayscale_matrix = np.empty((N, _AMOUNT_EXTRACTED_FEATURES))
-    S_hat_matrix = np.empty((N,_AMOUNT_LANDMARKS*2))
-    S_delta_matrix = np.empty((N,_AMOUNT_LANDMARKS*2))
-    S_true_matrix = np.empty((N, _AMOUNT_LANDMARKS*2))
+    amount_extracted_features = training_data[0, 3].shape[0]
+    amount_landmarks = training_data[0, 1].shape[0]
+
+    I_intensities_matrix = np.empty((N, amount_extracted_features))
+    S_hat_matrix = np.empty((N, amount_landmarks*2))
+    S_delta_matrix = np.empty((N, amount_landmarks*2))
+    S_true_matrix = np.empty((N, amount_landmarks*2))
 
     for i in range(0, training_data.shape[0]):
-        S_delta = training_data[i,2].flatten().reshape(388,1).T
-        S_hat = training_data[i,1].flatten().reshape(388,1).T
-        I_grayscale = training_data[i,3]
-        S_true = training_data[i,6]
-        I_grayscale_matrix[i] = I_grayscale
+        S_delta = training_data[i, 2].flatten().reshape(388, 1).T
+        S_hat = training_data[i, 1].flatten().reshape(388, 1).T
+        I_intensities = training_data[i, 3]
+        S_true = training_data[i, 6].flatten().reshape(388, 1).T
+        I_intensities_matrix[i] = I_intensities
         S_hat_matrix[i] = S_hat
         S_delta_matrix[i] = S_delta
         S_true_matrix[i] = S_true
 
-    return (I_grayscale_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix)
+    return (I_intensities_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix)
+
+def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matrix_new, training_data):
+    N = training_data.shape[0]
+    amount_extracted_features = training_data[0, 3].shape[0]
+    amount_landmarks = training_data[0, 1].shape[0]
+
+    x_mask = [x for x in range(0, amount_landmarks*2-1, 2)]
+    y_mask = [x for x in range(1, amount_landmarks*2, 2)]
+
+    I_intensities_matrix_new = np.empty((N, amount_extracted_features))
+
+    for i in tqdm(range(0, training_data.shape[0]), desc="update training data"):
+        I = training_data[i, 0]
+        S_hat = training_data[i, 1]
+        features_hat = training_data[i, 4]
+
+        S_hat_new = np.array(list(zip(S_hat_matrix_new[i,x_mask], S_hat_matrix_new[i,y_mask])))
+        S_delta_new = np.array(list(zip(S_delta_matrix_new[i,x_mask], S_delta_matrix_new[i,y_mask])))
+        features_hat_new = transform_features(S_hat, S_hat_new, features_hat).astype(int)
+        intensities_new = I[np.array(features_hat_new[:,1]), np.array(features_hat_new[:,0])]
+
+        training_data[i, 1] = S_hat_new
+        training_data[i, 2] = S_delta_new
+        training_data[i, 3] = intensities_new
+        training_data[i, 4] = features_hat_new
+      
+        I_intensities_matrix_new[i] = I[np.array(features_hat_new[:,1]), np.array(features_hat_new[:,0])]
+
+    return training_data, I_intensities_matrix_new
+
+
