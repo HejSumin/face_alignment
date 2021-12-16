@@ -40,7 +40,7 @@ Returns
     -------
     (pixel x1, pixel x2, pixel intensity threshold), mu_theta : best candidate split triplet and corresponding Q_theta_l, Q_thetas_r, mu_theta value needed for calculation in the next iteration
 """
-def _select_best_candidate_split_for_node(I_grayscale_matrix, residuals_matrix, theta_candidate_splits, Q_I_at_node, mu_parent_node=None):
+def _select_best_candidate_split_for_node(I_intensities_matrix, residuals_matrix, theta_candidate_splits, Q_I_at_node, mu_parent_node=None):
     sum_square_error_theta_candidate_splits = np.zeros((theta_candidate_splits.shape[0], 1))
     mu_thetas = []
     Q_thetas_l = []
@@ -53,7 +53,7 @@ def _select_best_candidate_split_for_node(I_grayscale_matrix, residuals_matrix, 
 
         # bucketize images based on theta candidate split
         for index in Q_I_at_node:
-            if np.abs(I_grayscale_matrix[index][x1] - I_grayscale_matrix[index][x2]) > threshold: 
+            if np.abs(I_intensities_matrix[index][x1] - I_intensities_matrix[index][x2]) > threshold: 
                 Q_theta_l.append(index)
             else:
                 Q_theta_r.append(index)
@@ -86,10 +86,10 @@ def _generate_random_candidate_splits(amount_extraced_features, amount_candidate
         random_candidate_splits[i] = np.array([random_x1_pixel_index, random_x2_pixel_index, random_threshold])
     return random_candidate_splits
 
-def _generate_root_node(regression_tree, I_grayscale_matrix, residuals_matrix, Q_I_at_root):
-    random_candidate_splits_root = _generate_random_candidate_splits(I_grayscale_matrix.shape[1])
+def _generate_root_node(regression_tree, I_intensities_matrix, residuals_matrix, Q_I_at_root):
+    random_candidate_splits_root = _generate_random_candidate_splits(I_intensities_matrix.shape[1])
     (best_x1_pixel_index_root, best_x2_pixel_index_root, best_threshold_root), Q_theta_l_root, Q_theta_r_root, mu_theta_root = _select_best_candidate_split_for_node(
-        I_grayscale_matrix,
+        I_intensities_matrix,
         residuals_matrix,
         random_candidate_splits_root,
         Q_I_at_root
@@ -104,7 +104,7 @@ def _generate_child_nodes(
         current_node_id, 
         current_depth, 
         max_depth, 
-        I_grayscale_matrix, 
+        I_intensities_matrix, 
         residuals_matrix, 
         Q_theta_l,
         Q_theta_r,
@@ -119,18 +119,18 @@ def _generate_child_nodes(
         regression_tree.append_avarage_residuals_matrix(mu_theta_r, Q_theta_r) # used for training as result of g_k
         return True
 
-    random_candidate_splits_left_child = _generate_random_candidate_splits(I_grayscale_matrix.shape[1])
+    random_candidate_splits_left_child = _generate_random_candidate_splits(I_intensities_matrix.shape[1])
     (best_x1_pixel_index_left_child, best_x2_pixel_index_left_child, best_threshold_left_child), Q_theta_l_left_child, Q_theta_r_left_child, mu_theta_left_child = _select_best_candidate_split_for_node(
-        I_grayscale_matrix,
+        I_intensities_matrix,
         residuals_matrix,
         random_candidate_splits_left_child,
         Q_theta_l,
         mu_theta_l
     )
 
-    random_candidate_splits_right_child = _generate_random_candidate_splits(I_grayscale_matrix.shape[1])
+    random_candidate_splits_right_child = _generate_random_candidate_splits(I_intensities_matrix.shape[1])
     (best_x1_pixel_index_right_child, best_x2_pixel_index_right_child, best_threshold_right_child), Q_theta_l_right_child, Q_theta_r_right_child, mu_theta_right_child = _select_best_candidate_split_for_node(
-        I_grayscale_matrix,
+        I_intensities_matrix,
         residuals_matrix,
         random_candidate_splits_right_child,
         Q_theta_r,
@@ -147,7 +147,7 @@ def _generate_child_nodes(
             left_node.id, 
             current_depth+1, 
             max_depth, 
-            I_grayscale_matrix,
+            I_intensities_matrix,
             residuals_matrix,
             Q_theta_l_left_child,
             Q_theta_r_left_child,
@@ -157,7 +157,7 @@ def _generate_child_nodes(
             right_node.id, 
             current_depth+1, 
             max_depth, 
-            I_grayscale_matrix,
+            I_intensities_matrix,
             residuals_matrix,
             Q_theta_l_right_child,
             Q_theta_r_right_child,
@@ -165,13 +165,13 @@ def _generate_child_nodes(
         )
     ) 
 
-def generate_regression_tree(I_grayscale_matrix, residuals_matrix):
-    Q_I_at_root = np.arange(0, I_grayscale_matrix.shape[0])
+def generate_regression_tree(I_intensities_matrix, residuals_matrix):
+    Q_I_at_root = np.arange(0, I_intensities_matrix.shape[0])
 
     regression_tree = Regression_Tree(avarage_residuals_matrix_shape=residuals_matrix.shape)
-    root_node, Q_theta_l_root, Q_theta_r_root, mu_theta_root = _generate_root_node(regression_tree, I_grayscale_matrix, residuals_matrix, Q_I_at_root)
+    root_node, Q_theta_l_root, Q_theta_r_root, mu_theta_root = _generate_root_node(regression_tree, I_intensities_matrix, residuals_matrix, Q_I_at_root)
 
-    success = _generate_child_nodes(regression_tree, root_node.id, 0, _REGRESSION_TREE_MAX_DEPTH, I_grayscale_matrix, residuals_matrix, Q_theta_l_root, Q_theta_r_root, mu_theta_root)
+    success = _generate_child_nodes(regression_tree, root_node.id, 0, _REGRESSION_TREE_MAX_DEPTH, I_intensities_matrix, residuals_matrix, Q_theta_l_root, Q_theta_r_root, mu_theta_root)
     return regression_tree
 
 def get_avarage_residual_vector_for_image(regression_tree, I_grayscale, current_node_id=None):
@@ -194,16 +194,16 @@ def run_test_example():
     landmarks = 194
     R = 20
     n_image_matrix = np.random.randint(0, 256, (images, 20))
-    I_grayscale_matrix = np.repeat(n_image_matrix, repeats=R, axis=0) # shape (N=n*R, #extraced pixels)
+    I_intensities_matrix = np.repeat(n_image_matrix, repeats=R, axis=0) # shape (N=n*R, #extraced pixels)
     residuals_matrix = np.random.rand(R*images, landmarks) # only positive values for test example ; shape (N=n*R, 194)
 
     start = timer()
-    regression_tree = generate_regression_tree(I_grayscale_matrix, residuals_matrix)
+    regression_tree = generate_regression_tree(I_intensities_matrix, residuals_matrix)
     end = timer()
 
     if _DEBUG:
         if _DEBUG_DETAILED:
-            print("I_grayscale_matrix : " + str(I_grayscale_matrix))
+            print("I_intensities_matrix : " + str(I_intensities_matrix))
             print("residuals_matrix : " + str(residuals_matrix))
         print()
         print(regression_tree.get_tree_description(detailed=_DEBUG_DETAILED))
