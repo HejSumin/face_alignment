@@ -123,6 +123,14 @@ def transform_features(s0, s1, features0):
 
     return features1
 
+# TODO is there a better solution
+def get_features_within_image_size(I, features_hat):
+    amount_features = I.shape[0]
+    for i, feature in enumerate(features_hat):
+        if feature >= amount_features:
+            features_hat[i] = amount_features-1
+    return features_hat
+
 """
 This function prepares the training data for the training of the face alignment algorithm
 
@@ -226,10 +234,10 @@ def prepare_training_data_for_tree_cascade(training_data):
     amount_extracted_features = training_data[0, 3].shape[0]
     amount_landmarks = training_data[0, 1].shape[0]
 
-    I_intensities_matrix = np.empty((N, amount_extracted_features))
-    S_hat_matrix = np.empty((N, amount_landmarks*2))
-    S_delta_matrix = np.empty((N, amount_landmarks*2))
-    S_true_matrix = np.empty((N, amount_landmarks*2))
+    I_intensities_matrix = np.empty((N, amount_extracted_features), dtype=int)
+    S_hat_matrix = np.empty((N, amount_landmarks*2), dtype=int)
+    S_delta_matrix = np.empty((N, amount_landmarks*2), dtype=int)
+    S_true_matrix = np.empty((N, amount_landmarks*2), dtype=int)
 
     for i in range(0, training_data.shape[0]):
         S_delta = training_data[i, 2].flatten().reshape(388, 1).T
@@ -251,7 +259,7 @@ def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matr
     x_mask = [x for x in range(0, amount_landmarks*2-1, 2)]
     y_mask = [x for x in range(1, amount_landmarks*2, 2)]
 
-    I_intensities_matrix_new = np.empty((N, amount_extracted_features))
+    I_intensities_matrix_new = np.empty((N, amount_extracted_features), dtype=int)
 
     for i in tqdm(range(0, training_data.shape[0]), desc="update training data"):
         I = training_data[i, 0]
@@ -260,8 +268,11 @@ def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matr
 
         S_hat_new = np.array(list(zip(S_hat_matrix_new[i,x_mask], S_hat_matrix_new[i,y_mask])))
         S_delta_new = np.array(list(zip(S_delta_matrix_new[i,x_mask], S_delta_matrix_new[i,y_mask])))
+
         features_hat_new = transform_features(S_hat, S_hat_new, features_hat).astype(int)
-        intensities_new = I[np.array(features_hat_new[:,1]), np.array(features_hat_new[:,0])]
+        # Issue: index out of bounds if features_hat_new is transformed
+        features_hat_new = get_features_within_image_size(I, features_hat_new)
+        intensities_new = I[np.array(features_hat_new[:, 1]), np.array(features_hat_new[:, 0])]
 
         training_data[i, 1] = S_hat_new
         training_data[i, 2] = S_delta_new
