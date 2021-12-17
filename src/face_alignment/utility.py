@@ -124,11 +124,16 @@ def transform_features(s0, s1, features0):
     return features1
 
 # TODO is there a better solution
-def get_features_within_image_size(I, features_hat):
-    amount_features = I.shape[0]
-    for i, feature in enumerate(features_hat):
-        if feature >= amount_features:
-            features_hat[i] = amount_features-1
+def get_features_within_image_shape(I_shape, features_hat):
+    height, width = I_shape
+    for i, features in enumerate(features_hat):
+        x = features[0]
+        y = features[1]
+        if x >= width:
+            features_hat[i,0] = width-1
+        if y >= height:
+            features_hat[i,1] = height-1
+
     return features_hat
 
 """
@@ -271,7 +276,7 @@ def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matr
 
         features_hat_new = transform_features(S_hat, S_hat_new, features_hat).astype(int)
         # Issue: index out of bounds if features_hat_new is transformed
-        features_hat_new = get_features_within_image_size(I, features_hat_new)
+        features_hat_new = get_features_within_image_shape(I.shape, features_hat_new)
         intensities_new = I[np.array(features_hat_new[:, 1]), np.array(features_hat_new[:, 0])]
 
         training_data[i, 1] = S_hat_new
