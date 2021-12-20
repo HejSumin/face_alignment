@@ -14,16 +14,15 @@ Parameters
     _T : amount of cascades 
 """
 _LEARNING_RATE = 0.1
-_K = 2
-_T = 10
+_K = 250
+_T = 5
 
 def train_multiple_cascades(training_data):
-    model_complete_regression_trees = []
     I_intensities_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix = prepare_training_data_for_tree_cascade(training_data)
 
     for t in tqdm(range(0, _T), desc="T cascades"):
         r_t_matrix, model_regression_trees = train_single_cascade(I_intensities_matrix, S_delta_matrix)
-        model_complete_regression_trees.append(model_regression_trees)
+        np.save("run_output/run_output_model_regression_trees_cascade_" + str(t), model_regression_trees, allow_pickle=True)
 
         S_hat_matrix = S_hat_matrix + r_t_matrix
         S_delta_matrix = S_true_matrix - S_hat_matrix
@@ -32,7 +31,7 @@ def train_multiple_cascades(training_data):
         training_data = training_data_new
         I_intensities_matrix = I_intensities_matrix_new
 
-    return training_data, model_complete_regression_trees
+    return training_data
 
 def train_single_cascade(I_intensities_matrix, S_delta_matrix):
     model_regression_trees = []

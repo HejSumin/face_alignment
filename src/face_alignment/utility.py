@@ -172,7 +172,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
 
     for file in tqdm(image_files):
         I_path     = file.replace('.jpg', '')
-        I           = cv2.imread(train_folder_path+file, cv2.IMREAD_GRAYSCALE)
+        I          = cv2.imread(train_folder_path+file, cv2.IMREAD_GRAYSCALE)
         bb         = get_rectangle_bounding_box_for_image(train_folder_path+file, frontalface_config='default')
         if(bb is None):
             continue
@@ -195,7 +195,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
             S_hat_image_id         = d.replace(".jpg", '')
             S_hat_path             = annotation_folder_path + image_to_annotation_dict[S_hat_image_id]
             S_hat_x, S_hat_y       = read_landmarks_from_file(S_hat_path)
-            S_hat                  = np.array(list(zip(S_hat_x, S_hat_y)))
+            S_hat                  = np.array(list(zip(S_hat_x, S_hat_y)), dtype=np.uint16)
 
             #NOTE move s hat to origo
             S_hat                  = center_shape(S_hat)
@@ -219,10 +219,10 @@ def create_training_data(train_folder_path, annotation_folder_path):
             #NOTE calculate delta values based scaled and translated s hat and the true shape
             S_delta_x              = S_true_x - S_hat[:,0]
             S_delta_y              = S_true_y - S_hat[:,1]
-            S_delta                = np.array(list(zip(S_delta_x, S_delta_y)))
+            S_delta                = np.array(list(zip(S_delta_x, S_delta_y)), np.float32)
 
             #NOTE we get the intensities from the images based on the feature points
-            features_hat           = features_hat.astype(int)
+            features_hat           = features_hat.astype(np.uint16)
 
             try:
                 intensities            = I[np.array(features_hat[:,1]), np.array(features_hat[:,0])]
@@ -239,10 +239,10 @@ def prepare_training_data_for_tree_cascade(training_data):
     amount_extracted_features = training_data[0, 3].shape[0]
     amount_landmarks = training_data[0, 1].shape[0]
 
-    I_intensities_matrix = np.empty((N, amount_extracted_features), dtype=int)
-    S_hat_matrix = np.empty((N, amount_landmarks*2), dtype=int)
-    S_delta_matrix = np.empty((N, amount_landmarks*2), dtype=int)
-    S_true_matrix = np.empty((N, amount_landmarks*2), dtype=int)
+    I_intensities_matrix = np.empty((N, amount_extracted_features), dtype=np.int16)
+    S_hat_matrix = np.empty((N, amount_landmarks*2), dtype=np.uint16)
+    S_delta_matrix = np.empty((N, amount_landmarks*2), dtype=np.float32)
+    S_true_matrix = np.empty((N, amount_landmarks*2), dtype=np.uint16)
 
     for i in range(0, training_data.shape[0]):
         S_delta = training_data[i, 2].flatten().reshape(388, 1).T
@@ -264,7 +264,7 @@ def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matr
     x_mask = [x for x in range(0, amount_landmarks*2-1, 2)]
     y_mask = [x for x in range(1, amount_landmarks*2, 2)]
 
-    I_intensities_matrix_new = np.empty((N, amount_extracted_features), dtype=int)
+    I_intensities_matrix_new = np.empty((N, amount_extracted_features), dtype=np.int16)
 
     for i in tqdm(range(0, training_data.shape[0]), desc="update training data"):
         I = training_data[i, 0]
@@ -284,7 +284,7 @@ def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matr
         training_data[i, 3] = intensities_new
         training_data[i, 4] = features_hat_new
       
-        I_intensities_matrix_new[i] = I[np.array(features_hat_new[:,1]), np.array(features_hat_new[:,0])]
+        I_intensities_matrix_new[i] = intensities_new
 
     return training_data, I_intensities_matrix_new
 
