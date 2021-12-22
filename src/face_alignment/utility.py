@@ -12,7 +12,7 @@ import sys
 Hyperparameters
 
 """
-_R = 20
+_R = 4
 
 def get_all_file_names(folder):
     return os.listdir(folder)
@@ -256,7 +256,7 @@ def prepare_training_data_for_tree_cascade(training_data):
 
     return (I_intensities_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix)
 
-def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matrix_new, training_data):
+def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matrix_new, training_data,last_run):
     N = training_data.shape[0]
     amount_extracted_features = training_data[0, 3].shape[0]
     amount_landmarks = training_data[0, 1].shape[0]
@@ -274,18 +274,43 @@ def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matr
         S_hat_new = np.array(list(zip(S_hat_matrix_new[i,x_mask], S_hat_matrix_new[i,y_mask])))
         S_delta_new = np.array(list(zip(S_delta_matrix_new[i,x_mask], S_delta_matrix_new[i,y_mask])))
 
-        features_hat_new = transform_features(S_hat, S_hat_new, features_hat).astype(int)
-        # Issue: index out of bounds if features_hat_new is transformed
-        features_hat_new = get_features_within_image_shape(I.shape, features_hat_new)
-        intensities_new = I[np.array(features_hat_new[:, 1]), np.array(features_hat_new[:, 0])]
+        if not last_run:
+            #Calculate means of s_hat for moving it and its features to origo
+            S_hat_mean = np.mean(S_hat, axis=0)
+            S_hat_centered = S_hat - S_hat_mean
+            features_hat_centered = features_hat - S_hat_mean
+
+            #Calculate means of s_hat_new for moving it and its features to origo
+            S_hat_new_mean = np.mean(S_hat_new, axis=0)
+            S_hat_new_centered = S_hat_new - S_hat_new_mean
+
+            features_hat_new = transform_features(S_hat_centered, S_hat_new_centered, features_hat_centered).astype(int)
+
+            #Move features_hat_new back to image's coordinate system
+            features_hat_new += S_hat_new_mean.astype(int)
+            #features_hat_new = features_hat_new.astype(int)
+
+            # Issue: index out of bounds if features_hat_new is transformed
+            #features_hat_new = get_features_within_image_shape(I.shape, features_hat_new)
+
+            try:
+                intensities_new = I[np.array(features_hat_new[:, 1]), np.array(features_hat_new[:, 0])]
+
+            except Exception as e:
+                print(e)
+                intensities_new = training_data[i, 3]
+
+        else:
+            #No need to transform features if last run, so just return old values
+            features_hat_new = features_hat
+            intensities_new = training_data[i, 3]
+
 
         training_data[i, 1] = S_hat_new
         training_data[i, 2] = S_delta_new
         training_data[i, 3] = intensities_new
         training_data[i, 4] = features_hat_new
-      
+
         I_intensities_matrix_new[i] = intensities_new
 
     return training_data, I_intensities_matrix_new
-
-

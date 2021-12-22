@@ -11,23 +11,25 @@ Parameters
     ----------
     _LEARNING_RATE : how much does the result of each tree influence the overall result
     _K : amount of trees per cascade
-    _T : amount of cascades 
+    _T : amount of cascades
 """
 _LEARNING_RATE = 0.1
-_K = 250
-_T = 5
+_K = 100
+_T = 2
 
 def train_multiple_cascades(training_data):
     I_intensities_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix = prepare_training_data_for_tree_cascade(training_data)
 
     for t in tqdm(range(0, _T), desc="T cascades"):
+        last_run = t == _T-1
+
         r_t_matrix, model_regression_trees = train_single_cascade(I_intensities_matrix, S_delta_matrix)
         np.save("run_output/run_output_model_regression_trees_cascade_" + str(t), model_regression_trees, allow_pickle=True)
 
         S_hat_matrix = S_hat_matrix + r_t_matrix
         S_delta_matrix = S_true_matrix - S_hat_matrix
 
-        training_data_new, I_intensities_matrix_new = update_training_data_with_tree_cascade_result(S_hat_matrix, S_delta_matrix, training_data)
+        training_data_new, I_intensities_matrix_new = update_training_data_with_tree_cascade_result(S_hat_matrix, S_delta_matrix, training_data, last_run)
         training_data = training_data_new
         I_intensities_matrix = I_intensities_matrix_new
 

@@ -12,15 +12,18 @@ if os.name == 'posix':
 # Paths
 data_path = 'data/'
 annotations_path = 'data/annotation/'
-
+"""
 print("... starting training ...")
 print("... creating training data ... ")
 training_data = fa.create_training_data(data_path + "train_1/", annotations_path)
 np.save("np_data/run_input_training_data", training_data)
+"""
 
 print("... loading training data ... ")
 training_data = np.load("np_data/run_input_training_data.npy", allow_pickle=True)
 
+
+#Not working, index out of bound when loading new intensities
 print("... starting training trees 🌳 in cascade ...")
 start = timer()
 training_data_result = fa.train_multiple_cascades(training_data)
