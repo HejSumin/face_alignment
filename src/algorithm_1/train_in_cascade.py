@@ -31,6 +31,7 @@ def train_multiple_cascades(training_data):
 
         training_data_new, I_intensities_matrix_new = update_training_data_with_tree_cascade_result(S_hat_matrix, S_delta_matrix, training_data, last_run)
         training_data = training_data_new
+        np.save("saved_while_training/t_data" + str(t), training_data)
         I_intensities_matrix = I_intensities_matrix_new
 
     return training_data

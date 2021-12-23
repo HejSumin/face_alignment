@@ -168,16 +168,23 @@ def create_training_data(train_folder_path, annotation_folder_path):
     mean_shape = center_shape(mean_shape)
 
     #NOTE remember to set n, which is number of features. Default=400
-    features = extract_coords_from_mean_shape(mean_shape, offset=30, n=400)
+    features = extract_coords_from_mean_shape(mean_shape, offset=20, n=400)
 
     for file in tqdm(image_files):
         I_path     = file.replace('.jpg', '')
         I          = cv2.imread(train_folder_path+file, cv2.IMREAD_GRAYSCALE)
+        h, w       = I.shape
+        h_pad      = (int((h / 100) * 20))
+        w_pad      = (int((w / 100) * 20))
+        I          = cv2.copyMakeBorder(I, h_pad, h_pad, w_pad, w_pad, cv2.BORDER_CONSTANT)
         bb         = get_rectangle_bounding_box_for_image(train_folder_path+file, frontalface_config='default')
+        
         if(bb is None):
             continue
 
         S_true_x, S_true_y     = read_landmarks_from_file(annotation_folder_path + image_to_annotation_dict[file.replace('.jpg', '')])
+        S_true_x               += w_pad
+        S_true_y               += h_pad
         S_true                 = np.array(list(zip(S_true_x, S_true_y)))
         np.random.shuffle(image_files)
 
@@ -195,6 +202,8 @@ def create_training_data(train_folder_path, annotation_folder_path):
             S_hat_image_id         = d.replace(".jpg", '')
             S_hat_path             = annotation_folder_path + image_to_annotation_dict[S_hat_image_id]
             S_hat_x, S_hat_y       = read_landmarks_from_file(S_hat_path)
+            S_hat_x               += w_pad
+            S_hat_y               += h_pad
             S_hat                  = np.array(list(zip(S_hat_x, S_hat_y)), dtype=np.uint16)
 
             #NOTE move s hat to origo
@@ -209,8 +218,8 @@ def create_training_data(train_folder_path, annotation_folder_path):
             features_hat           = transform_features(mean_shape, S_hat, features)
 
             #NOTE Calculate center of bounding box
-            bb_center_x            = bb[0] + bb[2]/2   #bb[0][0] = x coord, bb[0][2] = w
-            bb_center_y            = bb[1] + 1.1*(bb[3]/2)  #bb[0][1]  = y coord, bb[0][3] = h
+            bb_center_x            = ((bb[0]) + (bb[2])/2)+w_pad   #bb[0][0] = x coord, bb[0][2] = w
+            bb_center_y            = ((bb[1]) + 1.1*((bb[3])/2))+h_pad  #bb[0][1]  = y coord, bb[0][3] = h
 
             #NOTE move scaled s hat and its features to center of bb
             S_hat                  = S_hat + [bb_center_x, bb_center_y]
@@ -298,6 +307,10 @@ def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matr
 
             except Exception as e:
                 print(e)
+                data = np.array([I,features_hat, features_hat_new, S_hat, S_hat_new ])
+                
+                np.save("failed_transformations/data"+str(i), data)
+                print(i)
                 intensities_new = training_data[i, 3]
 
         else:
