@@ -26,7 +26,7 @@ Parameters
     I_grayscale_image_matrix : matrix with rows of grayscale image values for extraced features/pixels
         Note: one row for each I (image) in each (I, S_hat, S_delta) triplet of our data
 
-    residual_image_vector_matrix : matrix with rows of residual image vectors (all (194) resdiuals computed for a single image and data triplet (I, S_hat, S_delta)) 
+    residual_image_vector_matrix : matrix with rows of residual image vectors (all (194) resdiuals computed for a single image and data triplet (I, S_hat, S_delta))
         Note: amount and order of images / triplets (I, S_hat, S_delta) must be the same as in I_grayscale_image_matrix
 
     theta_candidate_splits : possible theta (pixel x1, pixel x2, pixel intensity threshold) candidate splits
@@ -53,19 +53,19 @@ def _select_best_candidate_split_for_node(I_intensities_matrix, residuals_matrix
 
         # bucketize images based on theta candidate split
         for index in Q_I_at_node:
-            if np.abs(I_intensities_matrix[index][x1] - I_intensities_matrix[index][x2]) > threshold: 
+            if np.abs(I_intensities_matrix[index][x1] - I_intensities_matrix[index][x2]) > threshold:
                 Q_theta_l.append(index)
             else:
                 Q_theta_r.append(index)
 
-        mu_theta_l = (len(Q_theta_l) and 1 / len(Q_theta_l) or 0) * np.sum(residuals_matrix[Q_theta_l], axis=0) 
+        mu_theta_l = (len(Q_theta_l) and 1 / len(Q_theta_l) or 0) * np.sum(residuals_matrix[Q_theta_l], axis=0)
         mu_theta_r = None # np.empty(residuals_matrix[Q_theta_r].shape)
         if mu_parent_node is None: # True if selecting candidate split for root node
             mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * np.sum(residuals_matrix[Q_theta_r], axis=0)
         else:
             mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * (len(Q_I_at_node) * mu_parent_node -  len(Q_theta_l) * mu_theta_l)
-        
-        sum_square_error_theta = (len(Q_theta_l) * np.matmul(mu_theta_l.T, mu_theta_l)) + (len(Q_theta_r) * np.matmul(mu_theta_r.T, mu_theta_r)) 
+
+        sum_square_error_theta = (len(Q_theta_l) * np.matmul(mu_theta_l.T, mu_theta_l)) + (len(Q_theta_r) * np.matmul(mu_theta_r.T, mu_theta_r))
         sum_square_error_theta_candidate_splits[i] = sum_square_error_theta
         mu_thetas.append((mu_theta_l , mu_theta_r))
         Q_thetas_l.append(Q_theta_l)
@@ -76,7 +76,7 @@ def _select_best_candidate_split_for_node(I_intensities_matrix, residuals_matrix
 
 def _generate_random_candidate_splits(amount_extraced_features, amount_candidate_splits=_AMOUNT_RANDOM_CANDIDATE_SPLITS):
     random_candidate_splits = np.empty((amount_candidate_splits, 3), dtype=int)
-    for i in range(0, amount_candidate_splits): 
+    for i in range(0, amount_candidate_splits):
         random_x1_pixel_index = np.random.randint(0, amount_extraced_features) # TODO optional: select with prior
         random_x2_pixel_index = np.random.randint(0, amount_extraced_features)
         while (random_x1_pixel_index == random_x2_pixel_index):
@@ -94,18 +94,18 @@ def _generate_root_node(regression_tree, I_intensities_matrix, residuals_matrix,
         random_candidate_splits_root,
         Q_I_at_root
     )
-    return regression_tree.create_node(best_x1_pixel_index_root, best_x2_pixel_index_root, best_threshold_root), Q_theta_l_root, Q_theta_r_root, mu_theta_root 
+    return regression_tree.create_node(best_x1_pixel_index_root, best_x2_pixel_index_root, best_threshold_root), Q_theta_l_root, Q_theta_r_root, mu_theta_root
 
 def _generate_leaf_node(regression_tree, avarage_residual_vector, parent_id):
     return regression_tree.create_leaf(avarage_residual_vector, parent_id)
 
 def _generate_child_nodes(
         regression_tree,
-        current_node_id, 
-        current_depth, 
-        max_depth, 
-        I_intensities_matrix, 
-        residuals_matrix, 
+        current_node_id,
+        current_depth,
+        max_depth,
+        I_intensities_matrix,
+        residuals_matrix,
         Q_theta_l,
         Q_theta_r,
         mu_parent_node
@@ -144,9 +144,9 @@ def _generate_child_nodes(
     return (
         _generate_child_nodes(
             regression_tree,
-            left_node.id, 
-            current_depth+1, 
-            max_depth, 
+            left_node.id,
+            current_depth+1,
+            max_depth,
             I_intensities_matrix,
             residuals_matrix,
             Q_theta_l_left_child,
@@ -154,16 +154,16 @@ def _generate_child_nodes(
             mu_theta_left_child
         ), _generate_child_nodes(
             regression_tree,
-            right_node.id, 
-            current_depth+1, 
-            max_depth, 
+            right_node.id,
+            current_depth+1,
+            max_depth,
             I_intensities_matrix,
             residuals_matrix,
             Q_theta_l_right_child,
             Q_theta_r_right_child,
             mu_theta_right_child
         )
-    ) 
+    )
 
 def generate_regression_tree(I_intensities_matrix, residuals_matrix):
     Q_I_at_root = np.arange(0, I_intensities_matrix.shape[0])
@@ -182,12 +182,12 @@ def get_avarage_residual_vector_for_image(regression_tree, I_grayscale, current_
         current_node = regression_tree.find_node_by_id(current_node_id)
 
     if  isinstance(current_node, Leaf):
-        return current_node.avarage_residual_image_vector
+        return current_node.avarage_residual_vector
     else:
-        if np.abs(I_grayscale[current_node.x1] - I_grayscale[current_node.x2]) > current_node.threshold: 
-            return get_avarage_residual_vector_for_image(regression_tree, current_node.left_child_id, I_grayscale)
+        if np.abs(I_grayscale[current_node.x1] - I_grayscale[current_node.x2]) > current_node.threshold:
+            return get_avarage_residual_vector_for_image(regression_tree, I_grayscale, current_node.left_child_id )
         else:
-            return get_avarage_residual_vector_for_image(regression_tree, current_node.right_child_id, I_grayscale)
+            return get_avarage_residual_vector_for_image(regression_tree, I_grayscale, current_node.right_child_id )
 
 def run_test_example():
     images = 2000

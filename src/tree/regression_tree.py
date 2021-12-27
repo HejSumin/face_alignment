@@ -6,7 +6,7 @@ from graphviz.dot import node
 _INSERT, _DELETE = range(2)
 
 class Leaf:
-    
+
     def __init__(self, avarage_residual_vector):
         self.id = uuid.uuid4().hex
         self.avarage_residual_vector = avarage_residual_vector
@@ -30,9 +30,9 @@ class Node:
     def update_child(self, child_id, left=True, mode=_INSERT):
         if mode is _INSERT:
             if left:
-                self.left_child_id = child_id 
+                self.left_child_id = child_id
             else:
-                self.right_child_id = child_id 
+                self.right_child_id = child_id
         elif mode is _DELETE:
             if left:
                 self.left_child_id = None
@@ -50,7 +50,7 @@ class Regression_Tree:
     def __init__(self, avarage_residuals_matrix_shape):
         self._nodes = []
         self._avarage_residuals_matrix = np.empty(avarage_residuals_matrix_shape)
-        #self._dot_graphviz = graphviz.Digraph('regression-tree', comment='A single regression tree')  
+        #self._dot_graphviz = graphviz.Digraph('regression-tree', comment='A single regression tree')
 
     def create_leaf(self, avarage_residual_vector, parent_id=None):
         leaf = Leaf(avarage_residual_vector)
@@ -80,7 +80,7 @@ class Regression_Tree:
 
     def append_avarage_residuals_matrix(self, avarage_residual_vector, Q_I_at_node):
         self._avarage_residuals_matrix[Q_I_at_node] = avarage_residual_vector
-    
+
     def find_node_by_id(self, node_id):
         return self[node_id]
 

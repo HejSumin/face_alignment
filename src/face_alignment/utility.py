@@ -161,7 +161,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
         with open(annotation_folder_path+file) as f:
             first_line = f.readline().replace('\n','')
         image_to_annotation_dict[first_line] = file
-
+        
     #calculate mean shape from all shape files
     mean_shape = get_mean_shape_from_files(image_files,image_to_annotation_dict,annotation_folder_path)
     #Center shape around origo to define features in this coordinate system
@@ -169,6 +169,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
 
     #NOTE remember to set n, which is number of features. Default=400
     features = extract_coords_from_mean_shape(mean_shape, offset=20, n=400)
+    np.save("np_data/mean_shape_features", features)
 
     for file in tqdm(image_files):
         I_path     = file.replace('.jpg', '')
@@ -178,7 +179,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
         w_pad      = (int((w / 100) * 20))
         I          = cv2.copyMakeBorder(I, h_pad, h_pad, w_pad, w_pad, cv2.BORDER_CONSTANT)
         bb         = get_rectangle_bounding_box_for_image(train_folder_path+file, frontalface_config='default')
-        
+
         if(bb is None):
             continue
 
@@ -308,7 +309,7 @@ def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matr
             except Exception as e:
                 print(e)
                 data = np.array([I,features_hat, features_hat_new, S_hat, S_hat_new ])
-                
+
                 np.save("failed_transformations/data"+str(i), data)
                 print(i)
                 intensities_new = training_data[i, 3]

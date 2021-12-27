@@ -13,10 +13,10 @@ if os.name == 'posix':
 data_path = 'data/'
 annotations_path = 'data/annotation/'
 
-#print("... starting training ...")
-#print("... creating training data ... ")
-#training_data = fa.create_training_data(data_path + "train_1/", annotations_path)
-#np.save("np_data/run_input_training_data", training_data)
+print("... starting training ...")
+print("... creating training data ... ")
+training_data = fa.create_training_data(data_path + "train_1/", annotations_path)
+np.save("np_data/run_input_training_data", training_data)
 
 
 print("... loading training data ... ")

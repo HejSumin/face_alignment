@@ -14,8 +14,8 @@ Parameters
     _T : amount of cascades
 """
 _LEARNING_RATE = 0.1
-_K = 100
-_T = 2
+_K = 200
+_T = 6
 
 def train_multiple_cascades(training_data):
     I_intensities_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix = prepare_training_data_for_tree_cascade(training_data)
