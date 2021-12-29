@@ -182,7 +182,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
         if(bb is None):
             continue
 
-        #NOTE find a scale valye bsaed on the bounding box and use it to resize the image (normalization)
+        #NOTE find a scale valye based on the bounding box and use it to resize the image (normalization)
         bb_w       = bb[2]
         bb_scale   = bb_scale_target / bb_w
         I          = cv2.resize(I, (int(w*bb_scale), int(h*bb_scale)), interpolation=cv2.INTER_LINEAR)
