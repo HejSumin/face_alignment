@@ -154,6 +154,8 @@ def create_training_data(train_folder_path, annotation_folder_path):
     training_data = []
     image_files = get_all_file_names(train_folder_path)
 
+    bb_scale_target = 500
+
     annotation_files = get_all_file_names(annotation_folder_path)
 
     image_to_annotation_dict = {}
@@ -171,19 +173,30 @@ def create_training_data(train_folder_path, annotation_folder_path):
     features = extract_coords_from_mean_shape(mean_shape, offset=20, n=400)
     np.save("np_data/mean_shape_features", features)
 
-    for file in tqdm(image_files):
+    for file in tqdm(image_files[:50]):
         I_path     = file.replace('.jpg', '')
         I          = cv2.imread(train_folder_path+file, cv2.IMREAD_GRAYSCALE)
         h, w       = I.shape
-        h_pad      = (int((h / 100) * 20))
-        w_pad      = (int((w / 100) * 20))
-        I          = cv2.copyMakeBorder(I, h_pad, h_pad, w_pad, w_pad, cv2.BORDER_CONSTANT)
         bb         = get_rectangle_bounding_box_for_image(train_folder_path+file, frontalface_config='default')
 
         if(bb is None):
             continue
 
-        S_true_x, S_true_y     = read_landmarks_from_file(annotation_folder_path + image_to_annotation_dict[file.replace('.jpg', '')])
+        #NOTE find a scale valye bsaed on the bounding box and use it to resize the image (normalization)
+        bb_w       = bb[2]
+        bb_scale   = bb_scale_target / bb_w
+        I          = cv2.resize(I, (int(w*bb_scale), int(h*bb_scale)), interpolation=cv2.INTER_LINEAR)
+
+        #NOTE padding the image with zeros in order to avoid index out of bound errors
+        h_pad      = (int((h / 100) * 20))
+        w_pad      = (int((w / 100) * 20))
+        I          = cv2.copyMakeBorder(I, h_pad, h_pad, w_pad, w_pad, cv2.BORDER_CONSTANT)
+
+        
+        #NOTE we use the the scale and padding values to move the true shape to the new image
+        S_true_x, S_true_y      = read_landmarks_from_file(annotation_folder_path + image_to_annotation_dict[file.replace('.jpg', '')])
+        S_true_x                = S_true_x*bb_scale
+        S_true_y                = S_true_y*bb_scale
         S_true_x               += w_pad
         S_true_y               += h_pad
         S_true                 = np.array(list(zip(S_true_x, S_true_y)))
@@ -192,6 +205,12 @@ def create_training_data(train_folder_path, annotation_folder_path):
         #Select the R number of duplicates for image
         delta_files = image_files[:_R]
 
+        
+        bb[2] = bb[2] * bb_scale
+        bb[3] = bb[3] * bb_scale
+        bb[0] = bb[0] * bb_scale
+        bb[1] = bb[1] * bb_scale
+        
         #NOTE this is the case when delta_file == file
         if I_path in delta_files:
             delta_files = delta_files.remove(I_path)
@@ -308,7 +327,7 @@ def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matr
 
             except Exception as e:
                 print(e)
-                data = np.array([I,features_hat, features_hat_new, S_hat, S_hat_new ])
+                data = np.array([I,features_hat, features_hat_new, S_hat, S_hat_new ], dtype=object)
 
                 np.save("failed_transformations/data"+str(i), data)
                 print(i)
