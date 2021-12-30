@@ -17,13 +17,13 @@ _LEARNING_RATE = 0.1
 _K = 200
 _T = 3
 
-def train_multiple_cascades(training_data):
-    I_intensities_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix = prepare_training_data_for_tree_cascade(training_data)
+def train_multiple_cascades(training_data, use_exponential_prior=True):
+    I_intensities_matrix, features_hat_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix = prepare_training_data_for_tree_cascade(training_data)
 
     for t in tqdm(range(0, _T), desc="T cascades"):
         last_run = t == _T-1
 
-        r_t_matrix, model_regression_trees,f_0_matrix = train_single_cascade(I_intensities_matrix, S_delta_matrix)
+        r_t_matrix, model_regression_trees,f_0_matrix = train_single_cascade(I_intensities_matrix, features_hat_matrix, S_delta_matrix, use_exponential_prior)
         np.save("run_output/run_output_model_regression_trees_cascade_" + str(t), model_regression_trees, allow_pickle=True)
         np.save("run_output/run_output_model_f_0_matrix" + str(t), f_0_matrix, allow_pickle=True)
 
@@ -38,7 +38,7 @@ def train_multiple_cascades(training_data):
 
     return training_data
 
-def train_single_cascade(I_intensities_matrix, S_delta_matrix):
+def train_single_cascade(I_intensities_matrix, features_hat_matrix, S_delta_matrix, use_exponential_prior):
     model_regression_trees = []
 
     f_0_matrix = calculate_f_0_matrix(S_delta_matrix)
@@ -48,7 +48,7 @@ def train_single_cascade(I_intensities_matrix, S_delta_matrix):
     for k in tqdm(range(0, _K), desc="K trees"):
         r_i_k_matrix = calculate_residuals_matrix(S_delta_matrix, f_k_minus_1_matrix)
 
-        regression_tree = generate_regression_tree(I_intensities_matrix, r_i_k_matrix)
+        regression_tree = generate_regression_tree(I_intensities_matrix, r_i_k_matrix, features_hat_matrix, use_exponential_prior)
         model_regression_trees.append(regression_tree)
 
         f_k_matrix = update_f_k_matrix(regression_tree, f_k_minus_1_matrix)

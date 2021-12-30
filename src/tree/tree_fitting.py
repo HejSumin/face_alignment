@@ -2,6 +2,7 @@ import numpy as np
 from src.tree.regression_tree import *
 from timeit import default_timer as timer
 from datetime import timedelta
+from tqdm import tqdm
 
 _DEBUG = True
 _DEBUG_DETAILED = False
@@ -17,6 +18,7 @@ Parameters
 """
 _AMOUNT_RANDOM_CANDIDATE_SPLITS = 20
 _REGRESSION_TREE_MAX_DEPTH = 5
+_EXPONENTIAL_PRIOR_LAMBDA = -0.05
 
 """
 Select and return best candidate split (pixel x1, pixel x2, pixel intensity threshold) for a single node.
@@ -40,7 +42,11 @@ Returns
     -------
     (pixel x1, pixel x2, pixel intensity threshold), mu_theta : best candidate split triplet and corresponding Q_theta_l, Q_thetas_r, mu_theta value needed for calculation in the next iteration
 """
-def _select_best_candidate_split_for_node(I_intensities_matrix, residuals_matrix, theta_candidate_splits, Q_I_at_node, mu_parent_node=None):
+def _select_best_candidate_split_for_node(I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_I_at_node, mu_parent_node=None, use_exponential_prior=True):
+    features_hat_at_Node_matrix = features_hat_matrix[Q_I_at_node]
+    features_hat_mean_coords = np.mean(features_hat_at_Node_matrix, axis=0) if features_hat_at_Node_matrix.shape[0] > 0 else None
+    theta_candidate_splits = _generate_random_candidate_splits(I_intensities_matrix.shape[1], features_hat_mean_coords=features_hat_mean_coords, use_exponential_prior=use_exponential_prior)
+
     sum_square_error_theta_candidate_splits = np.zeros((theta_candidate_splits.shape[0], 1))
     mu_thetas = []
     Q_thetas_l = []
@@ -74,25 +80,35 @@ def _select_best_candidate_split_for_node(I_intensities_matrix, residuals_matrix
     best_theta_candidate_split_index = np.argmax(sum_square_error_theta_candidate_splits)
     return theta_candidate_splits[best_theta_candidate_split_index],  Q_thetas_l[best_theta_candidate_split_index], Q_thetas_r[best_theta_candidate_split_index], mu_thetas[best_theta_candidate_split_index]
 
-def _generate_random_candidate_splits(amount_extraced_features, amount_candidate_splits=_AMOUNT_RANDOM_CANDIDATE_SPLITS):
+def _generate_random_candidate_splits(amount_extraced_features, features_hat_mean_coords=None, amount_candidate_splits=_AMOUNT_RANDOM_CANDIDATE_SPLITS, use_exponential_prior=True):
     random_candidate_splits = np.empty((amount_candidate_splits, 3), dtype=int)
     for i in range(0, amount_candidate_splits):
-        random_x1_pixel_index = np.random.randint(0, amount_extraced_features) # TODO optional: select with prior
-        random_x2_pixel_index = np.random.randint(0, amount_extraced_features)
-        while (random_x1_pixel_index == random_x2_pixel_index):
+        while True:
+            random_x1_pixel_index = np.random.randint(0, amount_extraced_features)
             random_x2_pixel_index = np.random.randint(0, amount_extraced_features)
 
-        random_threshold = np.random.randint(0, 256) # we take the absolute value for the pixel intensity differnece (0-255)
+            if use_exponential_prior and features_hat_mean_coords is not None:
+                u = np.array([features_hat_mean_coords[random_x1_pixel_index*2], features_hat_mean_coords[random_x1_pixel_index*2+1]])
+                v = np.array([features_hat_mean_coords[random_x2_pixel_index*2], features_hat_mean_coords[random_x2_pixel_index*2+1]])
+                pixel_distance = np.absolute(np.linalg.norm(u-v))
+                probability = np.exp(pixel_distance*_EXPONENTIAL_PRIOR_LAMBDA)
+                if random_x1_pixel_index != random_x2_pixel_index and probability > np.random.random():
+                    break
+            else:
+                if random_x1_pixel_index != random_x2_pixel_index:
+                    break
+
+        random_threshold = np.random.randint(0, 256) # we take the absolute value for the pixel intensity difference (0-255)
         random_candidate_splits[i] = np.array([random_x1_pixel_index, random_x2_pixel_index, random_threshold])
     return random_candidate_splits
 
-def _generate_root_node(regression_tree, I_intensities_matrix, residuals_matrix, Q_I_at_root):
-    random_candidate_splits_root = _generate_random_candidate_splits(I_intensities_matrix.shape[1])
+def _generate_root_node(regression_tree, I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_I_at_root, use_exponential_prior):
     (best_x1_pixel_index_root, best_x2_pixel_index_root, best_threshold_root), Q_theta_l_root, Q_theta_r_root, mu_theta_root = _select_best_candidate_split_for_node(
         I_intensities_matrix,
         residuals_matrix,
-        random_candidate_splits_root,
-        Q_I_at_root
+        features_hat_matrix,
+        Q_I_at_root,
+        use_exponential_prior
     )
     return regression_tree.create_node(best_x1_pixel_index_root, best_x2_pixel_index_root, best_threshold_root), Q_theta_l_root, Q_theta_r_root, mu_theta_root
 
@@ -106,9 +122,11 @@ def _generate_child_nodes(
         max_depth,
         I_intensities_matrix,
         residuals_matrix,
+        features_hat_matrix,
         Q_theta_l,
         Q_theta_r,
-        mu_parent_node
+        mu_parent_node,
+        use_exponential_prior
     ):
     mu_theta_l, mu_theta_r = mu_parent_node
 
@@ -119,22 +137,22 @@ def _generate_child_nodes(
         regression_tree.append_avarage_residuals_matrix(mu_theta_r, Q_theta_r) # used for training as result of g_k
         return True
 
-    random_candidate_splits_left_child = _generate_random_candidate_splits(I_intensities_matrix.shape[1])
     (best_x1_pixel_index_left_child, best_x2_pixel_index_left_child, best_threshold_left_child), Q_theta_l_left_child, Q_theta_r_left_child, mu_theta_left_child = _select_best_candidate_split_for_node(
         I_intensities_matrix,
         residuals_matrix,
-        random_candidate_splits_left_child,
+        features_hat_matrix,
         Q_theta_l,
-        mu_theta_l
+        mu_theta_l,
+        use_exponential_prior
     )
 
-    random_candidate_splits_right_child = _generate_random_candidate_splits(I_intensities_matrix.shape[1])
     (best_x1_pixel_index_right_child, best_x2_pixel_index_right_child, best_threshold_right_child), Q_theta_l_right_child, Q_theta_r_right_child, mu_theta_right_child = _select_best_candidate_split_for_node(
         I_intensities_matrix,
         residuals_matrix,
-        random_candidate_splits_right_child,
+        features_hat_matrix,
         Q_theta_r,
-        mu_theta_r
+        mu_theta_r,
+        use_exponential_prior
     )
 
     # we are always creating two new nodes at a time
@@ -149,9 +167,11 @@ def _generate_child_nodes(
             max_depth,
             I_intensities_matrix,
             residuals_matrix,
+            features_hat_matrix,
             Q_theta_l_left_child,
             Q_theta_r_left_child,
-            mu_theta_left_child
+            mu_theta_left_child,
+            use_exponential_prior
         ), _generate_child_nodes(
             regression_tree,
             right_node.id,
@@ -159,22 +179,24 @@ def _generate_child_nodes(
             max_depth,
             I_intensities_matrix,
             residuals_matrix,
+            features_hat_matrix,
             Q_theta_l_right_child,
             Q_theta_r_right_child,
-            mu_theta_right_child
+            mu_theta_right_child,
+            use_exponential_prior
         )
     )
 
-def generate_regression_tree(I_intensities_matrix, residuals_matrix):
+def generate_regression_tree(I_intensities_matrix, residuals_matrix, features_hat_matrix, use_exponential_prior=True):
     Q_I_at_root = np.arange(0, I_intensities_matrix.shape[0])
 
     regression_tree = Regression_Tree(avarage_residuals_matrix_shape=residuals_matrix.shape)
-    root_node, Q_theta_l_root, Q_theta_r_root, mu_theta_root = _generate_root_node(regression_tree, I_intensities_matrix, residuals_matrix, Q_I_at_root)
+    root_node, Q_theta_l_root, Q_theta_r_root, mu_theta_root = _generate_root_node(regression_tree, I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_I_at_root, use_exponential_prior)
 
-    success = _generate_child_nodes(regression_tree, root_node.id, 0, _REGRESSION_TREE_MAX_DEPTH, I_intensities_matrix, residuals_matrix, Q_theta_l_root, Q_theta_r_root, mu_theta_root)
+    success = _generate_child_nodes(regression_tree, root_node.id, 0, _REGRESSION_TREE_MAX_DEPTH, I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_theta_l_root, Q_theta_r_root, mu_theta_root, use_exponential_prior)
     return regression_tree
 
-def get_avarage_residual_vector_for_image(regression_tree, I_grayscale, current_node_id=None):
+def get_avarage_residual_vector_for_image(regression_tree, I_intensities, current_node_id=None):
     current_node = None
     if current_node_id is None:
         current_node = regression_tree.get_root_node()
@@ -184,10 +206,10 @@ def get_avarage_residual_vector_for_image(regression_tree, I_grayscale, current_
     if  isinstance(current_node, Leaf):
         return current_node.avarage_residual_vector
     else:
-        if np.abs(I_grayscale[current_node.x1] - I_grayscale[current_node.x2]) > current_node.threshold:
-            return get_avarage_residual_vector_for_image(regression_tree, I_grayscale, current_node.left_child_id )
+        if np.abs(I_intensities[current_node.x1] - I_intensities[current_node.x2]) > current_node.threshold:
+            return get_avarage_residual_vector_for_image(regression_tree, I_intensities, current_node.left_child_id)
         else:
-            return get_avarage_residual_vector_for_image(regression_tree, I_grayscale, current_node.right_child_id )
+            return get_avarage_residual_vector_for_image(regression_tree, I_intensities, current_node.right_child_id)
 
 def run_test_example():
     images = 2000
