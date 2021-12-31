@@ -269,21 +269,25 @@ def prepare_training_data_for_tree_cascade(training_data):
     amount_landmarks = training_data[0, 1].shape[0]
 
     I_intensities_matrix = np.empty((N, amount_extracted_features), dtype=np.int16)
+    features_hat_matrix = np.empty((N, amount_extracted_features*2), dtype=np.int16)
     S_hat_matrix = np.empty((N, amount_landmarks*2), dtype=np.uint16)
     S_delta_matrix = np.empty((N, amount_landmarks*2), dtype=np.float32)
     S_true_matrix = np.empty((N, amount_landmarks*2), dtype=np.uint16)
 
     for i in range(0, training_data.shape[0]):
-        S_delta = training_data[i, 2].flatten().reshape(388, 1).T
-        S_hat = training_data[i, 1].flatten().reshape(388, 1).T
         I_intensities = training_data[i, 3]
-        S_true = training_data[i, 6].flatten().reshape(388, 1).T
+        features_hat = training_data[i, 4].flatten().reshape(amount_extracted_features*2, 1).T
+        S_hat = training_data[i, 1].flatten().reshape(amount_landmarks*2, 1).T
+        S_delta = training_data[i, 2].flatten().reshape(amount_landmarks*2, 1).T
+        S_true = training_data[i, 6].flatten().reshape(amount_landmarks*2, 1).T
+
         I_intensities_matrix[i] = I_intensities
+        features_hat_matrix[i] = features_hat
         S_hat_matrix[i] = S_hat
         S_delta_matrix[i] = S_delta
         S_true_matrix[i] = S_true
 
-    return (I_intensities_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix)
+    return (I_intensities_matrix, np.array(features_hat_matrix, dtype=np.uint16), S_hat_matrix, S_delta_matrix, S_true_matrix)
 
 def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matrix_new, training_data,last_run):
     N = training_data.shape[0]
