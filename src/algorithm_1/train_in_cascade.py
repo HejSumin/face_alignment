@@ -17,14 +17,13 @@ _LEARNING_RATE = 0.1
 _K = 200
 _T = 3
 
-def train_multiple_cascades(training_data, use_exponential_prior=True):
+def train_multiple_cascades(training_data, regression_tree_max_depth=5, use_exponential_prior=True):
     I_intensities_matrix, features_hat_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix = prepare_training_data_for_tree_cascade(training_data)
 
     for t in tqdm(range(0, _T), desc="T cascades"):
         last_run = t == _T-1
 
-        r_t_matrix, model_regression_trees,f_0_matrix = train_single_cascade(I_intensities_matrix, features_hat_matrix, S_delta_matrix, use_exponential_prior)
-        np.save("run_output/run_output_model_regression_trees_cascade_" + str(t), model_regression_trees, allow_pickle=True)
+        r_t_matrix, model_regression_trees, f_0_matrix = train_single_cascade(I_intensities_matrix, features_hat_matrix, S_delta_matrix, regression_tree_max_depth, use_exponential_prior)
         np.save("run_output/run_output_model_f_0_matrix" + str(t), f_0_matrix, allow_pickle=True)
 
 
@@ -38,7 +37,7 @@ def train_multiple_cascades(training_data, use_exponential_prior=True):
 
     return training_data
 
-def train_single_cascade(I_intensities_matrix, features_hat_matrix, S_delta_matrix, use_exponential_prior):
+def train_single_cascade(I_intensities_matrix, features_hat_matrix, S_delta_matrix, regression_tree_max_depth, use_exponential_prior):
     model_regression_trees = []
 
     f_0_matrix = calculate_f_0_matrix(S_delta_matrix)
@@ -48,7 +47,7 @@ def train_single_cascade(I_intensities_matrix, features_hat_matrix, S_delta_matr
     for k in tqdm(range(0, _K), desc="K trees"):
         r_i_k_matrix = calculate_residuals_matrix(S_delta_matrix, f_k_minus_1_matrix)
 
-        regression_tree = generate_regression_tree(I_intensities_matrix, r_i_k_matrix, features_hat_matrix, use_exponential_prior)
+        regression_tree = generate_regression_tree(I_intensities_matrix, r_i_k_matrix, features_hat_matrix, regression_tree_max_depth, use_exponential_prior)
         model_regression_trees.append(regression_tree)
 
         f_k_matrix = update_f_k_matrix(regression_tree, f_k_minus_1_matrix)
@@ -66,3 +65,19 @@ def update_f_k_matrix(regression_tree, f_k_minus_1_matrix, learning_rate=_LEARNI
     g_k_matrix = regression_tree.get_avarage_residuals_matrix()
     f_k_matrix = f_k_minus_1_matrix + learning_rate * g_k_matrix
     return f_k_matrix
+
+def save_regression_trees(model_regression_trees, t, regression_tree_max_depth):
+    amount_regression_trees = len(model_regression_trees)
+    amount_leaf_per_regression_tree = 2**regression_tree_max_depth
+    amount_nodes_per_regression_tree = len(model_regression_trees[0]) - amount_leaf_per_regression_tree
+
+    avarage_residual_leaf_matrix = np.empty(amount_regression_trees, amount_leaf_per_regression_tree)
+    model_regression_trees_matrix = np.empty(amount_regression_trees, amount_nodes_per_regression_tree*3)
+
+    for i, regression_tree in enumerate(model_regression_trees):
+        
+        model_regression_trees_matrix[i] =
+
+    np.save("run_output/run_output_model_regression_trees_matrix_cascade_" + str(t), model_regression_trees_matrix)
+    np.save("run_output/run_output_avarage_residual_leaf_matrix_cascade_" + str(t), avarage_residual_leaf_matrix, allow_pickle=True)
+

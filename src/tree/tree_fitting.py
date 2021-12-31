@@ -17,7 +17,6 @@ Parameters
     _REGRESSION_TREE_MAX_DEPTH : depth of the regression tree -> e.g. depth 5 results in 32 leaf nodes
 """
 _AMOUNT_RANDOM_CANDIDATE_SPLITS = 20
-_REGRESSION_TREE_MAX_DEPTH = 5
 _EXPONENTIAL_PRIOR_LAMBDA = -0.05
 
 """
@@ -187,13 +186,13 @@ def _generate_child_nodes(
         )
     )
 
-def generate_regression_tree(I_intensities_matrix, residuals_matrix, features_hat_matrix, use_exponential_prior=True):
+def generate_regression_tree(I_intensities_matrix, residuals_matrix, features_hat_matrix, regression_tree_max_depth=5, use_exponential_prior=True):
     Q_I_at_root = np.arange(0, I_intensities_matrix.shape[0])
 
     regression_tree = Regression_Tree(avarage_residuals_matrix_shape=residuals_matrix.shape)
     root_node, Q_theta_l_root, Q_theta_r_root, mu_theta_root = _generate_root_node(regression_tree, I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_I_at_root, use_exponential_prior)
 
-    success = _generate_child_nodes(regression_tree, root_node.id, 0, _REGRESSION_TREE_MAX_DEPTH, I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_theta_l_root, Q_theta_r_root, mu_theta_root, use_exponential_prior)
+    success = _generate_child_nodes(regression_tree, root_node.id, 0, regression_tree_max_depth, I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_theta_l_root, Q_theta_r_root, mu_theta_root, use_exponential_prior)
     return regression_tree
 
 def get_avarage_residual_vector_for_image(regression_tree, I_intensities, current_node_id=None):
