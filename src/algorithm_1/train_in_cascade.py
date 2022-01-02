@@ -1,4 +1,6 @@
 from numpy.lib.npyio import save
+from src.cascade_forest.cascade_forest import CascadeForest
+from src.forest.forest import Forest
 from src.tree.tree_fitting import *
 from src.face_alignment.utility import *
 from tqdm import tqdm
@@ -18,25 +20,33 @@ _LEARNING_RATE = 0.1
 _K = 3
 _T = 3
 
-def train_multiple_cascades(training_data, model_output_path="run_output/", regression_tree_max_depth=5, use_exponential_prior=True):
+def train_multiple_cascades(training_data, model_output_path="run_output/", saved_while_training_path="saved_while_training/", regression_tree_max_depth=5, use_exponential_prior=True):
+    cascade_forests_list = []
     I_intensities_matrix, features_hat_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix = prepare_training_data_for_tree_cascade(training_data)
 
     for t in tqdm(range(0, _T), desc="T cascades"):
         last_run = t == _T-1
 
         r_t_matrix, model_regression_trees, f_0_matrix = train_single_cascade(I_intensities_matrix, features_hat_matrix, S_delta_matrix, regression_tree_max_depth, use_exponential_prior)
-        save_regression_trees_to_file(model_regression_trees, model_output_path, t, regression_tree_max_depth)
-        np.save(model_output_path + "model_f_0_matrix_" + str(t), f_0_matrix)
+
+        model_regression_trees_matrix, model_avarage_residual_leaf_matrix = convert_regression_trees_to_matrix_form(model_regression_trees, regression_tree_max_depth)
+        forest = Forest(model_regression_trees_matrix, model_avarage_residual_leaf_matrix, f_0_matrix)
+        cascade_forests_list.append(forest)
+
+        np.save(saved_while_training_path + "model_regression_trees_matrix_cascade_" + str(t), model_regression_trees_matrix)
+        np.save(saved_while_training_path + "model_avarage_residual_leaf_matrix_cascade_" + str(t), model_avarage_residual_leaf_matrix)    
+        np.save(saved_while_training_path + "model_f_0_matrix_" + str(t), f_0_matrix)
 
         S_hat_matrix = S_hat_matrix + r_t_matrix
         S_delta_matrix = S_true_matrix - S_hat_matrix
 
         training_data_new, I_intensities_matrix_new = update_training_data_with_tree_cascade_result(S_hat_matrix, S_delta_matrix, training_data, last_run)
         training_data = training_data_new
-        np.save("saved_while_training/t_data" + str(t), training_data)
+        np.save(saved_while_training_path + "t_data" + str(t), training_data)
         I_intensities_matrix = I_intensities_matrix_new
 
-    return training_data
+    model = CascadeForest(cascade_forests_list)
+    return training_data, model
 
 def train_single_cascade(I_intensities_matrix, features_hat_matrix, S_delta_matrix, regression_tree_max_depth, use_exponential_prior):
     model_regression_trees = []

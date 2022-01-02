@@ -26,9 +26,10 @@ training_data = np.load("np_data/run_input_training_data.npy", allow_pickle=True
 #Not working, index out of bound when loading new intensities
 print("... starting training trees 🌳 in cascade ...")
 start = timer()
-training_data_result = fa.train_multiple_cascades(training_data, use_exponential_prior=True)
+training_data_result, model = fa.train_multiple_cascades(training_data, use_exponential_prior=True)
 end = timer()
 
-np.save("run_output/run_output_numpy_training_data_result", training_data_result)
+np.save("run_output/run_output_model", model)
+np.save("run_output/run_output_training_data_result", training_data_result)
 
 print("Run finished in: (Time)", timedelta(seconds=end-start))
