@@ -20,6 +20,10 @@ _T = 3
 def train_multiple_cascades(training_data):
     I_intensities_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix = prepare_training_data_for_tree_cascade(training_data)
 
+    #NOTE we store the first shapes and theres features, to use for transformations later
+    S_0        = training_data[:, 1]
+    features_0 = training_data[:, 4]
+    
     for t in tqdm(range(0, _T), desc="T cascades"):
         last_run = t == _T-1
 
@@ -31,7 +35,7 @@ def train_multiple_cascades(training_data):
         S_hat_matrix = S_hat_matrix + r_t_matrix
         S_delta_matrix = S_true_matrix - S_hat_matrix
 
-        training_data_new, I_intensities_matrix_new = update_training_data_with_tree_cascade_result(S_hat_matrix, S_delta_matrix, training_data, last_run)
+        training_data_new, I_intensities_matrix_new = update_training_data_with_tree_cascade_result(S_0, features_0, S_hat_matrix, S_delta_matrix, training_data, last_run)
         training_data = training_data_new
         np.save("saved_while_training/t_data" + str(t), training_data)
         I_intensities_matrix = I_intensities_matrix_new

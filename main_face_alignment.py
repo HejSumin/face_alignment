@@ -31,4 +31,4 @@ end = timer()
 
 np.save("run_output/run_output_numpy_training_data_result", training_data_result)
 
-#print("Run finished in: (Time)", timedelta(seconds=end-start))
+print("Run finished in: (Time)", timedelta(seconds=end-start))
