@@ -14,7 +14,7 @@ Parameters
     _T : amount of cascades
 """
 _LEARNING_RATE = 0.1
-_K = 5
+_K = 50
 _T = 10
 
 def train_multiple_cascades(training_data):
