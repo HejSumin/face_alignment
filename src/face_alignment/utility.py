@@ -137,7 +137,8 @@ def get_features_within_image_shape(I_shape, features_hat):
 
     return features_hat
 
-# TODO compute_mean_error function needs to be implemented
+# Compute average landmark distance from the ground truth landamarks normalized by the distance between eyes for a single image. 
+# TODO compute_mean_error function needs to be implemented to handle multiple images
 def compute_error(shape, S_true):
     interocular_distance = np.linalg.norm(S_true[153]-S_true[114])
     average_distance = np.linalg.norm(shape - S_true, axis=1)/interocular_distance
