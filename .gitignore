@@ -135,3 +135,4 @@ dmypy.json
 src/tree/graphviz_output.txt
 /run_output
 *.npy
+graphviz_output.txt
