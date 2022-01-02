@@ -7,12 +7,13 @@ import scipy.optimize as opt
 import math
 from src.face_detection.face_detection import *
 import sys
+from concurrent import futures
 
 """
 Hyperparameters
 
 """
-_R = 4
+_R = 20
 
 def get_all_file_names(folder):
     return os.listdir(folder)
@@ -163,7 +164,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
         with open(annotation_folder_path+file) as f:
             first_line = f.readline().replace('\n','')
         image_to_annotation_dict[first_line] = file
-        
+
     #calculate mean shape from all shape files
     mean_shape = get_mean_shape_from_files(image_files,image_to_annotation_dict,annotation_folder_path)
     #Center shape around origo to define features in this coordinate system
@@ -173,14 +174,20 @@ def create_training_data(train_folder_path, annotation_folder_path):
     features = extract_coords_from_mean_shape(mean_shape, offset=20, n=400)
     np.save("np_data/mean_shape_features", features)
 
-    for file in tqdm(image_files[:50]):
+
+
+    def create_training_example(file):
+
+
         I_path     = file.replace('.jpg', '')
         I          = cv2.imread(train_folder_path+file, cv2.IMREAD_GRAYSCALE)
         h, w       = I.shape
         bb         = get_rectangle_bounding_box_for_image(train_folder_path+file, frontalface_config='default')
 
+
         if(bb is None):
-            continue
+            return
+
 
         #NOTE find a scale valye based on the bounding box and use it to resize the image (normalization)
         bb_w       = bb[2]
@@ -192,7 +199,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
         w_pad      = (int((w / 100) * 20))
         I          = cv2.copyMakeBorder(I, h_pad, h_pad, w_pad, w_pad, cv2.BORDER_CONSTANT)
 
-        
+
         #NOTE we use the the scale and padding values to move the true shape to the new image
         S_true_x, S_true_y      = read_landmarks_from_file(annotation_folder_path + image_to_annotation_dict[file.replace('.jpg', '')])
         S_true_x                = S_true_x*bb_scale
@@ -205,12 +212,12 @@ def create_training_data(train_folder_path, annotation_folder_path):
         #Select the R number of duplicates for image
         delta_files = image_files[:_R]
 
-        
+
         bb[2] = bb[2] * bb_scale
         bb[3] = bb[3] * bb_scale
         bb[0] = bb[0] * bb_scale
         bb[1] = bb[1] * bb_scale
-        
+
         #NOTE this is the case when delta_file == file
         if I_path in delta_files:
             delta_files = delta_files.remove(I_path)
@@ -258,7 +265,24 @@ def create_training_data(train_folder_path, annotation_folder_path):
             except:
                 continue
             #NOTE we return Image, s hat, s delta, feature intensities values, feature points, and bounding box
-            training_data.append((I, S_hat, S_delta, intensities, features_hat, bb, S_true))
+
+            return (I, S_hat, S_delta, intensities, features_hat, bb, S_true)
+
+
+
+    #workers = 10
+    with tqdm(total = len(image_files)) as pbar:
+
+        with futures.ThreadPoolExecutor(max_workers=10) as executor:
+            futuresDict = {executor.submit(create_training_example, arg): arg for arg in image_files}
+            results = []
+            for future in futures.as_completed(futuresDict):
+                arg = futuresDict[future]
+                results.append(future.result())
+                pbar.update(1)
+
+
+
 
 
     return np.array(training_data, dtype=object)
