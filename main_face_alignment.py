@@ -18,20 +18,15 @@ annotations_path = 'data/annotation/'
 # training_data = fa.create_training_data(data_path + "train_1/", annotations_path)
 # np.save("np_data/run_input_training_data", training_data)
 
-t = 0
-model_regression_trees = np.load("run_output/run_output_model_regression_trees_cascade_" + str(t) + ".npy", allow_pickle=True)
-fa.save_regression_trees(model_regression_trees, t, 5)
+print("... loading training data ... ")
+training_data = np.load("np_data/run_input_training_data.npy", allow_pickle=True)
 
-# print("... loading training data ... ")
-# training_data = np.load("np_data/run_input_training_data.npy", allow_pickle=True)
+#Not working, index out of bound when loading new intensities
+print("... starting training trees 🌳 in cascade ...")
+start = timer()
+training_data_result = fa.train_multiple_cascades(training_data, use_exponential_prior=True)
+end = timer()
 
+np.save("run_output/run_output_numpy_training_data_result", training_data_result)
 
-# #Not working, index out of bound when loading new intensities
-# print("... starting training trees 🌳 in cascade ...")
-# start = timer()
-# training_data_result = fa.train_multiple_cascades(training_data, use_exponential_prior=True)
-# end = timer()
-
-# np.save("run_output/run_output_numpy_training_data_result", training_data_result)
-
-# #print("Run finished in: (Time)", timedelta(seconds=end-start))
+#print("Run finished in: (Time)", timedelta(seconds=end-start))

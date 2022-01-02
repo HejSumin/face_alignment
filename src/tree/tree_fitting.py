@@ -210,6 +210,26 @@ def get_avarage_residual_vector_for_image(regression_tree, I_intensities, curren
         else:
             return get_avarage_residual_vector_for_image(regression_tree, I_intensities, current_node.right_child_id)
 
+def save_regression_trees_to_file(model_regression_trees, output_path, t, regression_tree_max_depth):
+    amount_regression_trees = len(model_regression_trees)
+    amount_leafs_per_regression_tree = 2**regression_tree_max_depth
+    amount_nodes_per_regression_tree = len(model_regression_trees[0].get_nodes_list()) - amount_leafs_per_regression_tree
+    amount_landmarks_flattened = model_regression_trees[0].get_nodes_list()[-1].avarage_residual_vector.shape[0]
+
+    model_avarage_residual_leaf_matrix = np.empty((amount_regression_trees, amount_leafs_per_regression_tree*amount_landmarks_flattened))
+    model_regression_trees_matrix = np.empty((amount_regression_trees, amount_nodes_per_regression_tree*3))
+
+    for i, regression_tree in tqdm(enumerate(model_regression_trees), desc="Saving tree model"):
+        regression_tree_without_leafs = filter(lambda x: not isinstance(x, Leaf), regression_tree.get_nodes_list())
+        regression_tree_vector = np.array([[node.x1, node.x2, node.threshold] for node in regression_tree_without_leafs], dtype=np.uint16)
+        model_regression_trees_matrix[i] = regression_tree_vector.flatten()
+        regression_tree_leafs = filter(lambda x: isinstance(x, Leaf), regression_tree.get_nodes_list())
+        regression_leafs_vector = np.array([leaf.avarage_residual_vector for leaf in regression_tree_leafs], dtype=np.uint16)
+        model_avarage_residual_leaf_matrix[i] = regression_leafs_vector.flatten()
+
+    np.save(output_path + "model_regression_trees_matrix_cascade_" + str(t), model_regression_trees_matrix)
+    np.save(output_path + "model_avarage_residual_leaf_matrix_cascade_" + str(t), model_avarage_residual_leaf_matrix)    
+
 def run_test_example():
     images = 2000
     landmarks = 194
