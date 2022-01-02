@@ -7,6 +7,7 @@ import scipy.optimize as opt
 import math
 from src.face_detection.face_detection import *
 import sys
+from concurrent import futures
 
 """
 Hyperparameters
@@ -285,7 +286,58 @@ def prepare_training_data_for_tree_cascade(training_data):
 
     return (I_intensities_matrix, S_hat_matrix, S_delta_matrix, S_true_matrix)
 
-def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matrix_new, training_data,last_run):
+
+def transformation_between_cascades(S_0, S_new, features_0):
+     #Calculate means of s_hat for moving it and its features to origo
+     S_0_mean = np.mean(S_0, axis=0)
+     S_0_centered = S_0 - S_0_mean
+     features_0_centered = features_0 - S_0_mean
+     
+
+     #Calculate means of s_hat_new for moving it and its features to origo
+     S_new_mean = np.mean(S_new, axis=0)
+     S_new_centered = S_new - S_new_mean
+
+     features_new = transform_features(S_0_centered, S_new_centered, features_0_centered).astype(int)
+
+     #Move features_hat_new back to image's coordinate system
+     features_new += S_new_mean.astype(int)
+
+     return features_new
+
+
+def update_single_entry_in_training_data(data):
+
+    S_hat_entry   = data[3]
+    S_delta_entry = data[4]
+    I             = data[0]
+    S_0           = data[1]
+    features_0    = data[2]
+
+    amount_extracted_features = len(features_0)
+    amount_landmarks = S_0.shape[0]
+
+    x_mask = [x for x in range(0, amount_landmarks*2-1, 2)]
+    y_mask = [x for x in range(1, amount_landmarks*2, 2)]
+           
+    S_hat_new    = np.array(list(zip(S_hat_entry[x_mask], S_hat_entry[y_mask])))
+    S_delta_new  = np.array(list(zip(S_delta_entry[x_mask], S_delta_entry[y_mask])))
+
+    features_hat_new = transformation_between_cascades(S_0, S_hat_new, features_0)
+            
+    try:
+        intensities_new = I[np.array(features_hat_new[:, 1]), np.array(features_hat_new[:, 0])]
+
+    except Exception as e:
+        print(e)
+        #data = np.array([I,features_hat, features_hat_new, S_hat, S_hat_new ], dtype=object)
+        #intensities_new = training_data_entry[3]
+        return
+    return (I, S_hat_new, S_delta_new, intensities_new, features_hat_new)
+    
+
+def update_training_data_with_tree_cascade_result(all_S_0, all_features_0, S_hat_matrix_new, S_delta_matrix_new, training_data,last_run):
+    
     N = training_data.shape[0]
     amount_extracted_features = training_data[0, 3].shape[0]
     amount_landmarks = training_data[0, 1].shape[0]
@@ -295,55 +347,56 @@ def update_training_data_with_tree_cascade_result(S_hat_matrix_new, S_delta_matr
 
     I_intensities_matrix_new = np.empty((N, amount_extracted_features), dtype=np.int16)
 
-    for i in tqdm(range(0, training_data.shape[0]), desc="update training data"):
-        I = training_data[i, 0]
-        S_hat = training_data[i, 1]
-        features_hat = training_data[i, 4]
+    images = training_data[:, 0]
+    #[ [s_hat1], [shat2],  ]
+    
+    #[ [i1, s_01, features_01, shatnew, sdeltanew], [..] ]
+    
+    enumerable_for_mapping   = list(zip(images, all_S_0, all_features_0, S_hat_matrix_new, S_delta_matrix_new ))
 
-        S_hat_new = np.array(list(zip(S_hat_matrix_new[i,x_mask], S_hat_matrix_new[i,y_mask])))
-        S_delta_new = np.array(list(zip(S_delta_matrix_new[i,x_mask], S_delta_matrix_new[i,y_mask])))
+    #with tqdm(total = len(training_data)) as pbar:
+    with futures.ThreadPoolExecutor(max_workers=10) as executor:
+            #result = list(tqdm(executor.map(update_single_entry_in_training_data, training_data, S_hat_matrix_new, S_delta_matrix_new, all_S_0, all_features_0), total=len(training_data)))
+             result = list(tqdm(executor.map(update_single_entry_in_training_data, enumerable_for_mapping), total=len(training_data)))
+    return np.array(result)
 
-        if not last_run:
-            #Calculate means of s_hat for moving it and its features to origo
-            S_hat_mean = np.mean(S_hat, axis=0)
-            S_hat_centered = S_hat - S_hat_mean
-            features_hat_centered = features_hat - S_hat_mean
+ #   for i in tqdm(range(0, training_data.shape[0]), desc="update training data"):
+ #       I            = training_data[i, 0]
+ #       S_hat        = training_data[i, 1]
+ #       features_hat = training_data[i, 4]
 
-            #Calculate means of s_hat_new for moving it and its features to origo
-            S_hat_new_mean = np.mean(S_hat_new, axis=0)
-            S_hat_new_centered = S_hat_new - S_hat_new_mean
+#        S_0          = all_S_0[i]
+#        features_0   = all_features_0[i]
+        
+ #       S_hat_new    = np.array(list(zip(S_hat_matrix_new[i,x_mask], S_hat_matrix_new[i,y_mask])))
+  #      S_delta_new  = np.array(list(zip(S_delta_matrix_new[i,x_mask], S_delta_matrix_new[i,y_mask])))
 
-            features_hat_new = transform_features(S_hat_centered, S_hat_new_centered, features_hat_centered).astype(int)
+   #     if not last_run:
 
-            #Move features_hat_new back to image's coordinate system
-            features_hat_new += S_hat_new_mean.astype(int)
-            #features_hat_new = features_hat_new.astype(int)
+    #        features_hat_new = transformation_between_cascades(S_0, S_hat_new, features_0)
+            
+     #       try:
+      #          intensities_new = I[np.array(features_hat_new[:, 1]), np.array(features_hat_new[:, 0])]
 
-            # Issue: index out of bounds if features_hat_new is transformed
-            #features_hat_new = get_features_within_image_shape(I.shape, features_hat_new)
+       #     except Exception as e:
+        #        print(e)
+         #       data = np.array([I,features_hat, features_hat_new, S_hat, S_hat_new ], dtype=object)
 
-            try:
-                intensities_new = I[np.array(features_hat_new[:, 1]), np.array(features_hat_new[:, 0])]
+          #      np.save("failed_transformations/data"+str(i), data)
+           #     print(i)
+            #    intensities_new = training_data[i, 3]
 
-            except Exception as e:
-                print(e)
-                data = np.array([I,features_hat, features_hat_new, S_hat, S_hat_new ], dtype=object)
-
-                np.save("failed_transformations/data"+str(i), data)
-                print(i)
-                intensities_new = training_data[i, 3]
-
-        else:
+       # else:
             #No need to transform features if last run, so just return old values
-            features_hat_new = features_hat
-            intensities_new = training_data[i, 3]
+        #    features_hat_new = features_hat
+         #   intensities_new = training_data[i, 3]
 
 
-        training_data[i, 1] = S_hat_new
-        training_data[i, 2] = S_delta_new
-        training_data[i, 3] = intensities_new
-        training_data[i, 4] = features_hat_new
+       # training_data[i, 1] = S_hat_new
+       # training_data[i, 2] = S_delta_new
+       # training_data[i, 3] = intensities_new
+       # training_data[i, 4] = features_hat_new
 
-        I_intensities_matrix_new[i] = intensities_new
+       # I_intensities_matrix_new[i] = intensities_new
 
     return training_data, I_intensities_matrix_new
