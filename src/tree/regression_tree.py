@@ -87,6 +87,9 @@ class Regression_Tree:
     def get_root_node(self):
         return self._nodes[0]
 
+    def get_nodes_list(self):
+        return self._nodes
+
     def get_tree_description(self, detailed=False):
         result = "<< 🌳 regression tree 🌳 >>\n\n"
         for index, node in enumerate(self._nodes):
