@@ -25,7 +25,6 @@ def train_multiple_cascades(training_data, model_output_path="run_output/", regr
         last_run = t == _T-1
 
         r_t_matrix, model_regression_trees, f_0_matrix = train_single_cascade(I_intensities_matrix, features_hat_matrix, S_delta_matrix, regression_tree_max_depth, use_exponential_prior)
-        np.save(model_output_path + "model_regression_trees_object_cascade_" + str(t), model_regression_trees, allow_pickle=True)
         save_regression_trees_to_file(model_regression_trees, model_output_path, t, regression_tree_max_depth)
         np.save(model_output_path + "model_f_0_matrix_" + str(t), f_0_matrix)
 

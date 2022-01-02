@@ -229,7 +229,7 @@ def predict_avarage_residual_vector_for_image(regression_tree_vector, avarage_re
 def get_max_depth_by_node_number(amount_nodes):
     return int(np.floor(np.log2(amount_nodes)))
 
-def save_regression_trees_to_file(model_regression_trees, output_path, t, regression_tree_max_depth):
+def save_regression_trees_to_file(model_regression_trees, output_path, cascade_number_t, regression_tree_max_depth):
     amount_regression_trees = len(model_regression_trees)
     amount_leafs_per_regression_tree = 2**regression_tree_max_depth
     amount_nodes_per_regression_tree = len(model_regression_trees[0].get_nodes_list()) - amount_leafs_per_regression_tree
@@ -246,8 +246,8 @@ def save_regression_trees_to_file(model_regression_trees, output_path, t, regres
         regression_leafs_vector = np.array([leaf.avarage_residual_vector for leaf in regression_tree_leafs], dtype=np.float32)
         model_avarage_residual_leaf_matrix[i] = regression_leafs_vector.flatten()
 
-    np.save(output_path + "model_regression_trees_matrix_cascade_" + str(t), model_regression_trees_matrix)
-    np.save(output_path + "model_avarage_residual_leaf_matrix_cascade_" + str(t), model_avarage_residual_leaf_matrix)    
+    np.save(output_path + "model_regression_trees_matrix_cascade_" + str(cascade_number_t), model_regression_trees_matrix)
+    np.save(output_path + "model_avarage_residual_leaf_matrix_cascade_" + str(cascade_number_t), model_avarage_residual_leaf_matrix)    
 
 def build_regression_tree_vector(regression_tree_node_list):
     regression_tree_vector = np.empty((1, len(regression_tree_node_list) * _NUMBER_SPLIT_VALUES_AT_NODE), dtype=np.uint16)
