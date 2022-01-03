@@ -154,13 +154,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
 
     bb_target_size = 500 #TODO Change that?
 
-    annotation_files = get_all_file_names(annotation_folder_path)
-
-    image_to_annotation_dict = {}
-    for annotation_file in annotation_files:
-        with open(annotation_folder_path+annotation_file) as f:
-            first_line = f.readline().replace('\n','')
-        image_to_annotation_dict[first_line] = annotation_file
+    image_to_annotation_dict = build_image_to_annotation_dict(annotation_folder_path)
 
     # calculate mean shape (S_mean) from all shape files
     S_mean = get_mean_shape_from_files(image_files, image_to_annotation_dict, annotation_folder_path)
@@ -179,17 +173,12 @@ def create_training_data(train_folder_path, annotation_folder_path):
         I_resized, bb_scaled, bb_scale_factor = prepare_result
 
         I_padded, h_pad, w_pad = pad_image_with_zeros(I_resized)
-        I_id = I_file_name.replace('.jpg', '')
-
+       
         #NOTE we use the the scale and padding values to move the true shape to the new image
-        S_true_x, S_true_y      = read_landmarks_from_file(annotation_folder_path + image_to_annotation_dict[I_id])
-        S_true_x                = S_true_x*bb_scale_factor
-        S_true_y                = S_true_y*bb_scale_factor
-        S_true_x               += w_pad
-        S_true_y               += h_pad
-        S_true                 = np.array(list(zip(S_true_x, S_true_y)))
+        I_id = I_file_name.replace('.jpg', '')
+        S_true = scale_S_true_to_bb_and_pad(I_id, annotation_folder_path, image_to_annotation_dict, bb_scale_factor, w_pad, h_pad)
+        
         np.random.shuffle(image_files)
-
         # select the R number of duplicates for image
         delta_files = image_files[:_R]
 
@@ -200,22 +189,21 @@ def create_training_data(train_folder_path, annotation_folder_path):
 
         for delta_file_name in delta_files:
         
-            #NOTE Extract landmarks for s hat
-            S_hat_image_id         = delta_file_name.replace(".jpg", '')
-            S_hat_path             = annotation_folder_path + image_to_annotation_dict[S_hat_image_id]
-            S_hat_x, S_hat_y       = read_landmarks_from_file(S_hat_path)
-            S_hat_x               += w_pad
-            S_hat_y               += h_pad
-            S_hat_raw               = np.array(list(zip(S_hat_x, S_hat_y)), dtype=np.uint16)
+            #NOTE extract landmarks for S_hat
+            S_hat_image_id = delta_file_name.replace(".jpg", '')
+            S_hat_x, S_hat_y = read_landmarks_from_file(annotation_folder_path + image_to_annotation_dict[S_hat_image_id])
+            S_hat_x += w_pad
+            S_hat_y += h_pad
+            S_hat_raw = np.array(list(zip(S_hat_x, S_hat_y)), dtype=np.uint16)
 
             #NOTE move s hat to origo
             S_hat_centered = center_shape(S_hat_raw)
             S_hat, features_hat = prepare_S_hat_and_features_hat(S_hat_centered, S_mean_centered, features_mean, bb_scaled, w_pad, h_pad)
 
             #NOTE calculate delta values based scaled and translated s hat and the true shape
-            S_delta_x              = S_true_x - S_hat[:,0]
-            S_delta_y              = S_true_y - S_hat[:,1]
-            S_delta                = np.array(list(zip(S_delta_x, S_delta_y)), np.float32)
+            S_delta_x = S_true[:, 0] - S_hat[:, 0]
+            S_delta_y = S_true[:, 1] - S_hat[:, 1]
+            S_delta = np.array(list(zip(S_delta_x, S_delta_y)), np.float32)
 
             try:
                 intensities = I_padded[np.array(features_hat[:,1]), np.array(features_hat[:,0])]
@@ -226,6 +214,17 @@ def create_training_data(train_folder_path, annotation_folder_path):
 
     return np.array(training_data, dtype=object)
 
+def build_image_to_annotation_dict(annotation_folder_path):
+    annotation_files = get_all_file_names(annotation_folder_path)
+
+    image_to_annotation_dict = {}
+    for annotation_file in annotation_files:
+        with open(annotation_folder_path+annotation_file) as f:
+            first_line = f.readline().replace('\n','')
+        image_to_annotation_dict[first_line] = annotation_file
+
+    return image_to_annotation_dict
+
 def prepare_S_hat_and_features_hat(S_hat_centered, S_mean_centered, features_mean, bb_scaled, w_pad, h_pad):
     bb_x, bb_y, bb_w, bb_h = bb_scaled[0], bb_scaled[1], bb_scaled[2], bb_scaled[3]
     S_hat_scaled = scale_S_hat_to_bb(S_hat_centered, bb_h)
@@ -233,14 +232,23 @@ def prepare_S_hat_and_features_hat(S_hat_centered, S_mean_centered, features_mea
     #NOTE warping; we transform from mean shape coordinate system to S_hat system
     features_hat_transformed = transform_features(S_mean_centered, S_hat_scaled, features_mean)
     #NOTE Calculate center of bounding box
-    bb_center_x            = (bb_x + bb_w/2)+w_pad  
-    bb_center_y            = (bb_y + 1.1*(bb_h/2))+h_pad #TODO constant should be a parameter
+    bb_center_x            = (bb_x + bb_w/2) + w_pad  
+    bb_center_y            = (bb_y + 1.1*(bb_h/2)) + h_pad #TODO constant should be a parameter
 
     #NOTE move scaled S_hat and its features to center of bb
     S_hat                  = S_hat_scaled + [bb_center_x, bb_center_y]
     features_hat           = features_hat_transformed + [bb_center_x, bb_center_y]
 
     return S_hat, features_hat.astype(np.uint16) #TODO uint8?
+
+def scale_S_true_to_bb_and_pad(I_id, annotation_folder_path, image_to_annotation_dict, bb_scale_factor, w_pad, h_pad):
+    S_true_x, S_true_y = read_landmarks_from_file(annotation_folder_path + image_to_annotation_dict[I_id])
+    S_true_x = S_true_x * bb_scale_factor
+    S_true_y = S_true_y * bb_scale_factor
+    S_true_x += w_pad
+    S_true_y += h_pad
+    S_true = np.array(list(zip(S_true_x, S_true_y)), dtype=np.uint16)
+    return S_true
 
 def scale_S_hat_to_bb(S_hat_centered, bb_height):
     #NOTE scalling to bb; We choose to multiply s hat height by some constant to make up for the extra padding the bounding box adds
@@ -376,8 +384,6 @@ def update_training_data_with_tree_cascade_result(all_S_0, all_features_0, S_hat
         training_data[i, 2] = S_delta_new
         training_data[i, 3] = intensities_new
         training_data[i, 4] = features_hat_new
-
-
 
         I_intensities_matrix_new[i] = intensities_new
 
