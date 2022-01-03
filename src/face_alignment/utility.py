@@ -125,26 +125,12 @@ def transform_features(s0, s1, features0):
 
     return features1
 
-# TODO is there a better solution
-def get_features_within_image_shape(I_shape, features_hat):
-    height, width = I_shape
-    for i, features in enumerate(features_hat):
-        x = features[0]
-        y = features[1]
-        if x >= width:
-            features_hat[i,0] = width-1
-        if y >= height:
-            features_hat[i,1] = height-1
-
-    return features_hat
-
 # Compute average landmark distance from the ground truth landamarks normalized by the distance between eyes for a single image.
 # TODO compute_mean_error function needs to be implemented to handle multiple images
 def compute_error(shape, S_true):
     interocular_distance = np.linalg.norm(S_true[153]-S_true[114])
     average_distance = np.linalg.norm(shape - S_true, axis=1)/interocular_distance
     return average_distance.mean()
-
 
 """
 This function prepares the training data for the training of the face alignment algorithm
@@ -174,14 +160,15 @@ def create_training_data(train_folder_path, annotation_folder_path):
             first_line = f.readline().replace('\n','')
         image_to_annotation_dict[first_line] = file
 
-    #calculate mean shape from all shape files
-    mean_shape = get_mean_shape_from_files(image_files,image_to_annotation_dict,annotation_folder_path)
-    #Center shape around origo to define features in this coordinate system
-    mean_shape = center_shape(mean_shape)
+    # calculate mean shape (S_mean) from all shape files
+    S_mean = get_mean_shape_from_files(image_files, image_to_annotation_dict, annotation_folder_path)
+    # center mean shape around the origin to define features in this coordinate system
+    S_mean_centered = center_shape(S_mean)
+    np.save("np_data/S_mean", S_mean_centered)
 
-    #NOTE remember to set n, which is number of features. Default=400
-    features = extract_coords_from_mean_shape(mean_shape, offset=20, n=400)
-    np.save("np_data/mean_shape_features", features)
+    #NOTE remember to set n, which is number of features. Default=400 #TODO make this n a parameter of the function!
+    features_mean = extract_coords_from_mean_shape(S_mean_centered, offset=20, n=400)
+    np.save("np_data/features_mean", features_mean)
 
     for file in tqdm(image_files):
         I_path     = file.replace('.jpg', '')
@@ -245,7 +232,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
             S_hat                  = S_hat *scale_value
 
             #NOTE warping; we transform from mean shape coordinate system to s hat system
-            features_hat           = transform_features(mean_shape, S_hat, features)
+            features_hat           = transform_features(mean_shape, S_hat, features_mean)
 
             #NOTE Calculate center of bounding box
             bb_center_x            = ((bb[0]) + (bb[2])/2)+w_pad   #bb[0][0] = x coord, bb[0][2] = w
@@ -299,21 +286,19 @@ def prepare_training_data_for_tree_cascade(training_data):
 
     return (I_intensities_matrix, np.array(features_hat_matrix, dtype=np.uint16), S_hat_matrix, S_delta_matrix, S_true_matrix)
 
-
 def transformation_between_cascades(S_0, S_new, features_0):
-     #Calculate means of s_hat for moving it and its features to origo
+     # calculate mean of S_0 to move it (the shape) and its features to the origin
      S_0_mean = np.mean(S_0, axis=0)
      S_0_centered = S_0 - S_0_mean
      features_0_centered = features_0 - S_0_mean
 
-
-     #Calculate means of s_hat_new for moving it and its features to origo
+     # calculate mean of S_new to move it (the shape) and its features to the origin
      S_new_mean = np.mean(S_new, axis=0)
      S_new_centered = S_new - S_new_mean
 
      features_new = transform_features(S_0_centered, S_new_centered, features_0_centered).astype(int)
 
-     #Move features_hat_new back to image's coordinate system
+     # move features_new back to the image's coordinate system
      features_new += S_new_mean.astype(int)
 
      return features_new
@@ -328,7 +313,6 @@ def update_training_data_with_tree_cascade_result(all_S_0, all_features_0, S_hat
     y_mask = [x for x in range(1, amount_landmarks*2, 2)]
 
     I_intensities_matrix_new = np.empty((N, amount_extracted_features), dtype=np.int16)
-
 
     for i in tqdm(range(0, training_data.shape[0]), desc="update training data"):
         I            = training_data[i, 0]
@@ -360,7 +344,6 @@ def update_training_data_with_tree_cascade_result(all_S_0, all_features_0, S_hat
             #No need to transform features if last run, so just return old values
             features_hat_new = features_hat
             intensities_new = training_data[i, 3]
-
 
         training_data[i, 1] = S_hat_new
         training_data[i, 2] = S_delta_new
