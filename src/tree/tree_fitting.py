@@ -64,12 +64,8 @@ def _select_best_candidate_split_for_node(I_intensities_matrix, residuals_matrix
                 Q_theta_r.append(index)
 
         mu_theta_l = (len(Q_theta_l) and 1 / len(Q_theta_l) or 0) * np.sum(residuals_matrix[Q_theta_l], axis=0, dtype=np.float32)
-        #mu_theta_r = None # np.empty(residuals_matrix[Q_theta_r].shape)
-        #if mu_parent_node is None: # True if selecting candidate split for root node
         mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * np.sum(residuals_matrix[Q_theta_r], axis=0, dtype=np.float32)
-        #else:
-            #mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * (len(Q_I_at_node) * mu_parent_node -  len(Q_theta_l) * mu_theta_l)
-
+     
         sum_square_error_theta = (len(Q_theta_l) * np.matmul(mu_theta_l.T, mu_theta_l)) + (len(Q_theta_r) * np.matmul(mu_theta_r.T, mu_theta_r))
         sum_square_error_theta_candidate_splits[i] = sum_square_error_theta
         mu_thetas.append((mu_theta_l.astype(np.float32) , mu_theta_r.astype(np.float32)))
