@@ -64,12 +64,8 @@ def _select_best_candidate_split_for_node(I_intensities_matrix, residuals_matrix
                 Q_theta_r.append(index)
 
         mu_theta_l = (len(Q_theta_l) and 1 / len(Q_theta_l) or 0) * np.sum(residuals_matrix[Q_theta_l], axis=0, dtype=np.float32)
-        mu_theta_r = None # np.empty(residuals_matrix[Q_theta_r].shape)
-        if mu_parent_node is None: # True if selecting candidate split for root node
-            mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * np.sum(residuals_matrix[Q_theta_r], axis=0, dtype=np.float32)
-        else:
-            mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * (len(Q_I_at_node) * mu_parent_node - len(Q_theta_l) * mu_theta_l)
-
+        mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * np.sum(residuals_matrix[Q_theta_r], axis=0, dtype=np.float32)
+     
         sum_square_error_theta = (len(Q_theta_l) * np.matmul(mu_theta_l.T, mu_theta_l)) + (len(Q_theta_r) * np.matmul(mu_theta_r.T, mu_theta_r))
         sum_square_error_theta_candidate_splits[i] = sum_square_error_theta
         mu_thetas.append((mu_theta_l.astype(np.float32) , mu_theta_r.astype(np.float32)))
@@ -202,7 +198,7 @@ def predict_avarage_residual_vector_for_image(regression_tree_vector, avarage_re
 
     current_node_index = 0
     current_depth = 0
-    depth_to_leafs = max_depth - current_depth 
+    depth_to_leafs = max_depth - current_depth
 
     while depth_to_leafs > 0:
         x1 = regression_tree_vector[current_node_index]
@@ -219,9 +215,9 @@ def predict_avarage_residual_vector_for_image(regression_tree_vector, avarage_re
             current_node_index = left_node_index
         else:
             current_node_index = right_node_index
-        
+
         current_depth = current_depth + 1
-        depth_to_leafs = max_depth - current_depth 
+        depth_to_leafs = max_depth - current_depth
 
     leaf_index = regression_tree_vector[current_node_index] * _AMOUNT_LANDMARKS_FLATTENED
     return avarage_residual_leaf_vector[leaf_index:(leaf_index  +_AMOUNT_LANDMARKS_FLATTENED)]

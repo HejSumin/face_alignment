@@ -14,6 +14,7 @@ from numba import jit
 Hyperparameters
 
 """
+
 _R = 20
 
 def get_all_file_names(folder):
@@ -318,6 +319,7 @@ def transformation_between_cascades(S_0, S_new, features_0):
      features_0_centered = features_0 - S_0_mean
 
      # calculate mean of S_new to move it (the shape) and its features to the origin
+
      S_new_mean = np.mean(S_new, axis=0)
      S_new_centered = S_new - S_new_mean
 
@@ -374,6 +376,8 @@ def update_training_data_with_tree_cascade_result(all_S_0, all_features_0, S_hat
         training_data[i, 2] = S_delta_new
         training_data[i, 3] = intensities_new
         training_data[i, 4] = features_hat_new
+
+
 
         I_intensities_matrix_new[i] = intensities_new
 
