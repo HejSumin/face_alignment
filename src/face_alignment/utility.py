@@ -13,7 +13,7 @@ from numba import jit
 Hyperparameters
 
 """
-_R = 4
+_R = 20
 
 def get_all_file_names(folder):
     return os.listdir(folder)
@@ -164,7 +164,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
     training_data = []
     image_files = get_all_file_names(train_folder_path)
 
-    bb_scale_target = 500
+    bb_scale_target = 500 #TODO Change that?
 
     annotation_files = get_all_file_names(annotation_folder_path)
 
@@ -183,7 +183,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
     features = extract_coords_from_mean_shape(mean_shape, offset=20, n=400)
     np.save("np_data/mean_shape_features", features)
 
-    for file in tqdm(image_files[:50]):
+    for file in tqdm(image_files):
         I_path     = file.replace('.jpg', '')
         I          = cv2.imread(train_folder_path+file, cv2.IMREAD_GRAYSCALE)
         h, w       = I.shape
@@ -317,9 +317,6 @@ def transformation_between_cascades(S_0, S_new, features_0):
      features_new += S_new_mean.astype(int)
 
      return features_new
-
-
-
 
 def update_training_data_with_tree_cascade_result(all_S_0, all_features_0, S_hat_matrix_new, S_delta_matrix_new, training_data,last_run):
 
