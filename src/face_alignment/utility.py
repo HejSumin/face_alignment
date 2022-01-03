@@ -13,7 +13,7 @@ from numba import jit
 Hyperparameters
 
 """
-_R = 20
+_R = 10
 
 def get_all_file_names(folder):
     return os.listdir(folder)
@@ -183,7 +183,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
     features = extract_coords_from_mean_shape(mean_shape, offset=20, n=400)
     np.save("np_data/mean_shape_features", features)
 
-    for file in tqdm(image_files[:50]):
+    for file in tqdm(image_files[:]):
         I_path     = file.replace('.jpg', '')
         I          = cv2.imread(train_folder_path+file, cv2.IMREAD_GRAYSCALE)
         h, w       = I.shape
@@ -199,8 +199,8 @@ def create_training_data(train_folder_path, annotation_folder_path):
 
         #NOTE padding the image with zeros in order to avoid index out of bound errors
         h_scaled, w_scaled          = I.shape
-        h_pad                       = (int((h / 100) * 0))
-        w_pad                       = (int((w / 100) * 0))
+        h_pad                       = (int((h / 100) * 10))
+        w_pad                       = (int((w / 100) * 10))
         I                           = cv2.copyMakeBorder(I, h_pad, h_pad, w_pad, w_pad, cv2.BORDER_CONSTANT)
 
 
