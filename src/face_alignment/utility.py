@@ -165,14 +165,14 @@ def create_training_data(train_folder_path, annotation_folder_path):
     S_mean = get_mean_shape_from_files(image_files, image_to_annotation_dict, annotation_folder_path)
     # center mean shape around the origin to define features in this coordinate system
     S_mean_centered = center_shape(S_mean)
-    np.save("np_data/S_mean", S_mean_centered)
+    np.save("np_data/S_mean_centered", S_mean_centered)
 
     #NOTE remember to set n, which is number of features. Default=400 #TODO make this n a parameter of the function!
     features_mean = extract_coords_from_mean_shape(S_mean_centered, offset=20, n=400)
     np.save("np_data/features_mean", features_mean)
 
     for I_file_name in tqdm(image_files):
-        prepare_result = prepare_image_and_bounding_box(I_file_path=train_folder_path+I_file_name)
+        prepare_result = prepare_image_and_bounding_box(train_folder_path+I_file_name, bb_target_size)
         if prepare_result is None:
             continue
         I_resized, bb_scaled, bb_scale_factor = prepare_result
@@ -189,7 +189,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
         S_true                 = np.array(list(zip(S_true_x, S_true_y)))
         np.random.shuffle(image_files)
 
-        #Select the R number of duplicates for image
+        # select the R number of duplicates for image
         delta_files = image_files[:_R]
 
         #NOTE this is the case when delta_file == file
@@ -197,32 +197,19 @@ def create_training_data(train_folder_path, annotation_folder_path):
             delta_files = delta_files.remove(I_file_name)
             delta_files.append(image_files[_R])
 
-        for d in delta_files:
+        for delta_file_name in delta_files:
         
             #NOTE Extract landmarks for s hat
-            S_hat_image_id         = d.replace(".jpg", '')
+            S_hat_image_id         = delta_file_name.replace(".jpg", '')
             S_hat_path             = annotation_folder_path + image_to_annotation_dict[S_hat_image_id]
             S_hat_x, S_hat_y       = read_landmarks_from_file(S_hat_path)
             S_hat_x               += w_pad
             S_hat_y               += h_pad
-            S_hat_raw                  = np.array(list(zip(S_hat_x, S_hat_y)), dtype=np.uint16)
+            S_hat_raw               = np.array(list(zip(S_hat_x, S_hat_y)), dtype=np.uint16)
 
             #NOTE move s hat to origo
-            S_hat_centered                 = center_shape(S_hat_raw)
-
-            bb_x, bb_y, bb_w, bb_h = bb_scaled[0], bb_scaled[1], bb_scaled[2], bb_scaled[3]
-
-            S_hat_scaled = scale_S_hat_to_bb(S_hat_centered, bb_h)
-
-            #NOTE warping; we transform from mean shape coordinate system to s hat system
-            features_hat_transformed = transform_features(S_mean_centered, S_hat_scaled, features_mean)
-            #NOTE Calculate center of bounding box
-            bb_center_x            = (bb_x + bb_w/2)+w_pad  
-            bb_center_y            = (bb_y + 1.1*(bb_h/2))+h_pad #TODO strange constant should be a parameter
-
-            #NOTE move scaled s hat and its features to center of bb
-            S_hat                  = S_hat_scaled + [bb_center_x, bb_center_y]
-            features_hat           = features_hat_transformed + [bb_center_x, bb_center_y]
+            S_hat_centered = center_shape(S_hat_raw)
+            S_hat, features_hat = prepare_S_hat_and_features_hat(S_hat_centered, S_mean_centered, features_mean, bb_scaled, w_pad, h_pad)
 
             #NOTE calculate delta values based scaled and translated s hat and the true shape
             S_delta_x              = S_true_x - S_hat[:,0]
@@ -230,16 +217,31 @@ def create_training_data(train_folder_path, annotation_folder_path):
             S_delta                = np.array(list(zip(S_delta_x, S_delta_y)), np.float32)
 
             #NOTE we get the intensities from the images based on the feature points
-            features_hat           = features_hat.astype(np.uint16)
+            features_hat = features_hat.astype(np.uint16)
 
             try:
-                intensities            = I_padded[np.array(features_hat[:,1]), np.array(features_hat[:,0])]
+                intensities = I_padded[np.array(features_hat[:,1]), np.array(features_hat[:,0])]
             except:
                 continue
             #NOTE we return Image, s hat, s delta, feature intensities values, feature points, and bounding box
             training_data.append((I_padded, S_hat, S_delta, intensities, features_hat, bb_scaled, S_true))
 
     return np.array(training_data, dtype=object)
+
+def prepare_S_hat_and_features_hat(S_hat_centered, S_mean_centered, features_mean, bb_scaled, w_pad, h_pad):
+    bb_x, bb_y, bb_w, bb_h = bb_scaled[0], bb_scaled[1], bb_scaled[2], bb_scaled[3]
+    S_hat_scaled = scale_S_hat_to_bb(S_hat_centered, bb_h)
+
+    #NOTE warping; we transform from mean shape coordinate system to S_hat system
+    features_hat_transformed = transform_features(S_mean_centered, S_hat_scaled, features_mean)
+    #NOTE Calculate center of bounding box
+    bb_center_x            = (bb_x + bb_w/2)+w_pad  
+    bb_center_y            = (bb_y + 1.1*(bb_h/2))+h_pad #TODO constant should be a parameter
+
+    #NOTE move scaled S_hat and its features to center of bb
+    S_hat                  = S_hat_scaled + [bb_center_x, bb_center_y]
+    features_hat           = features_hat_transformed + [bb_center_x, bb_center_y]
+    return S_hat, features_hat
 
 def scale_S_hat_to_bb(S_hat_centered, bb_height):
     #NOTE scalling to bb; We choose to multiply s hat height by some constant to make up for the extra padding the bounding box adds

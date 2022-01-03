@@ -17,8 +17,8 @@ Parameters
     _T : amount of cascades
 """
 _LEARNING_RATE = 0.1
-_K = 500
-_T = 10
+_K = 100
+_T = 3
 
 def train_multiple_cascades(training_data, saved_while_training_path="saved_while_training/", regression_tree_max_depth=5, use_exponential_prior=True):
     cascades = []
@@ -81,6 +81,6 @@ def update_f_k_matrix(regression_tree, f_k_minus_1_matrix, learning_rate=_LEARNI
     return f_k_matrix
 
 def build_model(cascades):
-    S_mean = np.load("np_data/S_mean.npy")
+    S_mean_centered = np.load("np_data/S_mean_centered.npy")
     features_mean = np.load("np_data/features_mean.npy")
-    return MultipleCascades(cascades, S_mean, features_mean)
+    return MultipleCascades(cascades, S_mean_centered, features_mean)

@@ -15,10 +15,10 @@ if os.name == 'posix':
 data_path = 'data/'
 annotations_path = 'data/annotation/'
 
-# print("... starting training ...")
-# print("... creating training data ... ")
-# training_data = fa.create_training_data(data_path + "train_1/", annotations_path)
-# np.save("np_data/run_input_training_data", training_data)
+print("... starting training ...")
+print("... creating training data ... ")
+training_data = fa.create_training_data(data_path + "train_1/", annotations_path)
+np.save("np_data/run_input_training_data", training_data)
 
 print("... loading training data ... ")
 training_data = np.load("np_data/run_input_training_data.npy", allow_pickle=True)
@@ -34,4 +34,6 @@ np.save("run_output/run_output_training_data_result", training_data_result)
 
 print("Run finished in: (Time)", timedelta(seconds=end-start))
 
-#model.predict(I)
+test_names = fa.get_all_file_names('data/test')
+file = test_names[0]
+model.predict("data/test/" +file)
