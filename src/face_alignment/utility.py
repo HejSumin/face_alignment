@@ -194,7 +194,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
 
         #NOTE this is the case when delta_file == file
         if I_file_name in delta_files:
-            delta_files = delta_files.remove(I_file_name)
+            delta_files.remove(I_file_name)
             delta_files.append(image_files[_R])
 
         for delta_file_name in delta_files:
@@ -215,9 +215,6 @@ def create_training_data(train_folder_path, annotation_folder_path):
             S_delta_x              = S_true_x - S_hat[:,0]
             S_delta_y              = S_true_y - S_hat[:,1]
             S_delta                = np.array(list(zip(S_delta_x, S_delta_y)), np.float32)
-
-            #NOTE we get the intensities from the images based on the feature points
-            features_hat = features_hat.astype(np.uint16)
 
             try:
                 intensities = I_padded[np.array(features_hat[:,1]), np.array(features_hat[:,0])]
@@ -241,7 +238,8 @@ def prepare_S_hat_and_features_hat(S_hat_centered, S_mean_centered, features_mea
     #NOTE move scaled S_hat and its features to center of bb
     S_hat                  = S_hat_scaled + [bb_center_x, bb_center_y]
     features_hat           = features_hat_transformed + [bb_center_x, bb_center_y]
-    return S_hat, features_hat
+
+    return S_hat, features_hat.astype(np.uint16) #TODO uint8?
 
 def scale_S_hat_to_bb(S_hat_centered, bb_height):
     #NOTE scalling to bb; We choose to multiply s hat height by some constant to make up for the extra padding the bounding box adds

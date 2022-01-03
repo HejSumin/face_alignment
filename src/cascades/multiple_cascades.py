@@ -7,6 +7,7 @@ class MultipleCascades(): #TODO Dataclass
         self.cascades = cascades
         self.S_mean_centered = S_mean_centered
         self.features_mean = features_mean
+        self.bb_target_size = 500 # TODO make parameter
 
     def predict(self, I_file_path):
         prepare_result = self._prepare_image_for_prediction(I_file_path)
@@ -20,10 +21,10 @@ class MultipleCascades(): #TODO Dataclass
                 S_hat = S_hat_new
                 features_hat = features_hat_new
 
-            return S_hat, features_hat
+            return I_padded, S_hat, features_hat
 
     def _prepare_image_for_prediction(self, I_file_path):
-        prepare_result = prepare_image_and_bounding_box(I_file_path)
+        prepare_result = prepare_image_and_bounding_box(I_file_path, self.bb_target_size)
         if prepare_result is None:
             return None
         I_resized, bb_scaled, bb_scale_factor = prepare_result
