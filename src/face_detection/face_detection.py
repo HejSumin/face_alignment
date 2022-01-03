@@ -21,7 +21,7 @@ def _get_bounding_box_for_image(image_path, frontalface_config='default', circle
             image_bounding_boxes.append((center, radius))
         else:
             cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
-            image_bounding_boxes.append((x, y, w, h))
+            image_bounding_boxes.append([x, y, w, h])
 
     return image_bounding_boxes 
 
