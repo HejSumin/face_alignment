@@ -7,7 +7,7 @@ import scipy.optimize as opt
 import math
 from src.face_detection.face_detection import *
 import sys
-from concurrent import futures
+from numba import jit
 
 """
 Hyperparameters
@@ -83,9 +83,10 @@ def optimize_equation_8(x_bar, x):
     res  = opt.fmin(func=equation_8, x0=[1,0], args=(x_bar, x), full_output=False, disp=False)
     return res
 
+@jit(nopython=True)
 def find_closest_landmark(feature, landmarks):
 
-    min_distance = sys.float_info.max
+    min_distance = 10000000
     closest_landmark = -1
 
     for index, landmark in enumerate(landmarks):
@@ -137,7 +138,7 @@ def get_features_within_image_shape(I_shape, features_hat):
 
     return features_hat
 
-# Compute average landmark distance from the ground truth landamarks normalized by the distance between eyes for a single image. 
+# Compute average landmark distance from the ground truth landamarks normalized by the distance between eyes for a single image.
 # TODO compute_mean_error function needs to be implemented to handle multiple images
 def compute_error(shape, S_true):
     interocular_distance = np.linalg.norm(S_true[153]-S_true[114])
@@ -172,7 +173,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
         with open(annotation_folder_path+file) as f:
             first_line = f.readline().replace('\n','')
         image_to_annotation_dict[first_line] = file
-        
+
     #calculate mean shape from all shape files
     mean_shape = get_mean_shape_from_files(image_files,image_to_annotation_dict,annotation_folder_path)
     #Center shape around origo to define features in this coordinate system
@@ -201,7 +202,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
         w_pad      = (int((w / 100) * 20))
         I          = cv2.copyMakeBorder(I, h_pad, h_pad, w_pad, w_pad, cv2.BORDER_CONSTANT)
 
-        
+
         #NOTE we use the the scale and padding values to move the true shape to the new image
         S_true_x, S_true_y      = read_landmarks_from_file(annotation_folder_path + image_to_annotation_dict[file.replace('.jpg', '')])
         S_true_x                = S_true_x*bb_scale
@@ -214,12 +215,12 @@ def create_training_data(train_folder_path, annotation_folder_path):
         #Select the R number of duplicates for image
         delta_files = image_files[:_R]
 
-        
+
         bb[2] = bb[2] * bb_scale
         bb[3] = bb[3] * bb_scale
         bb[0] = bb[0] * bb_scale
         bb[1] = bb[1] * bb_scale
-        
+
         #NOTE this is the case when delta_file == file
         if I_path in delta_files:
             delta_files = delta_files.remove(I_path)
@@ -304,7 +305,7 @@ def transformation_between_cascades(S_0, S_new, features_0):
      S_0_mean = np.mean(S_0, axis=0)
      S_0_centered = S_0 - S_0_mean
      features_0_centered = features_0 - S_0_mean
-     
+
 
      #Calculate means of s_hat_new for moving it and its features to origo
      S_new_mean = np.mean(S_new, axis=0)
@@ -318,38 +319,10 @@ def transformation_between_cascades(S_0, S_new, features_0):
      return features_new
 
 
-def update_single_entry_in_training_data(data):
 
-    S_hat_entry   = data[3]
-    S_delta_entry = data[4]
-    I             = data[0]
-    S_0           = data[1]
-    features_0    = data[2]
-
-    amount_extracted_features = len(features_0)
-    amount_landmarks = S_0.shape[0]
-
-    x_mask = [x for x in range(0, amount_landmarks*2-1, 2)]
-    y_mask = [x for x in range(1, amount_landmarks*2, 2)]
-           
-    S_hat_new    = np.array(list(zip(S_hat_entry[x_mask], S_hat_entry[y_mask])))
-    S_delta_new  = np.array(list(zip(S_delta_entry[x_mask], S_delta_entry[y_mask])))
-
-    features_hat_new = transformation_between_cascades(S_0, S_hat_new, features_0)
-            
-    try:
-        intensities_new = I[np.array(features_hat_new[:, 1]), np.array(features_hat_new[:, 0])]
-
-    except Exception as e:
-        print(e)
-        #data = np.array([I,features_hat, features_hat_new, S_hat, S_hat_new ], dtype=object)
-        #intensities_new = training_data_entry[3]
-        return
-    return (I, S_hat_new, S_delta_new, intensities_new, features_hat_new)
-    
 
 def update_training_data_with_tree_cascade_result(all_S_0, all_features_0, S_hat_matrix_new, S_delta_matrix_new, training_data,last_run):
-    
+
     N = training_data.shape[0]
     amount_extracted_features = training_data[0, 3].shape[0]
     amount_landmarks = training_data[0, 1].shape[0]
@@ -359,56 +332,44 @@ def update_training_data_with_tree_cascade_result(all_S_0, all_features_0, S_hat
 
     I_intensities_matrix_new = np.empty((N, amount_extracted_features), dtype=np.int16)
 
-    images = training_data[:, 0]
-    #[ [s_hat1], [shat2],  ]
-    
-    #[ [i1, s_01, features_01, shatnew, sdeltanew], [..] ]
-    
-    enumerable_for_mapping   = list(zip(images, all_S_0, all_features_0, S_hat_matrix_new, S_delta_matrix_new ))
 
-    #with tqdm(total = len(training_data)) as pbar:
-    with futures.ThreadPoolExecutor(max_workers=10) as executor:
-            #result = list(tqdm(executor.map(update_single_entry_in_training_data, training_data, S_hat_matrix_new, S_delta_matrix_new, all_S_0, all_features_0), total=len(training_data)))
-             result = list(tqdm(executor.map(update_single_entry_in_training_data, enumerable_for_mapping), total=len(training_data)))
-    return np.array(result)
+    for i in tqdm(range(0, training_data.shape[0]), desc="update training data"):
+        I            = training_data[i, 0]
+        features_hat = training_data[i, 4]
+        S_hat        = training_data[i, 1]
 
- #   for i in tqdm(range(0, training_data.shape[0]), desc="update training data"):
- #       I            = training_data[i, 0]
- #       S_hat        = training_data[i, 1]
- #       features_hat = training_data[i, 4]
+        S_0          = all_S_0[i]
+        features_0   = all_features_0[i]
 
-#        S_0          = all_S_0[i]
-#        features_0   = all_features_0[i]
-        
- #       S_hat_new    = np.array(list(zip(S_hat_matrix_new[i,x_mask], S_hat_matrix_new[i,y_mask])))
-  #      S_delta_new  = np.array(list(zip(S_delta_matrix_new[i,x_mask], S_delta_matrix_new[i,y_mask])))
+        S_hat_new    = np.array(list(zip(S_hat_matrix_new[i,x_mask], S_hat_matrix_new[i,y_mask])))
+        S_delta_new  = np.array(list(zip(S_delta_matrix_new[i,x_mask], S_delta_matrix_new[i,y_mask])))
 
-   #     if not last_run:
+        if not last_run:
 
-    #        features_hat_new = transformation_between_cascades(S_0, S_hat_new, features_0)
-            
-     #       try:
-      #          intensities_new = I[np.array(features_hat_new[:, 1]), np.array(features_hat_new[:, 0])]
+            features_hat_new = transformation_between_cascades(S_0, S_hat_new, features_0)
 
-       #     except Exception as e:
-        #        print(e)
-         #       data = np.array([I,features_hat, features_hat_new, S_hat, S_hat_new ], dtype=object)
+            try:
+                intensities_new = I[np.array(features_hat_new[:, 1]), np.array(features_hat_new[:, 0])]
 
-          #      np.save("failed_transformations/data"+str(i), data)
-           #     print(i)
-            #    intensities_new = training_data[i, 3]
+            except Exception as e:
+                print(e)
+                data = np.array([I,features_hat, features_hat_new, S_hat, S_hat_new ], dtype=object)
 
-       # else:
+                np.save("failed_transformations/data"+str(i), data)
+                print(i)
+                intensities_new = training_data[i, 3]
+
+        else:
             #No need to transform features if last run, so just return old values
-        #    features_hat_new = features_hat
-         #   intensities_new = training_data[i, 3]
+            features_hat_new = features_hat
+            intensities_new = training_data[i, 3]
 
 
-       # training_data[i, 1] = S_hat_new
-       # training_data[i, 2] = S_delta_new
-       # training_data[i, 3] = intensities_new
-       # training_data[i, 4] = features_hat_new
+        training_data[i, 1] = S_hat_new
+        training_data[i, 2] = S_delta_new
+        training_data[i, 3] = intensities_new
+        training_data[i, 4] = features_hat_new
 
-       # I_intensities_matrix_new[i] = intensities_new
+        I_intensities_matrix_new[i] = intensities_new
 
     return training_data, I_intensities_matrix_new

@@ -17,7 +17,7 @@ Parameters
     _T : amount of cascades
 """
 _LEARNING_RATE = 0.1
-_K = 3
+_K = 5
 _T = 3
 
 def train_multiple_cascades(training_data, model_output_path="run_output/", saved_while_training_path="saved_while_training/", regression_tree_max_depth=5, use_exponential_prior=True):
@@ -27,7 +27,7 @@ def train_multiple_cascades(training_data, model_output_path="run_output/", save
     #NOTE we store the first shapes and theres features, to use for transformations later
     S_0        = training_data[:, 1]
     features_0 = training_data[:, 4]
-    
+
     for t in tqdm(range(0, _T), desc="T cascades"):
         last_run = t == _T-1
 
@@ -38,7 +38,7 @@ def train_multiple_cascades(training_data, model_output_path="run_output/", save
         cascade_forests_list.append(forest)
 
         np.save(saved_while_training_path + "model_regression_trees_matrix_cascade_" + str(t), model_regression_trees_matrix)
-        np.save(saved_while_training_path + "model_avarage_residual_leaf_matrix_cascade_" + str(t), model_avarage_residual_leaf_matrix)    
+        np.save(saved_while_training_path + "model_avarage_residual_leaf_matrix_cascade_" + str(t), model_avarage_residual_leaf_matrix)
         np.save(saved_while_training_path + "model_f_0_matrix_" + str(t), f_0_matrix)
 
         S_hat_matrix = S_hat_matrix + r_t_matrix
@@ -50,7 +50,7 @@ def train_multiple_cascades(training_data, model_output_path="run_output/", save
         I_intensities_matrix = I_intensities_matrix_new
 
     model = CascadeForest(cascade_forests_list)
-    return training_data, model
+    return training_data#, model
 
 def train_single_cascade(I_intensities_matrix, features_hat_matrix, S_delta_matrix, regression_tree_max_depth, use_exponential_prior):
     model_regression_trees = []
