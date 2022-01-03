@@ -33,3 +33,21 @@ class MultipleCascades(): #TODO Dataclass
         S_hat, features_hat = prepare_S_hat_and_features_hat(self.S_mean_centered, self.S_mean_centered, self.features_mean, bb_scaled, w_pad, h_pad)
 
         return I_padded, S_hat, features_hat
+
+    # Compute average landmark distance from the ground truth landamarks normalized by the distance between eyes for a single image.
+    def compute_error(self, S_hat, S_true):
+        interocular_distance = np.abs(np.linalg.norm(S_true[153]-S_true[114]))
+        average_distance = np.abs(np.linalg.norm(S_hat - S_true, axis=-1)/interocular_distance)
+        return average_distance.mean()
+
+    #TODO: S_true array needs to be updated
+    def compute_error_all(self, I_file_path, annotation_folder_path, model):
+        test_names = get_all_file_names(I_file_path)
+        S_hat = []
+        S_true = []
+        for index in len(test_names):
+            file = test_names[index]
+            _, S_hat_predicted, _ = model.predict(I_file_path + file)
+            S_hat.append(S_hat_predicted)
+            
+        return self.compute_error(S_hat, S_true).mean()
