@@ -183,7 +183,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
     features = extract_coords_from_mean_shape(mean_shape, offset=20, n=400)
     np.save("np_data/mean_shape_features", features)
 
-    for file in tqdm(image_files[:]):
+    for file in tqdm(image_files[:50]):
         I_path     = file.replace('.jpg', '')
         I          = cv2.imread(train_folder_path+file, cv2.IMREAD_GRAYSCALE)
         h, w       = I.shape
@@ -198,9 +198,10 @@ def create_training_data(train_folder_path, annotation_folder_path):
         I          = cv2.resize(I, (int(w*bb_scale), int(h*bb_scale)), interpolation=cv2.INTER_LINEAR)
 
         #NOTE padding the image with zeros in order to avoid index out of bound errors
-        h_pad      = (int((h / 100) * 30))
-        w_pad      = (int((w / 100) * 30))
-        I          = cv2.copyMakeBorder(I, h_pad, h_pad, w_pad, w_pad, cv2.BORDER_CONSTANT)
+        h_scaled, w_scaled          = I.shape
+        h_pad                       = (int((h / 100) * 0))
+        w_pad                       = (int((w / 100) * 0))
+        I                           = cv2.copyMakeBorder(I, h_pad, h_pad, w_pad, w_pad, cv2.BORDER_CONSTANT)
 
 
         #NOTE we use the the scale and padding values to move the true shape to the new image
@@ -248,8 +249,11 @@ def create_training_data(train_folder_path, annotation_folder_path):
             features_hat           = transform_features(mean_shape, S_hat, features)
 
             #NOTE Calculate center of bounding box
-            bb_center_x            = ((bb[0]) + (bb[2])/2)+w_pad   #bb[0][0] = x coord, bb[0][2] = w
-            bb_center_y            = ((bb[1]) + 1.1*((bb[3])/2))+h_pad  #bb[0][1]  = y coord, bb[0][3] = h
+            #bb_center_x            = ((bb[0]) + (bb[2])/2)+w_pad   #bb[0][0] = x coord, bb[0][2] = w
+            #bb_center_y            = ((bb[1]) + 1.1*((bb[3])/2))+h_pad  #bb[0][1]  = y coord, bb[0][3] = h
+
+            bb_center_x            = np.mean(S_true_x)  # ((bb[0]) + (bb[2])/2)+w_pad   #bb[0][0] = x coord, bb[0][2] = w
+            bb_center_y            = np.mean(S_true_y)  #((bb[1]) + 1.1*((bb[3])/2))+h_pad  #bb[0][1]  = y coord, bb[0][3] = h
 
             #NOTE move scaled s hat and its features to center of bb
             S_hat                  = S_hat + [bb_center_x, bb_center_y]
@@ -305,7 +309,6 @@ def transformation_between_cascades(S_0, S_new, features_0):
      S_0_mean = np.mean(S_0, axis=0)
      S_0_centered = S_0 - S_0_mean
      features_0_centered = features_0 - S_0_mean
-
 
      #Calculate means of s_hat_new for moving it and its features to origo
      S_new_mean = np.mean(S_new, axis=0)
@@ -369,6 +372,8 @@ def update_training_data_with_tree_cascade_result(all_S_0, all_features_0, S_hat
         training_data[i, 2] = S_delta_new
         training_data[i, 3] = intensities_new
         training_data[i, 4] = features_hat_new
+
+
 
         I_intensities_matrix_new[i] = intensities_new
 

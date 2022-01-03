@@ -16,9 +16,9 @@ Parameters
     _K : amount of trees per cascade
     _T : amount of cascades
 """
-_LEARNING_RATE = 0.05
-_K = 200
-_T = 5
+_LEARNING_RATE = 0.1
+_K = 100
+_T = 2
 
 def train_multiple_cascades(training_data, model_output_path="run_output/", saved_while_training_path="saved_while_training/", regression_tree_max_depth=5, use_exponential_prior=True):
     cascade_forests_list = []
