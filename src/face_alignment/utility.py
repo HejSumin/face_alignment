@@ -127,13 +127,6 @@ def transform_features(s0, s1, features0):
 
     return features1
 
-# Compute average landmark distance from the ground truth landamarks normalized by the distance between eyes for a single image.
-# TODO compute_mean_error function needs to be implemented to handle multiple images
-def compute_error(shape, S_true):
-    interocular_distance = np.linalg.norm(S_true[153]-S_true[114])
-    average_distance = np.linalg.norm(shape - S_true, axis=1)/interocular_distance
-    return average_distance.mean()
-
 """
 This function prepares the training data for the training of the face alignment algorithm
 

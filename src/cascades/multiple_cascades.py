@@ -23,6 +23,20 @@ class MultipleCascades(): #TODO Dataclass
 
             return I_padded, S_hat, features_hat
 
+    def prediction_with_S_true(self, I_file_path, annotation_folder_path):
+        prepare_result = self._prepare_image_for_prediction_with_S_true(I_file_path, annotation_folder_path)
+        if prepare_result is None:
+            return None
+        else:
+            I_padded, S_hat, features_hat, S_true = prepare_result
+            
+            for cascade in self.cascades:
+                S_hat_new, features_hat_new = cascade.apply_cascade(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean)
+                S_hat = S_hat_new
+                features_hat = features_hat_new
+
+            return I_padded, S_hat, features_hat, S_true
+
     def _prepare_image_for_prediction(self, I_file_path):
         prepare_result = prepare_image_and_bounding_box(I_file_path, self.bb_target_size)
         if prepare_result is None:
@@ -58,21 +72,22 @@ class MultipleCascades(): #TODO Dataclass
             #TODO Do stuff here ...
 
     # Compute average landmark distance from the ground truth landamarks normalized by the distance between eyes for a single image.
-    def compute_error(self, S_hat, S_true):
-        interocular_distance = np.abs(np.linalg.norm(S_true[153]-S_true[114]))
-        average_distance = np.abs(np.linalg.norm(S_hat - S_true, axis=-1)/interocular_distance)
+    def compute_error(S_hat, S_true):
+        interocular_distance = np.linalg.norm(S_true[153].astype(np.int32)-S_true[114].astype(np.int32))
+        average_distance = np.linalg.norm(S_hat - S_true)/interocular_distance
         return average_distance.mean()
 
-    def compute_error_all(self, I_file_path, annotation_folder_path, model):
-        prepare_result = self._prepare_image_for_prediction_with_S_true(I_file_path, annotation_folder_path)
-        if prepare_result is None:
-            return None
-        else: 
-            I_padded, S_hat, features_hat, S_true = prepare_result
+    def compute_error_all(self, I_file_path, annotation_folder_path):
+        return print("dd")
+        # prepare_result = self._prepare_image_for_prediction_with_S_true(I_file_path, annotation_folder_path)
+        # if prepare_result is None:
+        #     return None
+        # else: 
+        #     I_padded, S_hat, features_hat, S_true = prepare_result
 
-        S_hat_arr = []
-        S_true_arr = []
-        for index in len(prepare_result):
-            S_hat_arr.append(S_hat[index])
-            S_true_arr.append(S_true[index])            
-        return self.compute_error(S_hat_arr, S_true_arr).mean()
+        # S_hat_arr = []
+        # S_true_arr = []
+        # for index in len(prepare_result):
+        #     S_hat_arr.append(S_hat[index])
+        #     S_true_arr.append(S_true[index])            
+        # return self.compute_error(S_hat_arr, S_true_arr).mean()
