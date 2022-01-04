@@ -63,14 +63,16 @@ class MultipleCascades(): #TODO Dataclass
         average_distance = np.abs(np.linalg.norm(S_hat - S_true, axis=-1)/interocular_distance)
         return average_distance.mean()
 
-    #TODO: S_true array needs to be updated
     def compute_error_all(self, I_file_path, annotation_folder_path, model):
-        test_names = get_all_file_names(I_file_path)
-        S_hat = []
-        S_true = []
-        for index in len(test_names):
-            file = test_names[index]
-            _, S_hat_predicted, _ = model.predict(I_file_path + file)
-            S_hat.append(S_hat_predicted)
-            
-        return self.compute_error(S_hat, S_true).mean()
+        prepare_result = self._prepare_image_for_prediction_with_S_true(I_file_path, annotation_folder_path)
+        if prepare_result is None:
+            return None
+        else: 
+            I_padded, S_hat, features_hat, S_true = prepare_result
+
+        S_hat_arr = []
+        S_true_arr = []
+        for index in len(prepare_result):
+            S_hat_arr.append(S_hat[index])
+            S_true_arr.append(S_true[index])            
+        return self.compute_error(S_hat_arr, S_true_arr).mean()
