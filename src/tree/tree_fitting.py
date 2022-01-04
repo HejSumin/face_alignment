@@ -3,6 +3,7 @@ from src.tree.regression_tree import *
 from timeit import default_timer as timer
 from datetime import timedelta
 from tqdm import tqdm
+from numba import jit, prange
 
 _DEBUG = True
 _DEBUG_DETAILED = False
@@ -41,42 +42,83 @@ Returns
     -------
     (pixel x1, pixel x2, pixel intensity threshold), mu_theta : best candidate split triplet and corresponding Q_theta_l, Q_thetas_r, mu_theta value needed for calculation in the next iteration
 """
+@jit(nopython=True)
+def mean_numba(a):
+
+    res = []
+    for i in prange(a.shape[0]):
+        res.append(a[:, i].mean())
+
+    return np.array(res)
+
+
+#np.mean(features_hat_at_Node_matrix, axis=0)
+# mean_numba(features_hat_at_Node_matrix)
+@jit
 def _select_best_candidate_split_for_node(I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_I_at_node, mu_parent_node=None, use_exponential_prior=True):
     features_hat_at_Node_matrix = features_hat_matrix[Q_I_at_node]
-    features_hat_mean_coords = np.mean(features_hat_at_Node_matrix, axis=0) if features_hat_at_Node_matrix.shape[0] > 0 else None
+    features_hat_mean_coords =  mean_numba(features_hat_at_Node_matrix) if features_hat_at_Node_matrix.shape[0] > 0 else None
     theta_candidate_splits = _generate_random_candidate_splits(I_intensities_matrix.shape[1], features_hat_mean_coords=features_hat_mean_coords, use_exponential_prior=use_exponential_prior)
 
     sum_square_error_theta_candidate_splits = np.zeros((theta_candidate_splits.shape[0], 1))
-    mu_thetas = []
+    #mu_thetas_1 = []
+    mu_thetas   = []
     Q_thetas_l = []
     Q_thetas_r = []
+    #Q_thetas_l_1 = []
+    #Q_thetas_r_1 = []
 
+    #Q_theta_r_index = 0
+    #Q_theta_l_index = 0
     for i, theta in enumerate(theta_candidate_splits):
         x1, x2, threshold = theta[0], theta[1], theta[2]
-        Q_theta_l = []
-        Q_theta_r = []
+        Q_theta_l = np.empty(0, dtype=np.int64)
+        Q_theta_r = np.empty(0, dtype=np.int64)
+
+        #Q_theta_l_1 = [] #np.zeros(theta_candidate_splits.size, dtype=np.int32)
+        #Q_theta_r_1 = [] #np.zeros(theta_candidate_splits.size, dtype=np.int32)
 
         # bucketize images based on theta candidate split
         for index in Q_I_at_node:
-            if np.abs(I_intensities_matrix[index, x1].astype(np.int16) - I_intensities_matrix[index, x2].astype(np.int16)) > threshold:
-                Q_theta_l.append(index)
+            if np.abs(I_intensities_matrix[index, x1] - I_intensities_matrix[index, x2]) > threshold:
+                #Q_theta_l_1.append(index)
+                #Q_theta_l[Q_theta_l_index] = index
+                #Q_theta_l_index += 1
+                Q_theta_l = np.append(Q_theta_l, index)
             else:
-                Q_theta_r.append(index)
+                #Q_theta_r_1.append(index)
+                #Q_theta_r[Q_theta_r_index] = index
+                #Q_theta_r_index += 1
+                Q_theta_r = np.append(Q_theta_r, index)
+        #print(Q_theta_r)
+        #print(Q_theta_r_1)
+        #print(np.array_equal(Q_theta_r, np.array(Q_theta_r_1)))
+        #mu_theta_l_1 = (len(Q_theta_l_1) and 1 / len(Q_theta_l_1) or 0) * np.sum(residuals_matrix[Q_theta_l_1], axis=0, dtype=np.float32)
+        mu_theta_l = ((Q_theta_l.size) and 1 / (Q_theta_l.size) or 0) * np.sum(residuals_matrix[Q_theta_l], axis=0, dtype=np.float32)
 
-        mu_theta_l = (len(Q_theta_l) and 1 / len(Q_theta_l) or 0) * np.sum(residuals_matrix[Q_theta_l], axis=0, dtype=np.float32)
-        mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * np.sum(residuals_matrix[Q_theta_r], axis=0, dtype=np.float32)
-     
-        sum_square_error_theta = (len(Q_theta_l) * np.matmul(mu_theta_l.T, mu_theta_l)) + (len(Q_theta_r) * np.matmul(mu_theta_r.T, mu_theta_r))
+        #mu_theta_r_1 = (len(Q_theta_r_1) and 1 / len(Q_theta_r_1) or 0) * np.sum(residuals_matrix[Q_theta_r_1], axis=0, dtype=np.float32)
+        mu_theta_r = ((Q_theta_r.size) and 1 / (Q_theta_r.size) or 0) * np.sum(residuals_matrix[Q_theta_r], axis=0, dtype=np.float32)
+        
+        #sum_square_error_theta_1 = (len(Q_theta_l_1) * np.matmul(mu_theta_l_1.T, mu_theta_l_1)) + (len(Q_theta_r_1) * np.matmul(mu_theta_r_1.T, mu_theta_r_1))
+        sum_square_error_theta = ((Q_theta_l.size) * np.dot(mu_theta_l.T, mu_theta_l)) + ((Q_theta_r.size) * np.dot(mu_theta_r.T, mu_theta_r))
+
         sum_square_error_theta_candidate_splits[i] = sum_square_error_theta
-        mu_thetas.append((mu_theta_l.astype(np.float32) , mu_theta_r.astype(np.float32)))
+
+        #mu_thetas_1.append((mu_theta_l_1.astype(np.float64) , mu_theta_r_1.astype(np.float64)))
+        mu_thetas.append((mu_theta_l.astype(np.float64) , mu_theta_r.astype(np.float64)))
+        #print(np.array_equal(mu_thetas_1, mu_thetas))
+        #np.append(mu_thetas,(mu_theta_l , mu_theta_r))
         Q_thetas_l.append(Q_theta_l)
+        #np.append(Q_thetas_l, Q_theta_l)
         Q_thetas_r.append(Q_theta_r)
+        #np.append(Q_thetas_r, Q_theta_r)
 
     best_theta_candidate_split_index = np.argmax(sum_square_error_theta_candidate_splits)
     return theta_candidate_splits[best_theta_candidate_split_index],  Q_thetas_l[best_theta_candidate_split_index], Q_thetas_r[best_theta_candidate_split_index], mu_thetas[best_theta_candidate_split_index]
 
+@jit(nopython=True)
 def _generate_random_candidate_splits(amount_extraced_features, features_hat_mean_coords=None, amount_candidate_splits=_AMOUNT_RANDOM_CANDIDATE_SPLITS, use_exponential_prior=True):
-    random_candidate_splits = np.empty((amount_candidate_splits, 3), dtype=int)
+    random_candidate_splits = np.empty((amount_candidate_splits, 3), dtype=np.int32)
     for i in range(0, amount_candidate_splits):
         while True:
             random_x1_pixel_index = np.random.randint(0, amount_extraced_features)
@@ -133,7 +175,7 @@ def _generate_child_nodes(
         return True
 
     (best_x1_pixel_index_left_child, best_x2_pixel_index_left_child, best_threshold_left_child), Q_theta_l_left_child, Q_theta_r_left_child, mu_theta_left_child = _select_best_candidate_split_for_node(
-        I_intensities_matrix,
+        I_intensities_matrix.astype(np.int16),
         residuals_matrix,
         features_hat_matrix,
         Q_theta_l,
