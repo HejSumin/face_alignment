@@ -1,13 +1,8 @@
 import numpy as np
 from src.tree.regression_tree import *
-from timeit import default_timer as timer
 from datetime import timedelta
 from tqdm import tqdm
-from numba import jit, prange
-
-_DEBUG = True
-_DEBUG_DETAILED = False
-_DEBUG_GRAPHVIZ = True
+from numba import jit
 
 """
 Hyperparameters
@@ -42,76 +37,38 @@ Returns
     -------
     (pixel x1, pixel x2, pixel intensity threshold), mu_theta : best candidate split triplet and corresponding Q_theta_l, Q_thetas_r, mu_theta value needed for calculation in the next iteration
 """
-@jit(nopython=True)
-def mean_numba(a):
 
-    res = []
-    for i in prange(a.shape[0]):
-        res.append(a[:, i].mean())
-
-    return np.array(res)
-
-
-#np.mean(features_hat_at_Node_matrix, axis=0)
-# mean_numba(features_hat_at_Node_matrix)
-@jit
 def _select_best_candidate_split_for_node(I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_I_at_node, mu_parent_node=None, use_exponential_prior=True):
     features_hat_at_Node_matrix = features_hat_matrix[Q_I_at_node]
-    features_hat_mean_coords =  mean_numba(features_hat_at_Node_matrix) if features_hat_at_Node_matrix.shape[0] > 0 else None
+    features_hat_mean_coords =  np.mean(features_hat_at_Node_matrix, axis=0) if features_hat_at_Node_matrix.shape[0] > 0 else None
     theta_candidate_splits = _generate_random_candidate_splits(I_intensities_matrix.shape[1], features_hat_mean_coords=features_hat_mean_coords, use_exponential_prior=use_exponential_prior)
 
     sum_square_error_theta_candidate_splits = np.zeros((theta_candidate_splits.shape[0], 1))
-    #mu_thetas_1 = []
     mu_thetas   = []
     Q_thetas_l = []
     Q_thetas_r = []
-    #Q_thetas_l_1 = []
-    #Q_thetas_r_1 = []
-
-    #Q_theta_r_index = 0
-    #Q_theta_l_index = 0
+ 
     for i, theta in enumerate(theta_candidate_splits):
         x1, x2, threshold = theta[0], theta[1], theta[2]
-        Q_theta_l = np.empty(0, dtype=np.int64)
-        Q_theta_r = np.empty(0, dtype=np.int64)
-
-        #Q_theta_l_1 = [] #np.zeros(theta_candidate_splits.size, dtype=np.int32)
-        #Q_theta_r_1 = [] #np.zeros(theta_candidate_splits.size, dtype=np.int32)
+        Q_theta_l = []
+        Q_theta_r = []
 
         # bucketize images based on theta candidate split
         for index in Q_I_at_node:
             if np.abs(I_intensities_matrix[index, x1] - I_intensities_matrix[index, x2]) > threshold:
-                #Q_theta_l_1.append(index)
-                #Q_theta_l[Q_theta_l_index] = index
-                #Q_theta_l_index += 1
-                Q_theta_l = np.append(Q_theta_l, index)
+                Q_theta_l.append(index)
             else:
-                #Q_theta_r_1.append(index)
-                #Q_theta_r[Q_theta_r_index] = index
-                #Q_theta_r_index += 1
-                Q_theta_r = np.append(Q_theta_r, index)
-        #print(Q_theta_r)
-        #print(Q_theta_r_1)
-        #print(np.array_equal(Q_theta_r, np.array(Q_theta_r_1)))
-        #mu_theta_l_1 = (len(Q_theta_l_1) and 1 / len(Q_theta_l_1) or 0) * np.sum(residuals_matrix[Q_theta_l_1], axis=0, dtype=np.float32)
-        mu_theta_l = ((Q_theta_l.size) and 1 / (Q_theta_l.size) or 0) * np.sum(residuals_matrix[Q_theta_l], axis=0, dtype=np.float32)
-
-        #mu_theta_r_1 = (len(Q_theta_r_1) and 1 / len(Q_theta_r_1) or 0) * np.sum(residuals_matrix[Q_theta_r_1], axis=0, dtype=np.float32)
-        mu_theta_r = ((Q_theta_r.size) and 1 / (Q_theta_r.size) or 0) * np.sum(residuals_matrix[Q_theta_r], axis=0, dtype=np.float32)
+                Q_theta_r.append(index)
+     
+        mu_theta_l = (len(Q_theta_l) and 1 / len(Q_theta_l) or 0) * np.sum(residuals_matrix[Q_theta_l], axis=0, dtype=np.float32)
+        mu_theta_r = (len(Q_theta_r) and 1 / len(Q_theta_r) or 0) * np.sum(residuals_matrix[Q_theta_r], axis=0, dtype=np.float32)
         
-        #sum_square_error_theta_1 = (len(Q_theta_l_1) * np.matmul(mu_theta_l_1.T, mu_theta_l_1)) + (len(Q_theta_r_1) * np.matmul(mu_theta_r_1.T, mu_theta_r_1))
-        sum_square_error_theta = ((Q_theta_l.size) * np.dot(mu_theta_l.T, mu_theta_l)) + ((Q_theta_r.size) * np.dot(mu_theta_r.T, mu_theta_r))
-
+        sum_square_error_theta = (len(Q_theta_l) * np.matmul(mu_theta_l.T, mu_theta_l)) + (len(Q_theta_r) * np.matmul(mu_theta_r.T, mu_theta_r))
         sum_square_error_theta_candidate_splits[i] = sum_square_error_theta
 
-        #mu_thetas_1.append((mu_theta_l_1.astype(np.float64) , mu_theta_r_1.astype(np.float64)))
-        mu_thetas.append((mu_theta_l.astype(np.float64) , mu_theta_r.astype(np.float64)))
-        #print(np.array_equal(mu_thetas_1, mu_thetas))
-        #np.append(mu_thetas,(mu_theta_l , mu_theta_r))
+        mu_thetas.append((mu_theta_l.astype(np.float32) , mu_theta_r.astype(np.float32)))
         Q_thetas_l.append(Q_theta_l)
-        #np.append(Q_thetas_l, Q_theta_l)
         Q_thetas_r.append(Q_theta_r)
-        #np.append(Q_thetas_r, Q_theta_r)
 
     best_theta_candidate_split_index = np.argmax(sum_square_error_theta_candidate_splits)
     return theta_candidate_splits[best_theta_candidate_split_index],  Q_thetas_l[best_theta_candidate_split_index], Q_thetas_r[best_theta_candidate_split_index], mu_thetas[best_theta_candidate_split_index]
@@ -267,11 +224,10 @@ def predict_avarage_residual_vector_for_image(regression_tree_vector, avarage_re
 def get_max_depth_by_node_number(amount_nodes):
     return int(np.floor(np.log2(amount_nodes)))
 
-def convert_regression_trees_to_matrix_form(model_regression_trees, regression_tree_max_depth):
-    isAveragingMode = False
-    if(all(isinstance(element,list)for element in model_regression_trees)):
+def convert_regression_trees_to_matrix_form(model_regression_trees, regression_tree_max_depth, is_averaging_mode):
+    if is_averaging_mode:
         model_regression_trees = [item for sublist in model_regression_trees for item in sublist]
-        isAveragingMode = True
+
     amount_regression_trees = len(model_regression_trees)
     amount_leafs_per_regression_tree = 2**regression_tree_max_depth
     amount_nodes_per_regression_tree = len(model_regression_trees[0].get_nodes_list()) - amount_leafs_per_regression_tree
@@ -288,7 +244,7 @@ def convert_regression_trees_to_matrix_form(model_regression_trees, regression_t
         regression_leafs_vector = np.array([leaf.avarage_residual_vector for leaf in regression_tree_leafs], dtype=np.float32)
         model_avarage_residual_leaf_matrix[i] = regression_leafs_vector.flatten()
 
-    return model_regression_trees_matrix, model_avarage_residual_leaf_matrix, isAveragingMode
+    return model_regression_trees_matrix, model_avarage_residual_leaf_matrix
 
 def build_regression_tree_vector(regression_tree_node_list):
     regression_tree_vector = np.empty((1, len(regression_tree_node_list) * _NUMBER_SPLIT_VALUES_AT_NODE), dtype=np.uint16)
@@ -316,30 +272,3 @@ def predict_avarage_residual_vector_for_image_from_regression_tree_object(regres
             return predict_avarage_residual_vector_for_image_from_regression_tree_object(regression_tree, I_intensities, current_node.left_child_id)
         else:
             return predict_avarage_residual_vector_for_image_from_regression_tree_object(regression_tree, I_intensities, current_node.right_child_id)
-
-def run_test_example():
-    images = 2000
-    landmarks = 194
-    R = 20
-    n_image_matrix = np.random.randint(0, 256, (images, 20))
-    I_intensities_matrix = np.repeat(n_image_matrix, repeats=R, axis=0) # shape (N=n*R, #extraced pixels)
-    residuals_matrix = np.random.rand(R*images, landmarks*2) # only positive values for test example ; shape (N=n*R, 194)
-    features_hat_matrix = np.random.rand(R*images, landmarks*2)
-
-    start = timer()
-    regression_tree = generate_regression_tree(I_intensities_matrix, residuals_matrix, features_hat_matrix)
-    end = timer()
-
-    if _DEBUG:
-        if _DEBUG_DETAILED:
-            print("I_intensities_matrix : " + str(I_intensities_matrix))
-            print("residuals_matrix : " + str(residuals_matrix))
-        print()
-        print(regression_tree.get_tree_description(detailed=_DEBUG_DETAILED))
-        print([node.id for node in regression_tree.get_nodes_list()])
-        print("Time: ", timedelta(seconds=end-start))
-        if _DEBUG_GRAPHVIZ:
-            graphviz = regression_tree.get_dot_graphviz_source()
-            graphviz_file = open('./graphviz_output.txt', 'w', encoding='utf-8')
-            graphviz_file.write(graphviz)
-            graphviz_file.close()

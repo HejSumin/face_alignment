@@ -27,16 +27,16 @@ class SingleCascade():
     
         return S_hat_new, features_hat_new
 
-    def apply_cascade_for_averaging(self, I, S_hat, features_hat, S_mean, features_mean):
+    def apply_cascade_in_averaging_mode(self, I, S_hat, features_hat, S_mean, features_mean, averaging_tree_amount):
         cascade_contribution = self.model_f_0_matrix
         x_mask = [x for x in range(0, cascade_contribution.shape[0]-1, 2)]
         y_mask = [y for y in range(1, cascade_contribution.shape[0], 2)]
     
         I_intensities = I[np.array(features_hat[:,1]), np.array(features_hat[:,0])].astype(np.uint8)
     
-        for i in range(0, self.model_regression_trees_matrix.shape[0], 10):
+        for i in range(0, self.model_regression_trees_matrix.shape[0], averaging_tree_amount):
             predict_avarage_residual_averaging_matrix = np.empty_like(cascade_contribution)
-            for i in range(10):
+            for i in range(averaging_tree_amount):
                 regression_tree_vector = self.model_regression_trees_matrix[i]
                 avarage_resiudal_leaf_vector = self.model_avarage_resiudal_leaf_matrix[i]
                 predict_avarage_residual_averaging_matrix[i] = predict_avarage_residual_vector_for_image(regression_tree_vector, avarage_resiudal_leaf_vector, I_intensities)
