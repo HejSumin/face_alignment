@@ -15,13 +15,17 @@ Hyperparameters
 
 """
 
-_R = 20
+_R = 10
+_BB_TARGET_SIZE = 500
+_BB_CENTER_Y_SCALE = 1.1
+_AMOUNT_EXTRACED_FEATURES = 400
+_S_HAT_HEIGHT_BB_SCALE = 1.3
+_Y_MIN_MEAN_SHAPE_SCALE = 1.5
 
 def get_all_file_names(folder):
     return os.listdir(folder)
 
 def get_mean_shape_from_files(filenames, image_to_annotation_dict,annotation_folder_path):
-
     shapes = []
     for file in filenames:
         I_path                 = image_to_annotation_dict[file.replace('.jpg', '')]
@@ -49,14 +53,13 @@ def read_landmarks_from_file(file):
         landmarks_y.append(float(coords[1]))
     return (np.array(landmarks_x, dtype=float), np.array(landmarks_y, dtype=float))
 
-def extract_coords_from_mean_shape(mean_shape, offset=100, n=400):
-
+def extract_coords_from_mean_shape(mean_shape, offset=100, n=_AMOUNT_EXTRACED_FEATURES):
     x_mean_shape =  [x[0] for x in mean_shape]
     y_mean_shape =  [x[1] for x in mean_shape]
 
     xmin = np.min(x_mean_shape) - offset
     xmax = np.max(x_mean_shape) + offset
-    ymin = np.min(y_mean_shape) - offset * 1.5
+    ymin = np.min(y_mean_shape) - offset * _Y_MIN_MEAN_SHAPE_SCALE
     ymax = np.max(y_mean_shape) + offset
 
     xs = np.random.randint(xmin,xmax, size=n)
@@ -87,7 +90,6 @@ def optimize_equation_8(x_bar, x):
 
 @jit(nopython=True)
 def find_closest_landmark(feature, landmarks):
-
     min_distance = 10000000
     closest_landmark = -1
 
@@ -109,10 +111,10 @@ def gen_list_of_closest_landmarks(features, landmarks):
     return closest_landmarks
 
 def transform_features(s0, s1, features0):
-    #Takes a set of landmarks s0 with a corresponding set of features features0 and warps these features to fit on
-    #the set of landmarks given by s1.
+    # Takes a set of landmarks s0 with a corresponding set of features features0 and warps these features to fit on
+    # the set of landmarks given by s1.
 
-    #Assumption: Both sets of landmarks s0 and s1 are centered when given as input
+    # Assumption: Both sets of landmarks s0 and s1 are centered when given as input
 
     opt = optimize_equation_8(s1, s0)
     R = rotate_matrix(opt[1])
@@ -145,8 +147,6 @@ def create_training_data(train_folder_path, annotation_folder_path):
     training_data = []
     image_files = get_all_file_names(train_folder_path)
 
-    bb_target_size = 500 #TODO Change that?
-
     image_to_annotation_dict = build_image_to_annotation_dict(annotation_folder_path)
 
     # calculate mean shape (S_mean) from all shape files
@@ -155,27 +155,26 @@ def create_training_data(train_folder_path, annotation_folder_path):
     S_mean_centered = center_shape(S_mean)
     np.save("np_data/S_mean_centered", S_mean_centered)
 
-    #NOTE remember to set n, which is number of features. Default=400 #TODO make this n a parameter of the function!
-    features_mean = extract_coords_from_mean_shape(S_mean_centered, offset=20, n=400)
+    features_mean = extract_coords_from_mean_shape(S_mean_centered, offset=20, n=_AMOUNT_EXTRACED_FEATURES)
     np.save("np_data/features_mean", features_mean)
 
     for I_file_name in tqdm(image_files):
-        prepare_result = prepare_image_and_bounding_box(train_folder_path+I_file_name, bb_target_size)
+        prepare_result = prepare_image_and_bounding_box(train_folder_path+I_file_name)
         if prepare_result is None:
             continue
         I_resized, bb_scaled, bb_scale_factor = prepare_result
 
         I_padded, h_pad, w_pad = pad_image_with_zeros(I_resized)
        
-        #NOTE we use the the scale and padding values to move the true shape to the new image
         I_id = I_file_name.replace('.jpg', '')
         S_true = scale_S_true_to_bb_and_pad(I_id, annotation_folder_path, image_to_annotation_dict, bb_scale_factor, w_pad, h_pad)
         
         np.random.shuffle(image_files)
+
         # select the R number of duplicates for image
         delta_files = image_files[:_R]
 
-        #NOTE this is the case when delta_file == file
+        #NOTE this is the case when delta_file_name == I_file_name
         if I_file_name in delta_files:
             delta_files.remove(I_file_name)
             delta_files.append(image_files[_R])
@@ -189,7 +188,7 @@ def create_training_data(train_folder_path, annotation_folder_path):
             S_hat_y += h_pad
             S_hat_raw = np.array(list(zip(S_hat_x, S_hat_y)), dtype=np.uint16)
 
-            #NOTE move s hat to origo
+            #NOTE move s hat to origin
             S_hat_centered = center_shape(S_hat_raw)
             S_hat, features_hat = prepare_S_hat_and_features_hat(S_hat_centered, S_mean_centered, features_mean, bb_scaled, w_pad, h_pad)
 
@@ -226,13 +225,13 @@ def prepare_S_hat_and_features_hat(S_hat_centered, S_mean_centered, features_mea
     features_hat_transformed = transform_features(S_mean_centered, S_hat_scaled, features_mean)
     #NOTE Calculate center of bounding box
     bb_center_x            = (bb_x + bb_w/2) + w_pad  
-    bb_center_y            = (bb_y + 1.1*(bb_h/2)) + h_pad #TODO constant should be a parameter
+    bb_center_y            = (bb_y + _BB_CENTER_Y_SCALE*(bb_h/2)) + h_pad
 
     #NOTE move scaled S_hat and its features to center of bb
     S_hat                  = S_hat_scaled + [bb_center_x, bb_center_y]
     features_hat           = features_hat_transformed + [bb_center_x, bb_center_y]
 
-    return S_hat, features_hat.astype(np.uint16) #TODO uint8?
+    return S_hat, features_hat.astype(np.uint16)
 
 def scale_S_true_to_bb_and_pad(I_id, annotation_folder_path, image_to_annotation_dict, bb_scale_factor, w_pad, h_pad):
     S_true_x, S_true_y = read_landmarks_from_file(annotation_folder_path + image_to_annotation_dict[I_id])
@@ -244,9 +243,9 @@ def scale_S_true_to_bb_and_pad(I_id, annotation_folder_path, image_to_annotation
     return S_true
 
 def scale_S_hat_to_bb(S_hat_centered, bb_height):
-    #NOTE scalling to bb; We choose to multiply s hat height by some constant to make up for the extra padding the bounding box adds
+    #NOTE scalling to bb; we choose to multiply S_hat height by some constant to make up for the extra padding the bounding box adds
     S_hat_height = np.max(S_hat_centered[:,1]) - np.min(S_hat_centered[:,1])
-    scale_factor = bb_height / (S_hat_height*1.3) #TODO make 1.3 a parameter
+    scale_factor = bb_height / (S_hat_height*_S_HAT_HEIGHT_BB_SCALE)
     S_hat_scaled = S_hat_centered * scale_factor
     return S_hat_scaled
 
@@ -266,14 +265,14 @@ def resize_image(I, I_width, I_height, bb_scale_factor):
     return cv2.resize(I, (int(I_width*bb_scale_factor), int(I_height*bb_scale_factor)), interpolation=cv2.INTER_LINEAR)
 
 def pad_image_with_zeros(I_resized):
-    I_resized_height, I_resized_width = I_resized.shape # TODO is that change correct? Getting the resized image shape to apply the padding!   
+    I_resized_height, I_resized_width = I_resized.shape
     #NOTE padding the image with zeros in order to avoid index out of bound errors
-    h_pad = (int((I_resized_height / 100) * 20)) # TODO extract hyperparameters
+    h_pad = (int((I_resized_height / 100) * 20))
     w_pad = (int((I_resized_width / 100) * 20))
     I_padded = cv2.copyMakeBorder(I_resized, h_pad, h_pad, w_pad, w_pad, cv2.BORDER_CONSTANT)
     return I_padded, h_pad, w_pad
 
-def prepare_image_and_bounding_box(I_file_path, bb_target_size):
+def prepare_image_and_bounding_box(I_file_path):
     I_raw = cv2.imread(I_file_path, cv2.IMREAD_GRAYSCALE)
     I_raw_height, I_raw_width = I_raw.shape
     bb_raw = get_rectangle_bounding_box_for_image(I_file_path, frontalface_config='default')
@@ -281,7 +280,7 @@ def prepare_image_and_bounding_box(I_file_path, bb_target_size):
     if(bb_raw is None):
         return None
     else:      
-        bb_scale_factor = find_bb_scale_factor(bb_raw, bb_target_size)
+        bb_scale_factor = find_bb_scale_factor(bb_raw, _BB_TARGET_SIZE)
         bb_scaled = scale_bb(bb_raw, bb_scale_factor)
         I_resized = resize_image(I_raw, I_raw_width, I_raw_height, bb_scale_factor)
 
@@ -369,7 +368,7 @@ def update_training_data_with_tree_cascade_result(all_S_0, all_features_0, S_hat
                 intensities_new = training_data[i, 3]
 
         else:
-            #No need to transform features if last run, so just return old values
+            # no need to transform features if last run, so just return old values
             features_hat_new = features_hat
             intensities_new = training_data[i, 3]
 

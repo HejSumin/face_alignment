@@ -1,7 +1,10 @@
+from datetime import datetime
+from logging import root
 import uuid
-import graphviz
 import numpy as np
 from graphviz.dot import node
+from numpy.lib.arraysetops import isin
+import graphviz
 
 _INSERT, _DELETE = range(2)
 
@@ -50,20 +53,17 @@ class Regression_Tree:
     def __init__(self, avarage_residuals_matrix_shape):
         self._nodes = []
         self._avarage_residuals_matrix = np.empty(avarage_residuals_matrix_shape)
-        #self._dot_graphviz = graphviz.Digraph('regression-tree', comment='A single regression tree')
 
     def create_leaf(self, avarage_residual_vector, parent_id=None):
         leaf = Leaf(avarage_residual_vector)
         self._nodes.append(leaf)
         self.__update_childs(parent_id, leaf.id, _INSERT)
-        #self.update_dot_graphviz(leaf, parent_id)
         return leaf
 
     def create_node(self, x1, x2, threshold, parent_id=None):
         node = Node(x1, x2, threshold)
         self._nodes.append(node)
         self.__update_childs(parent_id, node.id, _INSERT)
-        #self.update_dot_graphviz(node, parent_id)
         return node
 
     def __update_childs(self, parent_id, id, mode):
@@ -108,10 +108,15 @@ class Regression_Tree:
     def __setitem__(self, key, item):
         self._nodes[self._get_index(key)] = item
 
-    def update_dot_graphviz(self, node, parent_id):
-        self._dot_graphviz.node(str(node.id), node.get_dot_grahphviz_description(root=True if parent_id is None else False))
-        if parent_id is not None:
-            self._dot_graphviz.edge(str(parent_id), str(node.id))
-
     def get_dot_graphviz_source(self):
-        return self._dot_graphviz.source
+        dot_graphviz = graphviz.Digraph('regression-tree', comment='A single regression tree')
+        
+        for i, node in enumerate(self._nodes):
+            if not isinstance(node, Leaf):
+                dot_graphviz.node(str(node.left_child_id), node.get_dot_grahphviz_description(root=True if i == 0 else False))
+                dot_graphviz.node(str(node.right_child_id), node.get_dot_grahphviz_description(root=True if i == 0 else False))
+                if i != 0:
+                    dot_graphviz.edge(str(node), str(node.left_child_id))
+                    dot_graphviz.edge(str(node), str(node.right_child_id))
+        
+        return dot_graphviz.source
