@@ -105,11 +105,11 @@ def update_f_k_matrix(regression_tree, f_k_minus_1_matrix, learning_rate=_LEARNI
     f_k_matrix = f_k_minus_1_matrix + learning_rate * g_k_matrix
     return f_k_matrix
 
-def update_f_k_matrix_in_averaging_mode(regression_tree_list, f_k_minus_1_matrix, learning_rate=_LEARNING_RATE, averaging_tree_amount=10):
+def update_f_k_matrix_in_averaging_mode(regression_tree_list, f_k_minus_1_matrix, averaging_tree_amount=10):
     g_k_matrix = regression_tree_list[0].get_avarage_residuals_matrix()
     for i in range(1, averaging_tree_amount):
         g_k_matrix += regression_tree_list[i].get_avarage_residuals_matrix()
-    f_k_matrix = f_k_minus_1_matrix + learning_rate * (g_k_matrix / averaging_tree_amount)
+    f_k_matrix = f_k_minus_1_matrix + g_k_matrix / averaging_tree_amount
     return f_k_matrix
 
 def build_model(cascades, is_averaging_mode, averaging_tree_amount):

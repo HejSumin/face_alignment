@@ -40,7 +40,7 @@ class SingleCascade():
                 regression_tree_vector = self.model_regression_trees_matrix[i]
                 avarage_resiudal_leaf_vector = self.model_avarage_resiudal_leaf_matrix[i]
                 predict_avarage_residual_averaging_matrix[i] = predict_avarage_residual_vector_for_image(regression_tree_vector, avarage_resiudal_leaf_vector, I_intensities)
-            cascade_contribution = cascade_contribution + (self.model_learning_rate * np.mean(predict_avarage_residual_averaging_matrix, axis = 0))
+            cascade_contribution = cascade_contribution + np.mean(predict_avarage_residual_averaging_matrix, axis = 0)
     
         S_hat_new = S_hat + list(zip(cascade_contribution[x_mask], cascade_contribution[y_mask]))
 
