@@ -80,7 +80,7 @@ def train_single_cascade_in_averaging_mode(I_intensities_matrix, features_hat_ma
 
     f_k_minus_1_matrix = f_0_matrix
 
-    for k in tqdm(range(0, _K, averaging_tree_amount), desc="K trees"):
+    for k in tqdm(range(0, _K, averaging_tree_amount), desc="K / " + str(averaging_tree_amount) + " tree steps (averaging mode)"):
         r_i_k_matrix = calculate_residuals_matrix(S_delta_matrix, f_k_minus_1_matrix)
         
         regression_tree_averaging_list = []
