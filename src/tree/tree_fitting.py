@@ -117,7 +117,7 @@ def _select_best_candidate_split_for_node(I_intensities_matrix, residuals_matrix
     return theta_candidate_splits[best_theta_candidate_split_index],  Q_thetas_l[best_theta_candidate_split_index], Q_thetas_r[best_theta_candidate_split_index], mu_thetas[best_theta_candidate_split_index]
 
 @jit(nopython=True)
-def _generate_random_candidate_splits(amount_extraced_features, features_hat_mean_coords=None, amount_candidate_splits=_AMOUNT_RANDOM_CANDIDATE_SPLITS, use_exponential_prior=True):
+def _generate_random_candidate_splits(amount_extraced_features, features_hat_mean_coords=None, amount_candidate_splits=_AMOUNT_RANDOM_CANDIDATE_SPLITS, use_exponential_prior=False):
     random_candidate_splits = np.empty((amount_candidate_splits, 3), dtype=np.int32)
     for i in range(0, amount_candidate_splits):
         while True:
@@ -224,7 +224,7 @@ def _generate_child_nodes(
         )
     )
 
-def generate_regression_tree(I_intensities_matrix, residuals_matrix, features_hat_matrix, regression_tree_max_depth=5, use_exponential_prior=True):
+def generate_regression_tree(I_intensities_matrix, residuals_matrix, features_hat_matrix, regression_tree_max_depth=4, use_exponential_prior=True):
     Q_I_at_root = np.arange(0, I_intensities_matrix.shape[0])
 
     regression_tree = Regression_Tree(avarage_residuals_matrix_shape=residuals_matrix.shape)
@@ -268,6 +268,10 @@ def get_max_depth_by_node_number(amount_nodes):
     return int(np.floor(np.log2(amount_nodes)))
 
 def convert_regression_trees_to_matrix_form(model_regression_trees, regression_tree_max_depth):
+    isAveragingMode = False
+    if(all(isinstance(element,list)for element in model_regression_trees)):
+        model_regression_trees = [item for sublist in model_regression_trees for item in sublist]
+        isAveragingMode = True
     amount_regression_trees = len(model_regression_trees)
     amount_leafs_per_regression_tree = 2**regression_tree_max_depth
     amount_nodes_per_regression_tree = len(model_regression_trees[0].get_nodes_list()) - amount_leafs_per_regression_tree
@@ -284,7 +288,7 @@ def convert_regression_trees_to_matrix_form(model_regression_trees, regression_t
         regression_leafs_vector = np.array([leaf.avarage_residual_vector for leaf in regression_tree_leafs], dtype=np.float32)
         model_avarage_residual_leaf_matrix[i] = regression_leafs_vector.flatten()
 
-    return model_regression_trees_matrix, model_avarage_residual_leaf_matrix
+    return model_regression_trees_matrix, model_avarage_residual_leaf_matrix, isAveragingMode
 
 def build_regression_tree_vector(regression_tree_node_list):
     regression_tree_vector = np.empty((1, len(regression_tree_node_list) * _NUMBER_SPLIT_VALUES_AT_NODE), dtype=np.uint16)

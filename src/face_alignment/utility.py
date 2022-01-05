@@ -15,7 +15,7 @@ Hyperparameters
 
 """
 
-_R = 20
+_R = 10
 
 def get_all_file_names(folder):
     return os.listdir(folder)

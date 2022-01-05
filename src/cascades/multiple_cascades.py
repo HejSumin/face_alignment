@@ -3,11 +3,12 @@ from src.cascades.single_cascade import *
 
 class MultipleCascades(): #TODO Dataclass
 
-    def __init__(self, cascades, S_mean_centered, features_mean):
+    def __init__(self, cascades, S_mean_centered, features_mean, isAveragingMode):
         self.cascades = cascades
         self.S_mean_centered = S_mean_centered
         self.features_mean = features_mean
         self.bb_target_size = 500 # TODO make parameter
+        self.isAveragingMode = isAveragingMode
 
     def predict(self, I_file_path):
         prepare_result = self._prepare_image_for_prediction(I_file_path)
@@ -15,11 +16,7 @@ class MultipleCascades(): #TODO Dataclass
             return None
         else:
             I_padded, S_hat, features_hat = prepare_result
-            
-            for cascade in self.cascades:
-                S_hat_new, features_hat_new = cascade.apply_cascade(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean)
-                S_hat = S_hat_new
-                features_hat = features_hat_new
+            S_hat, features_hat = self.predict_in_cascade(I_padded, S_hat, features_hat)
 
             return I_padded, S_hat, features_hat
 
@@ -29,13 +26,19 @@ class MultipleCascades(): #TODO Dataclass
             return None
         else:
             I_padded, S_hat, features_hat, S_true = prepare_result
+            S_hat, features_hat = self.predict_in_cascade(I_padded, S_hat, features_hat)
             
-            for cascade in self.cascades:
+            return I_padded, S_hat, features_hat, S_true
+
+    def predict_in_cascade(self, I_padded, S_hat, features_hat):
+        for cascade in self.cascades:
+            if(self.isAveragingMode):
+                S_hat_new, features_hat_new = cascade.apply_cascade_for_averaging(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean)
+            else:
                 S_hat_new, features_hat_new = cascade.apply_cascade(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean)
                 S_hat = S_hat_new
                 features_hat = features_hat_new
-
-            return I_padded, S_hat, features_hat, S_true
+        return S_hat, features_hat
 
     def _prepare_image_for_prediction(self, I_file_path):
         prepare_result = prepare_image_and_bounding_box(I_file_path, self.bb_target_size)
@@ -78,16 +81,15 @@ class MultipleCascades(): #TODO Dataclass
         return average_distance.mean()
 
     def compute_error_all(self, I_file_path, annotation_folder_path):
-        return print("dd")
-        # prepare_result = self._prepare_image_for_prediction_with_S_true(I_file_path, annotation_folder_path)
-        # if prepare_result is None:
-        #     return None
-        # else: 
-        #     I_padded, S_hat, features_hat, S_true = prepare_result
+        prepare_result = self._prepare_image_for_prediction_with_S_true(I_file_path, annotation_folder_path)
+        if prepare_result is None:
+            return None
+        else: 
+            I_padded, S_hat, features_hat, S_true = prepare_result
 
-        # S_hat_arr = []
-        # S_true_arr = []
-        # for index in len(prepare_result):
-        #     S_hat_arr.append(S_hat[index])
-        #     S_true_arr.append(S_true[index])            
-        # return self.compute_error(S_hat_arr, S_true_arr).mean()
+        S_hat_arr = []
+        S_true_arr = []
+        for index in len(prepare_result):
+            S_hat_arr.append(S_hat[index])
+            S_true_arr.append(S_true[index])            
+        return self.compute_error(S_hat_arr, S_true_arr).mean()
