@@ -18,8 +18,8 @@ Parameters
 """
 _LEARNING_RATE = 0.1
 
-_K = 250
-_T = 4
+_K = 100
+_T = 5
 
 
 def train_multiple_cascades(training_data, saved_while_training_path="saved_while_training/", regression_tree_max_depth=5, use_exponential_prior=True):
