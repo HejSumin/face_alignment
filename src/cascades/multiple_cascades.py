@@ -10,7 +10,7 @@ class MultipleCascades():
         self.is_averaging_mode = is_averaging_mode
         self.averaging_tree_amount = averaging_tree_amount
 
-    def predict(self, I_file_path):
+    def predict_image(self, I_file_path):
         prepare_result = self._prepare_image_for_prediction(I_file_path)
         if prepare_result is None:
             return None
@@ -20,15 +20,53 @@ class MultipleCascades():
 
             return I_padded, S_hat, features_hat
 
-    def validate_train_image(self, I_file_path, annotation_folder_path):
-        prepare_result = self._prepare_train_image_for_validation_with_S_true(I_file_path, annotation_folder_path)
+    def predict_image_with_intermediate_steps(self, I_file_path):
+        prepare_result = self._prepare_image_for_prediction(I_file_path)
+        if prepare_result is None:
+            return None
+        else:
+            I_padded, S_hat, features_hat = prepare_result
+            S_hat_list, features_hat_list = self.apply_cascades_with_intermediate_steps(I_padded, S_hat, features_hat)
+            
+            return I_padded, S_hat_list, features_hat_list     
+
+    def validate_test_image(self, I_file_path, annotation_folder_path):
+        prepare_result = self._prepare_test_image_for_validation_with_S_true(I_file_path, annotation_folder_path)
         if prepare_result is None:
             return None
         else:
             I_padded, S_hat, features_hat, S_true = prepare_result
             S_hat, features_hat = self.apply_cascades(I_padded, S_hat, features_hat)
             
-            return I_padded, S_hat, features_hat
+            return I_padded, S_hat, features_hat, S_true      
+
+    def validate_test_image_with_intermediate_steps(self, I_file_path, annotation_folder_path):
+        prepare_result = self._prepare_test_image_for_validation_with_S_true(I_file_path, annotation_folder_path)
+        if prepare_result is None:
+            return None
+        else:
+            I_padded, S_hat, features_hat, S_true = prepare_result
+            S_hat_list, features_hat_list = self.apply_cascades_with_intermediate_steps(I_padded, S_hat, features_hat)
+            
+            return I_padded, S_hat_list, features_hat_list, S_true     
+    
+    def apply_cascades_with_intermediate_steps(self, I_padded, S_hat, features_hat):
+        S_hat_list = [S_hat]
+        features_hat_list = [features_hat]
+        for cascade in self.cascades:
+
+            if self.is_averaging_mode:
+                S_hat_new, features_hat_new = cascade.apply_cascade_in_averaging_mode(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean, self.averaging_tree_amount)
+            else:
+                S_hat_new, features_hat_new = cascade.apply_cascade(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean)
+
+            S_hat = S_hat_new
+            features_hat = features_hat_new
+
+            S_hat_list.append(S_hat)
+            features_hat_list.append(features_hat)
+            
+        return S_hat_list, features_hat_list
 
     def apply_cascades(self, I_padded, S_hat, features_hat):
         for cascade in self.cascades:
@@ -54,7 +92,7 @@ class MultipleCascades():
 
         return I_padded, S_hat, features_hat
       
-    def _prepare_train_image_for_validation_with_S_true(self, I_file_path, annotation_folder_path):
+    def _prepare_test_image_for_validation_with_S_true(self, I_file_path, annotation_folder_path):
         prepare_result = prepare_image_and_bounding_box(I_file_path)
         if prepare_result is None:
             return None
@@ -70,22 +108,28 @@ class MultipleCascades():
         return I_padded, S_hat, features_hat, S_true
 
     # Compute average landmark distance from the ground truth landamarks normalized by the distance between eyes for a single image.
-    def compute_error(S_hat, S_true):
-        interocular_distance = np.linalg.norm(S_true[153].astype(np.int32)- S_true[114].astype(np.int32))
+    def compute_error(self, S_hat, S_true):
+        interocular_distance = np.linalg.norm(S_true[153].astype(np.int32) - S_true[114].astype(np.int32))
         average_distance = np.linalg.norm(S_hat - S_true) / interocular_distance
-        return average_distance.mean()
+        return average_distance
 
-    def compute_error_all(self, I_file_path, annotation_folder_path): #TODO THIS DOES NOT DO WHAT IT SHOULD DO!
-        prepare_result = self.validate_train_image(I_file_path, annotation_folder_path) 
-        if prepare_result is None:
-            return None
-        else: 
-            _, S_hat, _, S_true = prepare_result
+    def compute_error_all(self, test_folder_path, annotation_folder_path):
+        error_all_test_images_matrix = []
 
-        S_hat_arr = []
-        S_true_arr = []
-        for index in len(prepare_result):
-            S_hat_arr.append(S_hat[index])
-            S_true_arr.append(S_true[index])       
+        test_file_names = get_all_file_names(test_folder_path)
+        for test_file_name in test_file_names:
 
-        return self.compute_error(S_hat_arr, S_true_arr).mean()
+            prepare_result = self.validate_test_image_with_intermediate_steps(test_folder_path + test_file_name, annotation_folder_path) 
+            if prepare_result is None:
+                continue
+            else: 
+                _, S_hat_list, _, S_true = prepare_result
+
+                error_single_images_all_cascades = []
+                for S_hat in S_hat_list:
+                    error = self.compute_error(S_hat, S_true)
+                    error_single_images_all_cascades.append(error)
+                
+                error_all_test_images_matrix.append(error_single_images_all_cascades)
+                  
+        return error_all_test_images_matrix
