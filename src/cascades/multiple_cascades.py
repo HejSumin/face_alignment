@@ -3,11 +3,11 @@ from src.cascades.single_cascade import *
 
 class MultipleCascades():
 
-    def __init__(self, cascades, S_mean_centered, features_mean,  averaging_tree_amount):
+    def __init__(self, cascades, S_mean_centered, features_mean, is_averaging_mode, averaging_tree_amount):
         self.cascades = cascades
         self.S_mean_centered = S_mean_centered
         self.features_mean = features_mean
-        #self.is_averaging_mode = is_averaging_mode
+        self.is_averaging_mode = is_averaging_mode
         self.averaging_tree_amount = averaging_tree_amount
 
     def predict_image(self, I_file_path):
@@ -111,9 +111,6 @@ class MultipleCascades():
 
     # Compute average landmark distance from the ground truth landamarks normalized by the distance between eyes for a single image.
     def compute_error(self, S_hat, S_true):
-        #interocular_distance = np.linalg.norm(S_true[153].astype(np.int32) - S_true[114].astype(np.int32))
-        #average_distance = np.linalg.norm(S_hat - S_true) / interocular_distance
-        #return average_distance
         interocular_distance = np.linalg.norm(S_true[153].astype(np.int32) - S_true[114].astype(np.int32))
         s_delta   = S_hat - S_true
         distances = [ np.sqrt(math.pow(x[0], 2) + math.pow(x[1],2) ) for x in s_delta ]
