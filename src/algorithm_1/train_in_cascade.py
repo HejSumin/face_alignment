@@ -37,7 +37,7 @@ def train_multiple_cascades(training_data, saved_while_training_path="saved_whil
         else:
             r_t_matrix, model_regression_trees, f_0_matrix = train_single_cascade(I_intensities_matrix, features_hat_matrix, S_delta_matrix, regression_tree_max_depth, use_exponential_prior)
 
-        model_regression_trees_matrix, model_avarage_residual_leaf_matrix = convert_regression_trees_to_matrix_form(model_regression_trees, regression_tree_max_depth, is_averaging_mode)
+        model_regression_trees_matrix, model_avarage_residual_leaf_matrix = convert_fancy_regression_trees_to_matrix_form(model_regression_trees, is_averaging_mode)
         single_cascade = SingleCascade(model_regression_trees_matrix, model_avarage_residual_leaf_matrix, f_0_matrix, _LEARNING_RATE)
         cascades.append(single_cascade)
 

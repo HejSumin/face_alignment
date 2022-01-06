@@ -28,7 +28,7 @@ training_data = np.load("np_data/run_input_training_data.npy", allow_pickle=True
 
 print("... starting training trees in cascade ...")
 start = timer()
-training_data_result, model = fa.train_multiple_cascades(training_data, regression_tree_max_depth=5, use_exponential_prior=True, is_averaging_mode=False)
+training_data_result, model = fa.train_multiple_cascades(training_data, regression_tree_max_depth=4, use_exponential_prior=True, is_averaging_mode=False)
 end = timer()
 
 pickle.dump(model, open("run_output/run_output_model.p", "wb"))

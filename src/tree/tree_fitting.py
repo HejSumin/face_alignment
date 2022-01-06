@@ -4,6 +4,8 @@ from datetime import timedelta
 from tqdm import tqdm
 from numba import jit
 
+from src.tree.regression_tree_fancy import Regression_Tree_Fancy
+
 """
 Hyperparameters
 
@@ -104,14 +106,11 @@ def _generate_root_node(regression_tree, I_intensities_matrix, residuals_matrix,
         Q_I_at_root,
         use_exponential_prior
     )
-    return regression_tree.create_node(best_x1_pixel_index_root, best_x2_pixel_index_root, best_threshold_root), Q_theta_l_root, Q_theta_r_root, mu_theta_root
-
-def _generate_leaf_node(regression_tree, avarage_residual_vector, parent_id):
-    return regression_tree.create_leaf(avarage_residual_vector, parent_id)
+    regression_tree.create_node(best_x1_pixel_index_root, best_x2_pixel_index_root, best_threshold_root)
+    return Q_theta_l_root, Q_theta_r_root, mu_theta_root
 
 def _generate_child_nodes(
         regression_tree,
-        current_node_id,
         current_depth,
         max_depth,
         I_intensities_matrix,
@@ -125,8 +124,8 @@ def _generate_child_nodes(
     mu_theta_l, mu_theta_r = mu_parent_node
 
     if current_depth == max_depth-1:
-        _generate_leaf_node(regression_tree, mu_theta_l, parent_id=current_node_id)
-        _generate_leaf_node(regression_tree, mu_theta_r, parent_id=current_node_id)
+        regression_tree.create_leaf(mu_theta_l)
+        regression_tree.create_leaf(mu_theta_r)
         regression_tree.append_avarage_residuals_matrix(mu_theta_l, Q_theta_l) # used for training as result of g_k
         regression_tree.append_avarage_residuals_matrix(mu_theta_r, Q_theta_r) # used for training as result of g_k
         return True
@@ -150,13 +149,12 @@ def _generate_child_nodes(
     )
 
     # we are always creating two new nodes at a time
-    left_node = regression_tree.create_node(best_x1_pixel_index_left_child, best_x2_pixel_index_left_child, best_threshold_left_child, parent_id=current_node_id)  # left node, has parent current_node
-    right_node = regression_tree.create_node(best_x1_pixel_index_right_child, best_x2_pixel_index_right_child, best_threshold_right_child, parent_id=current_node_id)  # right node, has parent current_node
+    regression_tree.create_node(best_x1_pixel_index_left_child, best_x2_pixel_index_left_child, best_threshold_left_child)  # left node, has parent current_node
+    regression_tree.create_node(best_x1_pixel_index_right_child, best_x2_pixel_index_right_child, best_threshold_right_child)  # right node, has parent current_node
 
     return (
         _generate_child_nodes(
             regression_tree,
-            left_node.id,
             current_depth+1,
             max_depth,
             I_intensities_matrix,
@@ -168,7 +166,6 @@ def _generate_child_nodes(
             use_exponential_prior
         ), _generate_child_nodes(
             regression_tree,
-            right_node.id,
             current_depth+1,
             max_depth,
             I_intensities_matrix,
@@ -184,10 +181,10 @@ def _generate_child_nodes(
 def generate_regression_tree(I_intensities_matrix, residuals_matrix, features_hat_matrix, regression_tree_max_depth=4, use_exponential_prior=True):
     Q_I_at_root = np.arange(0, I_intensities_matrix.shape[0])
 
-    regression_tree = Regression_Tree(avarage_residuals_matrix_shape=residuals_matrix.shape)
-    root_node, Q_theta_l_root, Q_theta_r_root, mu_theta_root = _generate_root_node(regression_tree, I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_I_at_root, use_exponential_prior)
+    regression_tree = Regression_Tree_Fancy(avarage_residuals_matrix_shape=residuals_matrix.shape)
+    Q_theta_l_root, Q_theta_r_root, mu_theta_root = _generate_root_node(regression_tree, I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_I_at_root, use_exponential_prior)
 
-    success = _generate_child_nodes(regression_tree, root_node.id, 0, regression_tree_max_depth, I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_theta_l_root, Q_theta_r_root, mu_theta_root, use_exponential_prior)
+    success = _generate_child_nodes(regression_tree, 0, regression_tree_max_depth, I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_theta_l_root, Q_theta_r_root, mu_theta_root, use_exponential_prior)
     return regression_tree
 
 _NUMBER_SPLIT_VALUES_AT_NODE = 3
@@ -223,6 +220,21 @@ def predict_avarage_residual_vector_for_image(regression_tree_vector, avarage_re
 
 def get_max_depth_by_node_number(amount_nodes):
     return int(np.floor(np.log2(amount_nodes)))
+
+def convert_fancy_regression_trees_to_matrix_form(model_regression_trees, is_averaging_mode):
+    if is_averaging_mode:
+        model_regression_trees = [item for sublist in model_regression_trees for item in sublist]
+
+    amount_regression_trees = len(model_regression_trees)
+    model_avarage_residual_leaf_matrix = np.empty((amount_regression_trees, model_regression_trees[0].get_regression_tree_vector().shape[1]), dtype=np.float32)
+    model_regression_trees_matrix = np.empty((amount_regression_trees, model_regression_trees[0].regression_leafs_vector().shape[1]), dtype=np.uint16)
+
+    for i, regression_tree in tqdm(enumerate(model_regression_trees), desc="Saving tree model"):
+        
+        model_regression_trees_matrix[i] = regression_tree.get_regression_tree_vector()
+        model_avarage_residual_leaf_matrix[i] = regression_tree.get_regression_leafs_vector()
+
+    return model_regression_trees_matrix, model_avarage_residual_leaf_matrix
 
 def convert_regression_trees_to_matrix_form(model_regression_trees, regression_tree_max_depth, is_averaging_mode):
     if is_averaging_mode:
