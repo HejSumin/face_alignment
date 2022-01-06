@@ -53,12 +53,13 @@ class MultipleCascades():
     def apply_cascades_with_intermediate_steps(self, I_padded, S_hat, features_hat):
         S_hat_list = [S_hat]
         features_hat_list = [features_hat]
+        I_intensities = None
         for cascade in self.cascades:
 
             if hasattr(self, 'is_averaging_mode') and self.is_averaging_mode:
-                S_hat_new, features_hat_new = cascade.apply_cascade_in_averaging_mode(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean, self.averaging_tree_amount)
+                S_hat_new, features_hat_new, I_intensities = cascade.apply_cascade_in_averaging_mode(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean, self.averaging_tree_amount, I_intensities)
             else:
-                S_hat_new, features_hat_new = cascade.apply_cascade(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean)
+                S_hat_new, features_hat_new, I_intensities = cascade.apply_cascade(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean, I_intensities)
 
             S_hat = S_hat_new
             features_hat = features_hat_new
@@ -69,12 +70,13 @@ class MultipleCascades():
         return S_hat_list, features_hat_list
 
     def apply_cascades(self, I_padded, S_hat, features_hat):
+        I_intensities = None
         for cascade in self.cascades:
-
+            
             if hasattr(self, 'is_averaging_mode') and self.is_averaging_mode:
-                S_hat_new, features_hat_new = cascade.apply_cascade_in_averaging_mode(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean, self.averaging_tree_amount)
+                S_hat_new, features_hat_new, I_intensities = cascade.apply_cascade_in_averaging_mode(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean, self.averaging_tree_amount, I_intensities)
             else:
-                S_hat_new, features_hat_new = cascade.apply_cascade(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean)
+                S_hat_new, features_hat_new, I_intensities = cascade.apply_cascade(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean, I_intensities)
 
             S_hat = S_hat_new
             features_hat = features_hat_new
@@ -124,7 +126,7 @@ class MultipleCascades():
         error_all_test_images_matrix = []
 
         test_file_names = get_all_file_names(test_folder_path)
-        for test_file_name in test_file_names:
+        for test_file_name in tqdm(test_file_names):
 
             prepare_result = self.validate_test_image_with_intermediate_steps(test_folder_path + test_file_name, annotation_folder_path) 
             if prepare_result is None:

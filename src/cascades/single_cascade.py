@@ -9,12 +9,15 @@ class SingleCascade():
         self.model_f_0_matrix = model_f_0_matrix
         self.model_learning_rate = model_learning_rate
 
-    def apply_cascade(self, I, S_hat, features_hat, S_mean, features_mean):
+    def apply_cascade(self, I, S_hat, features_hat, S_mean, features_mean, I_intensities_prev):
         cascade_contribution = self.model_f_0_matrix
         x_mask = [x for x in range(0, cascade_contribution.shape[0]-1, 2)]
         y_mask = [y for y in range(1, cascade_contribution.shape[0], 2)]
-    
-        I_intensities = I[np.array(features_hat[:,1]), np.array(features_hat[:,0])].astype(np.uint8)
+
+        try:
+            I_intensities = I[np.array(features_hat[:,1]), np.array(features_hat[:,0])].astype(np.uint8)
+        except Exception as e:
+            I_intensities = I_intensities_prev
     
         for i in range(0, self.model_regression_trees_matrix.shape[0]):
             regression_tree_vector = self.model_regression_trees_matrix[i]
@@ -25,15 +28,18 @@ class SingleCascade():
 
         features_hat_new = transformation_between_cascades(S_mean, S_hat_new, features_mean)
     
-        return S_hat_new, features_hat_new
+        return S_hat_new, features_hat_new, I_intensities
 
-    def apply_cascade_in_averaging_mode(self, I, S_hat, features_hat, S_mean, features_mean, averaging_tree_amount):
+    def apply_cascade_in_averaging_mode(self, I, S_hat, features_hat, S_mean, features_mean, averaging_tree_amount, I_intensities_prev):
         cascade_contribution = self.model_f_0_matrix
         x_mask = [x for x in range(0, cascade_contribution.shape[0]-1, 2)]
         y_mask = [y for y in range(1, cascade_contribution.shape[0], 2)]
-    
-        I_intensities = I[np.array(features_hat[:,1]), np.array(features_hat[:,0])].astype(np.uint8)
-    
+        
+        try:
+            I_intensities = I[np.array(features_hat[:,1]), np.array(features_hat[:,0])].astype(np.uint8)
+        except Exception as e:
+            I_intensities = I_intensities_prev
+
         for i in range(0, self.model_regression_trees_matrix.shape[0], averaging_tree_amount):
             predict_avarage_residual_averaging_matrix = np.empty((averaging_tree_amount, cascade_contribution.shape[0]), dtype=np.float32)
         
@@ -48,4 +54,4 @@ class SingleCascade():
 
         features_hat_new = transformation_between_cascades(S_mean, S_hat_new, features_mean)
     
-        return S_hat_new, features_hat_new
+        return S_hat_new, features_hat_new, I_intensities
