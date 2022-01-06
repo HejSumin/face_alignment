@@ -178,10 +178,10 @@ def _generate_child_nodes(
         )
     )
 
-def generate_regression_tree(I_intensities_matrix, residuals_matrix, features_hat_matrix, regression_tree_max_depth=4, use_exponential_prior=True):
+def generate_regression_tree(I_intensities_matrix, residuals_matrix, features_hat_matrix, regression_tree_max_depth=5, use_exponential_prior=True):
     Q_I_at_root = np.arange(0, I_intensities_matrix.shape[0])
 
-    regression_tree = Regression_Tree_Fancy(avarage_residuals_matrix_shape=residuals_matrix.shape)
+    regression_tree = Regression_Tree_Fancy(avarage_residuals_matrix_shape=residuals_matrix.shape, regression_tree_max_depth=regression_tree_max_depth)
     Q_theta_l_root, Q_theta_r_root, mu_theta_root = _generate_root_node(regression_tree, I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_I_at_root, use_exponential_prior)
 
     success = _generate_child_nodes(regression_tree, 0, regression_tree_max_depth, I_intensities_matrix, residuals_matrix, features_hat_matrix, Q_theta_l_root, Q_theta_r_root, mu_theta_root, use_exponential_prior)
@@ -226,8 +226,8 @@ def convert_fancy_regression_trees_to_matrix_form(model_regression_trees, is_ave
         model_regression_trees = [item for sublist in model_regression_trees for item in sublist]
 
     amount_regression_trees = len(model_regression_trees)
-    model_avarage_residual_leaf_matrix = np.empty((amount_regression_trees, model_regression_trees[0].get_regression_tree_vector().shape[1]), dtype=np.float32)
-    model_regression_trees_matrix = np.empty((amount_regression_trees, model_regression_trees[0].regression_leafs_vector().shape[1]), dtype=np.uint16)
+    model_regression_trees_matrix = np.empty((amount_regression_trees, model_regression_trees[0].get_regression_tree_vector().shape[1]), dtype=np.uint16)
+    model_avarage_residual_leaf_matrix = np.empty((amount_regression_trees, model_regression_trees[0].get_regression_leafs_vector().shape[0]), dtype=np.float32)
 
     for i, regression_tree in tqdm(enumerate(model_regression_trees), desc="Saving tree model"):
         
