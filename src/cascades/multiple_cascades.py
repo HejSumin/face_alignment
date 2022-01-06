@@ -55,10 +55,10 @@ class MultipleCascades():
         features_hat_list = [features_hat]
         for cascade in self.cascades:
 
-            #if self.is_averaging_mode:
-             #   S_hat_new, features_hat_new = cascade.apply_cascade_in_averaging_mode(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean, self.averaging_tree_amount)
-            #else:
-            S_hat_new, features_hat_new = cascade.apply_cascade(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean)
+            if hasattr(self, 'is_averaging_mode') and self.is_averaging_mode:
+                S_hat_new, features_hat_new = cascade.apply_cascade_in_averaging_mode(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean, self.averaging_tree_amount)
+            else:
+                S_hat_new, features_hat_new = cascade.apply_cascade(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean)
 
             S_hat = S_hat_new
             features_hat = features_hat_new
@@ -71,10 +71,10 @@ class MultipleCascades():
     def apply_cascades(self, I_padded, S_hat, features_hat):
         for cascade in self.cascades:
 
-            #if self.is_averaging_mode:
-               # S_hat_new, features_hat_new = cascade.apply_cascade_in_averaging_mode(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean, self.averaging_tree_amount)
-            #else:
-            S_hat_new, features_hat_new = cascade.apply_cascade(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean)
+            if hasattr(self, 'is_averaging_mode') and self.is_averaging_mode:
+                S_hat_new, features_hat_new = cascade.apply_cascade_in_averaging_mode(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean, self.averaging_tree_amount)
+            else:
+                S_hat_new, features_hat_new = cascade.apply_cascade(I_padded, S_hat, features_hat, self.S_mean_centered, self.features_mean)
 
             S_hat = S_hat_new
             features_hat = features_hat_new
