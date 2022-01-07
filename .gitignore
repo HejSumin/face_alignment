@@ -133,6 +133,5 @@ dmypy.json
 
 # run generated files that should no be in git
 src/tree/graphviz_output.txt
-/run_output
 *.npy
 graphviz_output.txt
