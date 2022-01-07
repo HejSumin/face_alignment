@@ -15,7 +15,7 @@ Hyperparameters
 
 """
 
-_R = 10
+_R = 20
 _BB_TARGET_SIZE = 500
 _BB_CENTER_Y_SCALE = 1.1
 _AMOUNT_EXTRACED_FEATURES = 400
